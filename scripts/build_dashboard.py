@@ -53,6 +53,7 @@ EXP_LABELS = {
     16: "Free NSA (param-free)",
     17: "Coarse-to-fine",
     18: "Confidence-gated multi-resolution",
+    19: "Bigger Bird Flash",
 }
 
 CUSTOM_EXP_MAP = {
@@ -60,11 +61,13 @@ CUSTOM_EXP_MAP = {
     "bigbird_8000": 16,
     "biggerbird_globals_ver1": 17,
     "biggerbird_topk_mmr": 18,
-    "biggerbird_topk_mmr_ver2": 19,
+    # Historical kaggle dir; keep out of exp_19 Bigger Bird Flash numbering.
+    "biggerbird_topk_mmr_ver2": 24,
     "biggerbird_topkmmr_globals_ver1": 20,
     "biggerbird_topkmmr_globals_8000": 21,
     "biggerbird_topkmmr_globals_randoms_8000": 22,
     "biggerbird_topkmmr_globals_teleports_8000": 23,
+    "bigger_bird_flash": 19,
 }
 
 SKIP_NAMES = {
@@ -73,12 +76,27 @@ SKIP_NAMES = {
     BUILD_REPORT.name,
 }
 
+SKIP_DIR_NAMES = {
+    "invalid_tokenizer",
+}
+
 SOURCE_PRIORITY = {
     "direct_results": 100,
     "nested_results": 90,
     "nested_eval": 80,
     "sweep": 70,
     "efficiency_summary": 60,
+    "bigger_bird_flash_smoke": 95,
+    "bigger_bird_flash_microbench": 85,
+}
+
+BIGGER_BIRD_FLASH_VARIANT_MAP = {
+    "dense_flash_cached": (0, "Dense Flash cached"),
+    "dense_flash": (0, "Dense Flash"),
+    "bigger_bird_last_query_cached": (19, "last_query cached"),
+    "bigger_bird_last_query": (19, "last_query"),
+    "bigger_bird_causal_chunk_cached": (19, "causal_chunk cached"),
+    "bigger_bird_causal_chunk": (19, "causal_chunk"),
 }
 
 # R1/Llama runs before this project-wide sparse-only correction may have used
@@ -520,12 +538,249 @@ def aggregate_rows(path: Path, payload: dict, diagnostics: dict) -> list[dict]:
     return rows
 
 
+def _bigger_bird_flash_base_run(
+    path: Path,
+    *,
+    exp_num: int,
+    variant: str,
+    task: str,
+    seq_length: int,
+    depth: Any,
+    accuracy: Any,
+    latency_ms: Any,
+    peak_memory_mb: Any,
+    eval_time_s: Any,
+    n_examples: int | None,
+    observed: int | None,
+    source_kind_name: str,
+    timestamp: str,
+    gpu: Any = None,
+    complete: bool = True,
+    status: str = "ok",
+    extra: dict | None = None,
+) -> dict:
+    label = EXP_LABELS.get(exp_num, variant or f"Experiment {exp_num}")
+    validity, analysis_eligible = sparse_validity(exp_num, "r1-llama-8b", timestamp)
+    run = {
+        "exp_num": exp_num,
+        "experiment": f"exp_{exp_num} · {label}",
+        "experiment_id": f"exp_{exp_num}",
+        "experiment_label": label,
+        "variant": variant,
+        "track": "smoke",
+        "task": task,
+        "model": "r1-llama-8b",
+        "source_kind": source_kind_name,
+        "source_file": relative(path),
+        "timestamp": timestamp,
+        "seq_length": seq_length,
+        "depth": rounded(depth, 3),
+        "accuracy": rounded(accuracy, 6),
+        "f1": rounded(accuracy, 6),
+        "eval_time_s": rounded(eval_time_s, 3),
+        "train_time_s": None,
+        "latency_ms": rounded(latency_ms, 3),
+        "peak_memory_mb": rounded(peak_memory_mb, 2),
+        "softmax_comparisons": None,
+        "n_examples": n_examples,
+        "observed_examples": observed,
+        "stored_examples": observed,
+        "status": status,
+        "complete": complete,
+        "causal": True,
+        "attention_mode": "dense_baseline" if exp_num == 0 else "sparse_experiment",
+        "sparse_validity": validity,
+        "analysis_eligible": analysis_eligible,
+        "random_baseline": None,
+        "gpu": gpu,
+        "cluster": None,
+        "host": None,
+        "slurm_job": None,
+    }
+    if extra:
+        run.update(extra)
+    return run
+
+
+def parse_bigger_bird_flash_smoke(path: Path, payload: dict, diagnostics: dict) -> list[dict]:
+    """Paired dense-vs-exp19 exact-number retrieval smoke results."""
+    rows: list[dict] = []
+    timestamp = str(first_value(payload.get("created"), path.stem, now_iso()))
+    gpu = payload.get("gpu")
+    for item in payload.get("results", []):
+        if not isinstance(item, dict):
+            diagnostics["unrecognized_files"].append(
+                {"file": relative(path), "reason": "non-object row in bigger_bird_flash smoke results"}
+            )
+            continue
+        variant_key = str(item.get("variant") or "")
+        mapped = BIGGER_BIRD_FLASH_VARIANT_MAP.get(variant_key)
+        if mapped is None:
+            diagnostics["unrecognized_files"].append(
+                {"file": relative(path), "reason": f"unknown bigger_bird_flash smoke variant: {variant_key}"}
+            )
+            continue
+        exp_num, variant_label = mapped
+        seq = as_int(first_value(item.get("input_tokens"), item.get("seq_length"), item.get("n")))
+        if not seq:
+            diagnostics["unrecognized_files"].append(
+                {"file": relative(path), "reason": "bigger_bird_flash smoke row missing input_tokens"}
+            )
+            continue
+        correct = item.get("exact_number_correct")
+        if correct is None and item.get("gold") is not None:
+            generated = str(item.get("generated") or item.get("raw_generated") or "")
+            correct = str(item.get("gold")) in generated
+        accuracy = 1.0 if correct is True else (0.0 if correct is False else None)
+        seconds = as_number(item.get("seconds"))
+        latency_ms = seconds * 1000.0 if seconds is not None else None
+        peak_gb = as_number(item.get("peak_memory_gb"))
+        peak_mb = peak_gb * 1024.0 if peak_gb is not None else None
+        mode = "causal_chunk" if "causal_chunk" in variant_key else "last_query"
+        # Dense and last_query share task so the dashboard can compare them directly.
+        # Causal-chunk ablation stays on its own task to avoid preferred-row collisions.
+        if "causal_chunk" in variant_key:
+            task = "exact_number_causal_chunk"
+        else:
+            task = "exact_number"
+        status, complete = status_from(
+            {"status": "ok" if accuracy is not None else "incomplete"},
+            accuracy,
+            1,
+            1 if accuracy is not None else 0,
+        )
+        selection = as_dict(item.get("selection"))
+        rows.append(
+            _bigger_bird_flash_base_run(
+                path,
+                exp_num=exp_num,
+                variant=variant_label,
+                task=task,
+                seq_length=seq,
+                depth=item.get("depth"),
+                accuracy=accuracy,
+                latency_ms=latency_ms,
+                peak_memory_mb=peak_mb,
+                eval_time_s=seconds,
+                n_examples=1,
+                observed=1 if accuracy is not None else 0,
+                source_kind_name="bigger_bird_flash_smoke",
+                timestamp=timestamp,
+                gpu=first_value(item.get("gpu"), gpu),
+                complete=complete,
+                status=status,
+                extra={
+                    "routing_mode": selection.get("routing_mode") or mode,
+                    "route_slots": as_int(selection.get("route_slots")),
+                    "complete_speedup": None,
+                    "attention_speedup": None,
+                },
+            )
+        )
+        diagnostics["source_kind_counts"]["bigger_bird_flash_smoke"] += 1
+        diagnostics["track_counts"]["smoke"] += 1
+        diagnostics["model_counts"]["r1-llama-8b"] += 1
+    return rows
+
+
+def parse_bigger_bird_flash_microbench(path: Path, payload: dict, diagnostics: dict) -> list[dict]:
+    """Attention-only dense FA vs Bigger Bird Flash (+routing) timings."""
+    rows: list[dict] = []
+    timestamp = str(first_value(payload.get("created"), path.stem, now_iso()))
+    for item in payload.get("results", []):
+        if not isinstance(item, dict):
+            diagnostics["unrecognized_files"].append(
+                {"file": relative(path), "reason": "non-object row in bigger_bird_flash microbench"}
+            )
+            continue
+        seq = as_int(first_value(item.get("n"), item.get("seq_length")))
+        if not seq:
+            diagnostics["unrecognized_files"].append(
+                {"file": relative(path), "reason": "bigger_bird_flash microbench row missing n"}
+            )
+            continue
+        mode = str(item.get("mode") or "last_query")
+        dense_ms = as_number(item.get("dense_ms"))
+        sparse_ms = as_number(first_value(item.get("sparse_complete_ms"), item.get("sparse_attention_ms")))
+        peak_gb = as_number(item.get("peak_memory_gb"))
+        peak_mb = peak_gb * 1024.0 if peak_gb is not None else None
+        gpu = item.get("gpu")
+        speedup_extra = {
+            "routing_mode": mode,
+            "complete_speedup": rounded(item.get("complete_speedup"), 4),
+            "attention_speedup": rounded(item.get("attention_speedup"), 4),
+        }
+        if dense_ms is not None:
+            rows.append(
+                _bigger_bird_flash_base_run(
+                    path,
+                    exp_num=0,
+                    variant="Dense FA kernel",
+                    task="attention_microbench",
+                    seq_length=seq,
+                    depth=None,
+                    accuracy=None,
+                    latency_ms=dense_ms,
+                    peak_memory_mb=peak_mb,
+                    eval_time_s=dense_ms / 1000.0,
+                    n_examples=1,
+                    observed=1,
+                    source_kind_name="bigger_bird_flash_microbench",
+                    timestamp=timestamp,
+                    gpu=gpu,
+                    complete=True,
+                    status="ok",
+                    extra=speedup_extra,
+                )
+            )
+            diagnostics["source_kind_counts"]["bigger_bird_flash_microbench"] += 1
+            diagnostics["track_counts"]["smoke"] += 1
+            diagnostics["model_counts"]["r1-llama-8b"] += 1
+        if sparse_ms is not None:
+            rows.append(
+                _bigger_bird_flash_base_run(
+                    path,
+                    exp_num=19,
+                    variant=f"Bigger Bird Flash ({mode})",
+                    task="attention_microbench",
+                    seq_length=seq,
+                    depth=None,
+                    accuracy=None,
+                    latency_ms=sparse_ms,
+                    peak_memory_mb=peak_mb,
+                    eval_time_s=sparse_ms / 1000.0,
+                    n_examples=1,
+                    observed=1,
+                    source_kind_name="bigger_bird_flash_microbench",
+                    timestamp=timestamp,
+                    gpu=gpu,
+                    complete=True,
+                    status="ok",
+                    extra={
+                        **speedup_extra,
+                        "route_slots": as_int(as_dict(item.get("schedule")).get("middle")),
+                    },
+                )
+            )
+            diagnostics["source_kind_counts"]["bigger_bird_flash_microbench"] += 1
+            diagnostics["track_counts"]["smoke"] += 1
+            diagnostics["model_counts"]["r1-llama-8b"] += 1
+    return rows
+
+
+def is_bigger_bird_flash_path(path: Path) -> bool:
+    return "bigger_bird_flash" in path.parts or path.parent.name == "bigger_bird_flash"
+
+
 def load_runs(diagnostics: dict) -> list[dict]:
     runs: list[dict] = []
     for path in sorted((ROOT / "benchmarks").glob("**/*.json")):
         if not path.is_file():
             continue
         diagnostics["scanned_files"] += 1
+        if any(part in SKIP_DIR_NAMES for part in path.parts):
+            diagnostics["ignored_files"].append({"file": relative(path), "reason": "invalid/excluded benchmark subdirectory"})
+            continue
         if path.name in SKIP_NAMES or "backup" in path.stem.lower():
             diagnostics["ignored_files"].append({"file": relative(path), "reason": "aggregate/backup source"})
             continue
@@ -538,6 +793,24 @@ def load_runs(diagnostics: dict) -> list[dict]:
         diagnostics["parsed_files"] += 1
 
         if path.name == "complexity_results.json":
+            continue
+        if is_bigger_bird_flash_path(path) and isinstance(data.get("results"), list):
+            benchmark = str(data.get("benchmark") or "").lower()
+            sample = data["results"][0] if data["results"] and isinstance(data["results"][0], dict) else {}
+            if (
+                "exact_number" in benchmark
+                or "smoke" in path.stem.lower()
+                or "exact_number_correct" in sample
+                or "input_tokens" in sample
+            ):
+                runs.extend(parse_bigger_bird_flash_smoke(path, data, diagnostics))
+                continue
+            if "dense_ms" in sample or "sparse_complete_ms" in sample or "microbench" in path.stem.lower():
+                runs.extend(parse_bigger_bird_flash_microbench(path, data, diagnostics))
+                continue
+            diagnostics["unrecognized_files"].append(
+                {"file": relative(path), "reason": "bigger_bird_flash JSON without smoke/microbench schema"}
+            )
             continue
         if path.name == "efficiency_results.json":
             for item in data.get("results", []):
@@ -740,7 +1013,39 @@ def coverage_summaries(runs: list[dict]) -> tuple[list[dict], list[dict]]:
                 for row in sorted(group, key=lambda item: item["seq_length"])
             ],
         })
-    return coverage, focus_summary
+
+    smoke_focus = [
+        row for row in preferred
+        if row["track"] == "smoke"
+        and row["task"] in {"exact_number", "exact_number_causal_chunk", "attention_microbench"}
+    ]
+    smoke_by_task: dict[str, list[dict]] = defaultdict(list)
+    for row in smoke_focus:
+        smoke_by_task[row["task"]].append(row)
+    smoke_summary = []
+    for task, group in sorted(smoke_by_task.items()):
+        smoke_summary.append({
+            "task": task,
+            "experiments": sorted({row["exp_num"] for row in group}),
+            "results": [
+                {
+                    "exp_num": row["exp_num"],
+                    "experiment": row["experiment"],
+                    "variant": row.get("variant"),
+                    "seq_length": row["seq_length"],
+                    "depth": row.get("depth"),
+                    "accuracy": row["accuracy"],
+                    "latency_ms": row.get("latency_ms"),
+                    "peak_memory_mb": row.get("peak_memory_mb"),
+                    "complete_speedup": row.get("complete_speedup"),
+                    "attention_speedup": row.get("attention_speedup"),
+                    "status": row["status"],
+                    "source_file": row["source_file"],
+                }
+                for row in sorted(group, key=lambda item: (item["seq_length"], item["exp_num"], item.get("depth") or -1))
+            ],
+        })
+    return coverage, focus_summary, smoke_summary
 
 
 def audit_sparse_models() -> dict:
@@ -799,7 +1104,7 @@ def build_data() -> dict:
     analysis_runs = [row for row in runs if row.get("analysis_eligible", True)]
     complexity = load_complexity(diagnostics)
     sparse_audit = audit_sparse_models()
-    coverage_summary, focus_summary = coverage_summaries(analysis_runs)
+    coverage_summary, focus_summary, smoke_summary = coverage_summaries(analysis_runs)
     diagnostics["source_kind_counts"] = dict(diagnostics["source_kind_counts"])
     diagnostics["track_counts"] = dict(diagnostics["track_counts"])
     diagnostics["model_counts"] = dict(diagnostics["model_counts"])
@@ -819,6 +1124,7 @@ def build_data() -> dict:
         "aggregates": aggregate_runs(analysis_runs),
         "coverage_summary": coverage_summary,
         "focus_summary": focus_summary,
+        "smoke_summary": smoke_summary,
         "complexity": complexity,
         "diagnostics": diagnostics,
         "sparse_audit": sparse_audit,
@@ -866,6 +1172,19 @@ def log_text(data: dict) -> str:
             accuracy_text = "—" if result["accuracy"] is None else f"{float(result['accuracy']) * 100:.1f}%"
             formatted.append(f"{result['seq_length']}={accuracy_text}[{result['status']}]")
         lines.append(f"  {item['experiment']}: {', '.join(formatted)}")
+    lines.append("")
+    lines.append("BIGGER BIRD FLASH SMOKE / MICROBENCH")
+    for item in data.get("smoke_summary", []):
+        lines.append(f"  task={item['task']} experiments={item['experiments']}")
+        for result in item["results"]:
+            accuracy_text = "—" if result["accuracy"] is None else f"{float(result['accuracy']) * 100:.1f}%"
+            latency = "—" if result.get("latency_ms") is None else f"{float(result['latency_ms']):.1f}ms"
+            speedup = result.get("complete_speedup")
+            speedup_text = "" if speedup is None else f" speedup={float(speedup):.2f}x"
+            lines.append(
+                f"    exp_{result['exp_num']} seq={result['seq_length']} depth={result.get('depth')} "
+                f"acc={accuracy_text} latency={latency}{speedup_text} [{result['status']}]"
+            )
     lines.extend(["", "SPARSE AUDIT", f"  status: {audit['status']}", f"  expected dense baseline: {audit['expected_dense_experiment']}", f"  short-sequence helper: {audit['short_sequence_helper']}", f"  historical exclusion cutoff: {SPARSE_FIX_CUTOFF}"])
     if audit["violations"]:
         lines.extend(f"  VIOLATION: {json.dumps(item, sort_keys=True)}" for item in audit["violations"])

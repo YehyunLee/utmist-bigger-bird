@@ -1,0 +1,106 @@
+{
+  "created": "2026-09-26T17:16:07",
+  "torch": "2.13.0",
+  "results": [
+    {
+      "n": 4096,
+      "gpu": "NVIDIA A100-SXM4-40GB MIG 3g.20gb",
+      "dtype": "bfloat16",
+      "heads": 32,
+      "kv_heads": 8,
+      "schedule": {
+        "middle": 512,
+        "wide": 1024,
+        "local": 128,
+        "globals": 32
+      },
+      "mode": "last_query",
+      "block_m": 32,
+      "block_n": 64,
+      "dense_backend": "forced_flash_attention",
+      "dense_ms": 1.9239999453226726,
+      "routing_ms": 0.8720426559448242,
+      "sparse_attention_ms": 1.643445332845052,
+      "sparse_complete_ms": 2.235424041748047,
+      "attention_speedup": 1.1707112532863737,
+      "complete_speedup": 0.8606867911370193,
+      "mean_unique_routes": 552.65625,
+      "peak_memory_gb": 0.185160704
+    },
+    {
+      "n": 8192,
+      "gpu": "NVIDIA A100-SXM4-40GB MIG 3g.20gb",
+      "dtype": "bfloat16",
+      "heads": 32,
+      "kv_heads": 8,
+      "schedule": {
+        "middle": 512,
+        "wide": 1024,
+        "local": 128,
+        "globals": 32
+      },
+      "mode": "last_query",
+      "block_m": 32,
+      "block_n": 64,
+      "dense_backend": "forced_flash_attention",
+      "dense_ms": 7.059445063273112,
+      "routing_ms": 0.8433706760406494,
+      "sparse_attention_ms": 3.2431465784708657,
+      "sparse_complete_ms": 3.905514717102051,
+      "attention_speedup": 2.176727105131838,
+      "complete_speedup": 1.8075581772513007,
+      "mean_unique_routes": 609.1875,
+      "peak_memory_gb": 0.370234368
+    },
+    {
+      "n": 16384,
+      "gpu": "NVIDIA A100-SXM4-40GB MIG 3g.20gb",
+      "dtype": "bfloat16",
+      "heads": 32,
+      "kv_heads": 8,
+      "schedule": {
+        "middle": 512,
+        "wide": 1024,
+        "local": 128,
+        "globals": 32
+      },
+      "mode": "last_query",
+      "block_m": 32,
+      "block_n": 64,
+      "dense_backend": "forced_flash_attention",
+      "dense_ms": 27.312266031901043,
+      "routing_ms": 0.9793813228607178,
+      "sparse_attention_ms": 6.443178812662761,
+      "sparse_complete_ms": 7.28929074605306,
+      "attention_speedup": 4.2389427371198085,
+      "complete_speedup": 3.7469030915922574,
+      "mean_unique_routes": 641.59375,
+      "peak_memory_gb": 0.740381696
+    },
+    {
+      "n": 32768,
+      "gpu": "NVIDIA A100-SXM4-40GB MIG 3g.20gb",
+      "dtype": "bfloat16",
+      "heads": 32,
+      "kv_heads": 8,
+      "schedule": {
+        "middle": 512,
+        "wide": 2048,
+        "local": 128,
+        "globals": 32
+      },
+      "mode": "last_query",
+      "block_m": 32,
+      "block_n": 64,
+      "dense_backend": "forced_flash_attention",
+      "dense_ms": 106.80077107747395,
+      "routing_ms": 1.084170659383138,
+      "sparse_attention_ms": 12.835797627766928,
+      "sparse_complete_ms": 13.892106374104818,
+      "attention_speedup": 8.320540271407685,
+      "complete_speedup": 7.687874552742618,
+      "mean_unique_routes": 639.25,
+      "peak_memory_gb": 1.480676352
+    }
+  ]
+}
