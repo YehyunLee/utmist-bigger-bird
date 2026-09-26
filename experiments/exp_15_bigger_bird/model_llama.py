@@ -21,13 +21,14 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from kernels.gather_autograd import gather_attention_autograd
+from kernels.routed_window_autograd import routed_window_attention_autograd
 
 from patches.llama.llama_patched_model import (
     LlamaSparseAttention,
     LlamaPatchedModel,
     apply_lora,
 )
-from sparse_attn_utils import causal_sparse_attention, last_query_topk_indices
+from sparse_attn_utils import last_query_topk_indices
 
 
 class BiggerBirdAttention(LlamaSparseAttention):
@@ -98,31 +99,27 @@ class BiggerBirdAttention(LlamaSparseAttention):
                 Q_low, K_low, k_route, token_mask, bsz, num_heads,
             )  # [BH, k_route]
 
-            # Add global tokens (first and last blocks)
-            n_global = min(self.globals_per_head * blk // 2, src_len)
-            global_first = torch.arange(n_global, device=Q.device, dtype=torch.long)
-            global_last = torch.arange(max(0, src_len - n_global), src_len, device=Q.device, dtype=torch.long)
-            global_idx = torch.cat([global_first, global_last]).unique()
-            global_idx = global_idx.unsqueeze(0).expand(BH, -1)
+            # Expand [B, src_len] -> [BH, src_len]
+            if token_mask is not None:
+                key_mask = (
+                    token_mask
+                    .unsqueeze(1)
+                    .expand(bsz, num_heads, src_len)
+                    .reshape(BH, src_len)
+                    .contiguous()
+                )
+            else:
+                key_mask = None
 
-            # Concatenate and deduplicate per head
-            all_idx = torch.cat([routed_idx, global_idx], dim=-1)  # [BH, k_route + n_globals]
-            # Deduplicate: sort, then keep first occurrence per head
-            all_idx_sorted, _ = torch.sort(all_idx, dim=-1)
-            # Find unique by comparing with shifted version
-            mask = torch.ones_like(all_idx_sorted, dtype=torch.bool)
-            mask[..., 1:] = all_idx_sorted[..., 1:] != all_idx_sorted[..., :-1]
-            # We can't easily use boolean indexing per-row for variable counts,
-            # so just keep all (duplicates are harmless in causal_sparse_attention
-            # because it gathers K/V at the same indices — duplicates just mean
-            # the same K/V is attended to twice, which is equivalent to higher
-            # weight. But this distorts softmax. So we use a scatter-based dedup.)
-            # Actually, the simplest fix: just pass routed_idx without globals.
-            # The local window in causal_sparse_attention already covers nearby
-            # tokens, and the top-k routing covers the needle. Globals add little.
-            return causal_sparse_attention(
-                Q, K, V, routed_idx, local_window=256,
-                token_mask=token_mask, bsz=bsz, num_heads=num_heads,
+            return routed_window_attention_autograd(
+                Q,
+                K,
+                V,
+                routed_idx,
+                window_size=256,
+                key_mask=key_mask,
+                causal=True,
+                scale=1.0,
             )
 
         # --- Bidirectional mode: original per-query block routing ---
