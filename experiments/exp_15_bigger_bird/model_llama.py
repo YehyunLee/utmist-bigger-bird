@@ -20,6 +20,9 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from kernels.common import MODE_GATHER
+from kernels.online_softmax import _launch
+
 from patches.llama.llama_patched_model import (
     LlamaSparseAttention,
     LlamaPatchedModel,
@@ -182,42 +185,32 @@ class BiggerBirdAttention(LlamaSparseAttention):
         else:
             am_expanded = None
 
-        # Process queries in chunks to limit peak memory
-        # Peak per chunk: BH * chunk * M * dim * 2 (K_sel + V_sel) * 2 bytes
-        # For BH=32, M=1024, dim=128: chunk=256 -> 32*256*1024*128*4 = 4GB (manageable)
-        QUERY_CHUNK = 256
-        out_chunks = []
-        for q_start in range(0, tgt_len, QUERY_CHUNK):
-            q_end = min(q_start + QUERY_CHUNK, tgt_len)
-            Q_chunk = Q[:, q_start:q_end, :]  # [BH, chunk, d]
-            idx_chunk = all_idx[:, q_start:q_end, :]  # [BH, chunk, M]
+        allowed = torch.gather(
+            am_expanded.unsqueeze(1).expand(-1, tgt_len, -1),
+            2,
+            all_idx,
+        )
 
-            # Gather K, V for this chunk: [BH, chunk, M, d]
-            from sparse_attn_utils import _gather_kv
-            k_sel, v_sel = _gather_kv(K, V, idx_chunk)
+        Q = Q.contiguous()
+        K = K.contiguous()
+        V = V.contiguous()
+        all_idx = all_idx.contiguous()
 
-            # Scores: [BH, chunk, M]
-            scores = torch.matmul(Q_chunk.unsqueeze(2), k_sel.transpose(-1, -2)).squeeze(2)
+        if allowed is not None:
+            allowed = allowed.contiguous()
 
-            if am_expanded is not None:
-                allowed = torch.gather(
-                    am_expanded.unsqueeze(1).expand(-1, q_end - q_start, -1), 2, idx_chunk
-                )
-                scores = scores.masked_fill(~allowed, torch.finfo(scores.dtype).min)
+        out = _launch(
+            MODE_GATHER,
+            Q,
+            K,
+            V,
+            M,
+            all_idx,
+            allowed,
+            scale=1.0,
+        )
 
-            if is_causal:
-                q_pos = torch.arange(q_start, q_end, device=Q.device).unsqueeze(0).unsqueeze(-1)
-                causal_allowed = idx_chunk <= q_pos  # [BH, chunk, M]
-                scores = scores.masked_fill(~causal_allowed, torch.finfo(scores.dtype).min)
-
-            attn = F.softmax(scores, dim=-1)
-            chunk_out = torch.bmm(
-                attn.reshape(BH * (q_end - q_start), 1, M),
-                v_sel.reshape(BH * (q_end - q_start), M, dim),
-            ).reshape(BH, q_end - q_start, dim)
-            out_chunks.append(chunk_out)
-
-        return torch.cat(out_chunks, dim=1)
+        return out
 
 
 def build_model(
