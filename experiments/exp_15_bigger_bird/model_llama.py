@@ -20,8 +20,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from kernels.common import MODE_GATHER
-from kernels.online_softmax import _launch
+from kernels.gather_autograd import gather_attention_autograd
 
 from patches.llama.llama_patched_model import (
     LlamaSparseAttention,
@@ -173,23 +172,25 @@ class BiggerBirdAttention(LlamaSparseAttention):
             if teleport_indices:
                 teleport_idx = torch.cat(teleport_indices, dim=-1)
                 all_idx = torch.cat([all_idx, teleport_idx], dim=-1)
-        # --- Gather attention over selected tokens (memory-efficient chunked) ---
+
+
+        # --- Fused Triton gather attention ---
         M = all_idx.size(-1)
         dim = self.head_dim
 
-        # Precompute token_mask expanded for gather (avoid recompute per chunk)
+        # Compute token_mask expanded for gather
         if token_mask is not None:
             am_expanded = token_mask.unsqueeze(1).expand(
                 bsz, num_heads, src_len
-            ).reshape(BH, src_len)  # [BH, src_len]
-        else:
-            am_expanded = None
+            ).reshape(BH, src_len)
 
-        allowed = torch.gather(
-            am_expanded.unsqueeze(1).expand(-1, tgt_len, -1),
-            2,
-            all_idx,
-        )
+            allowed = torch.gather(
+                am_expanded.unsqueeze(1).expand(-1, tgt_len, -1),
+                2,
+                all_idx,
+            )
+        else:
+            allowed = None
 
         Q = Q.contiguous()
         K = K.contiguous()
@@ -199,12 +200,8 @@ class BiggerBirdAttention(LlamaSparseAttention):
         if allowed is not None:
             allowed = allowed.contiguous()
 
-        out = _launch(
-            MODE_GATHER,
-            Q,
-            K,
-            V,
-            M,
+        out = gather_attention_autograd(
+            Q, K, V,
             all_idx,
             allowed,
             scale=1.0,
