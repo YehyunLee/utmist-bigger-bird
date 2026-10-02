@@ -257,7 +257,7 @@ const S = [
   {vis: "board", step: 2, say: "Keeping the first 16 layers normal fixed it, but that is still quadratic."},
   {say: "Even when we handed the model the answer, it still failed."},
   {say: "So finding the fact wasn't the real problem."},
-  {vis: "img", img: F + "recall_layers.png", say: "We measured how blurry each design's view gets.", sub: "each line is a design; higher = its output stays closer to the normal model's"},
+  {vis: "img", img: F + "recall_layers.png", say: "We measured how blurry each shortcut's view gets.", sub: "each line is a different way of choosing spots; higher = its output stays closer to the normal model's"},
   {vis: "img", img: F + "recall_layers.png", say: "1.0 would mean identical to the normal model, layer by layer."},
   {vis: "img", img: F + "recall_layers.png", say: "The simple shortcuts (blue and orange) drift to about 0.85 in the middle layers."},
   {vis: "img", img: F + "recall_layers.png", say: "Red is the ceiling: a cheat that already knows the true best spots."},
