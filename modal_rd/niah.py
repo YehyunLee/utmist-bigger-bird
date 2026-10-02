@@ -59,6 +59,47 @@ def prepare(tokenizer, seq_bytes, count, depth=0.5, seed=42, start=0, verify=Tru
                      "tokens": len(ids), "token_sha256": hashlib.sha256(json.dumps(ids).encode()).hexdigest(),
                      "source_sha256": hashlib.sha256(text.encode()).hexdigest(),
                      "spans": spans, "question_tokens": [min(q), max(q) + 1], "depth": depth, "seed": seed})
+    _verify(rows, seq_bytes, depth, seed, verify)
+    return rows
+
+
+def prepare_task(tokenizer, task, seq_bytes, count, depth=0.5, seed=42, start=0):
+    """Any RULER NIAH variant. Gold answers = every value stated for the queried key(s).
+
+    Prompts whose queried key also appears with a different value elsewhere (possible
+    with the distractor-needle haystack) are skipped as ambiguous; the skip count is
+    returned alongside the rows.
+    """
+    if task in ("niah", "niah_single_1"):
+        return prepare(tokenizer, seq_bytes, count, depth=depth, seed=seed, start=start), 0
+    data = build_ruler_dataset(task=task, seq_len=seq_bytes, needle_depth=depth,
+                               train_samples=1, eval_samples=2 * (start + count) + 4, seed=seed)["validation"]
+    rows, skipped, idx = [], 0, start
+    while len(rows) < count and idx < len(data):
+        text = _ids_to_text(data[idx]["input_ids"]).rstrip() + " The answer is:"
+        cue = re.search(r"What (?:is the special magic (?P<one>[\w-]+)|are all values for the special magic "
+                        r"(?P<multi>[\w-]+)|are the special magics for: (?P<keys>[^?]+))\?", text)
+        keys = [cue["one"] or cue["multi"]] if not cue["keys"] else [k.strip() for k in cue["keys"].split(",")]
+        answers, ambiguous = [], False
+        for key in keys:
+            vals = re.findall(r"The special magic " + re.escape(key) + r" is: ([\w-]+)\.", text)
+            ambiguous |= not vals or (cue["multi"] is None and len(set(vals)) > 1)
+            answers += vals
+        idx += 1
+        if ambiguous:
+            skipped += 1
+            continue
+        ids = tokenizer(text, truncation=False)["input_ids"]
+        if len(ids) + 64 > 131072:
+            raise ValueError(f"{task} at {seq_bytes} bytes is {len(ids)} tokens; use fewer bytes")
+        rows.append({"idx": idx - 1, "task": task, "text": text, "answers": answers, "answer": answers[0],
+                     "label": int(data[idx - 1]["labels"]), "tokens": len(ids),
+                     "token_sha256": hashlib.sha256(json.dumps(ids).encode()).hexdigest(),
+                     "depth": depth, "seed": seed, "spans": None})
+    return rows, skipped
+
+
+def _verify(rows, seq_bytes, depth, seed, verify):
     manifest = MANIFESTS / f"bytes{seq_bytes}.json"
     if verify and depth == 0.5 and seed == 42 and manifest.exists():
         saved = {r["idx"]: r for r in json.loads(manifest.read_text())}

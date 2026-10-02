@@ -19,7 +19,7 @@ from torch.nn.attention import SDPBackend, sdpa_kernel
 from transformers import AutoModelForCausalLM
 
 from modal_rd import attention as rd
-from modal_rd.niah import MODEL_PATH, load_tokenizer, prepare
+from modal_rd.niah import MODEL_PATH, load_tokenizer, prepare_task
 
 RESULTS = Path("/vol/results")
 
@@ -72,9 +72,17 @@ def run_one(model, tokenizer, row, arm, max_new):
     gen_ids = out[0, row["tokens"]:].tolist()
     gen = tokenizer.decode(gen_ids, skip_special_tokens=True)
     first = re.search(r"\d+", gen)
+    if "answers" in row:
+        # RULER-style string match: every gold value must appear in the output.
+        flat = re.sub(r"\s", "", gen)
+        hits = [a in flat for a in row["answers"]]
+        exact, partial = all(hits), sum(hits) / len(hits)
+    else:
+        exact = bool(first and first[0] == row["answer"])
+        partial = float(exact)
     routes = None
     attn0 = model.model.layers[-1].self_attn
-    if getattr(attn0, "last_routes", None) is not None:
+    if getattr(attn0, "last_routes", None) is not None and row.get("spans"):
         lo, hi = row["spans"]["number"]
         hit = []
         for layer in model.model.layers:
@@ -83,7 +91,8 @@ def run_one(model, tokenizer, row, arm, max_new):
                 hit.append(((r >= lo) & (r < hi)).sum(-1).ge(hi - lo).float().mean().item())
         routes = {"mean_head_fraction_full_number_routed": sum(hit) / max(1, len(hit)), "slots": int(attn0.last_routes.shape[-1])}
     return {"idx": row["idx"], "tokens": row["tokens"], "token_sha256": row["token_sha256"], "answer": row["answer"],
-            "generated": gen, "generated_ids": gen_ids, "exact": bool(first and first[0] == row["answer"]),
+            "answers": row.get("answers", [row["answer"]]), "generated": gen, "generated_ids": gen_ids,
+            "exact": exact, "partial": partial,
             "last_digit": bool(first and int(first[0][-1]) == row["label"]),
             "prefill_s": events[0][0].elapsed_time(events[0][1]) / 1000, "wall_s": wall,
             "forwards": len(events), "peak_gb": torch.cuda.max_memory_allocated() / 1e9, "routes": routes}
@@ -100,6 +109,7 @@ def main():
     p.add_argument("--depths", default="0.5")
     p.add_argument("--max-new", type=int, default=10)
     p.add_argument("--warm", default="all", choices=["all", "first", "none"])
+    p.add_argument("--task", default="niah", help="RULER NIAH variant, e.g. niah_multikey_1, niah_multivalue")
     p.add_argument("--tag", required=True)
     a = p.parse_args()
     attn, dense_layers = json.loads(a.attn), parse_layers(a.dense_layers)
@@ -107,11 +117,11 @@ def main():
     model = build(a.arm, attn, dense_layers)
     RESULTS.mkdir(parents=True, exist_ok=True)
     out_path = RESULTS / f"{a.tag}.json"
-    report = {"arm": a.arm, "attn": attn, "dense_layers": dense_layers, "gpu": torch.cuda.get_device_name(0),
+    report = {"arm": a.arm, "task": a.task, "attn": attn, "dense_layers": dense_layers, "gpu": torch.cuda.get_device_name(0),
               "torch": torch.__version__, "max_new": a.max_new, "cache": True, "warm": a.warm, "runs": []}
     for nbytes in map(int, a.bytes.split(",")):
         for depth in map(float, a.depths.split(",")):
-            rows = prepare(tokenizer, nbytes, a.n, depth=depth, start=a.start)
+            rows, skipped = prepare_task(tokenizer, a.task, nbytes, a.n, depth=depth, start=a.start)
             warm = rows if a.warm == "all" else rows[:1] if a.warm == "first" else []
             for row in warm:
                 w = run_one(model, tokenizer, row, a.arm, a.max_new)
@@ -122,14 +132,16 @@ def main():
                 res.append(r)
                 print(f"TIMED bytes={nbytes} depth={depth} idx={row['idx']} tok={r['tokens']} exact={r['exact']} "
                       f"prefill={r['prefill_s']:.2f}s wall={r['wall_s']:.2f}s gen={r['generated']!r} routes={r['routes']}", flush=True)
-            summary = {"bytes": nbytes, "depth": depth, "n": len(res), "exact": sum(r["exact"] for r in res),
+            summary = {"task": a.task, "bytes": nbytes, "depth": depth, "n": len(res), "skipped_ambiguous": skipped,
+                       "exact": sum(r["exact"] for r in res), "partial": sum(r["partial"] for r in res) / len(res),
                        "last_digit": sum(r["last_digit"] for r in res),
                        "mean_prefill_s": sum(r["prefill_s"] for r in res) / len(res),
                        "mean_tokens": sum(r["tokens"] for r in res) / len(res),
                        "peak_gb": max(r["peak_gb"] for r in res), "examples": res}
             report["runs"].append(summary)
             out_path.write_text(json.dumps(report, indent=2))
-            print(f"SUMMARY arm={a.arm} bytes={nbytes} depth={depth} exact={summary['exact']}/{len(res)} "
+            print(f"SUMMARY arm={a.arm} task={a.task} bytes={nbytes} depth={depth} exact={summary['exact']}/{len(res)} "
+                  f"partial={summary['partial']:.3f} tokens={summary['mean_tokens']:.0f} "
                   f"last_digit={summary['last_digit']}/{len(res)} prefill={summary['mean_prefill_s']:.2f}s", flush=True)
     print("DONE", out_path, flush=True)
 

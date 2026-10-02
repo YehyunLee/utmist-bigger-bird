@@ -130,9 +130,11 @@ class RDAttention(nn.Module):
         r = min(self.exact_tail, n)
         if r:
             # Final r prompt queries (question / answer cue) attend exactly: O(r * n).
-            causal = torch.arange(n, device=q.device)[None, :] <= torch.arange(n - r, n, device=q.device)[:, None]
-            out[:, :, n - r:] = F.scaled_dot_product_attention(q[:, :, n - r:], k, v, attn_mask=causal,
-                                                               scale=self.scaling, enable_gqa=True)
+            for s in range(n - r, n, 256):   # 256-query chunks bound the masked-SDPA workspace
+                e = min(s + 256, n)
+                causal = torch.arange(n, device=q.device)[None, :] <= torch.arange(s, e, device=q.device)[:, None]
+                out[:, :, s:e] = F.scaled_dot_product_attention(q[:, :, s:e], k, v, attn_mask=causal,
+                                                                 scale=self.scaling, enable_gqa=True)
         return out
 
 
