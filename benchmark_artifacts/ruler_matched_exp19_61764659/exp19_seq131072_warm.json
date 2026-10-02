@@ -1,0 +1,312 @@
+{
+  "task": "niah",
+  "exp": 19,
+  "seq_len": 131072,
+  "depth": 0.5,
+  "n_examples": 30,
+  "eval_samples": 128,
+  "seed": 42,
+  "dtype": "bfloat16",
+  "max_new_tokens": 10,
+  "use_cache": false,
+  "is_causal": true,
+  "model": "DeepSeek-R1-Distill-Llama-8B",
+  "gpu": "NVIDIA H100 80GB HBM3 MIG 3g.40gb",
+  "attention_config": {
+    "middle_min": 512,
+    "middle_max": 2048,
+    "middle_ratio": 64,
+    "window_min": 1024,
+    "window_max": 8192,
+    "local_min": 128,
+    "local_max": 512,
+    "globals_min": 32,
+    "globals_max": 64,
+    "recent_window": 128,
+    "diversity": 0.05,
+    "low_rank_dim": 128,
+    "routing_mode": "last_query",
+    "route_chunk": 1024,
+    "use_triton": true
+  },
+  "commit": "eb7650a9046946514a4e4185c6a26539fb40e804",
+  "job_id": "61764659",
+  "setup_seconds": 81.06160917319357,
+  "prompt_manifest": "benchmarks/ruler_matched_exp19_61764659/prompts_131072.json",
+  "tokenizer": "checkpoint BPE (shared and hash-verified)",
+  "dense_backend": null,
+  "phase": "warm",
+  "accuracy": 0.0,
+  "examples": [
+    {
+      "idx": 0,
+      "label": 4,
+      "pred": -1,
+      "correct": false,
+      "generated": " The five boxing wizards jump quickly. The grass is"
+    },
+    {
+      "idx": 1,
+      "label": 4,
+      "pred": -1,
+      "correct": false,
+      "generated": " The five boxing wizards jump quickly. The grass is"
+    },
+    {
+      "idx": 2,
+      "label": 8,
+      "pred": -1,
+      "correct": false,
+      "generated": " The five boxing wizards jump quickly. The grass is"
+    },
+    {
+      "idx": 3,
+      "label": 0,
+      "pred": -1,
+      "correct": false,
+      "generated": " The grass is green. The sky is blue."
+    },
+    {
+      "idx": 4,
+      "label": 1,
+      "pred": -1,
+      "correct": false,
+      "generated": " The grass is green. The sky is blue."
+    },
+    {
+      "idx": 5,
+      "label": 5,
+      "pred": -1,
+      "correct": false,
+      "generated": " The five boxing wizards jump quickly. The judge is"
+    },
+    {
+      "idx": 6,
+      "label": 5,
+      "pred": -1,
+      "correct": false,
+      "generated": " All questions asked by five watched experts amaze the"
+    },
+    {
+      "idx": 7,
+      "label": 3,
+      "pred": -1,
+      "correct": false,
+      "generated": " The five boxing wizards jump quickly. The grass is"
+    },
+    {
+      "idx": 8,
+      "label": 2,
+      "pred": -1,
+      "correct": false,
+      "generated": " The five boxing wizards jump quickly. Sphinx of black"
+    },
+    {
+      "idx": 9,
+      "label": 2,
+      "pred": -1,
+      "correct": false,
+      "generated": " The five boxing wizards jump quickly. The answer is"
+    },
+    {
+      "idx": 10,
+      "label": 7,
+      "pred": -1,
+      "correct": false,
+      "generated": " The grass is green. The sky is blue."
+    },
+    {
+      "idx": 11,
+      "label": 5,
+      "pred": -1,
+      "correct": false,
+      "generated": " The five boxing wizards jump quickly. The grass is"
+    },
+    {
+      "idx": 12,
+      "label": 8,
+      "pred": -1,
+      "correct": false,
+      "generated": " A quick brown fox jumps over the lazy dog."
+    },
+    {
+      "idx": 13,
+      "label": 3,
+      "pred": -1,
+      "correct": false,
+      "generated": " The five boxing wizards jump quickly. The grass is"
+    },
+    {
+      "idx": 14,
+      "label": 3,
+      "pred": -1,
+      "correct": false,
+      "generated": " Jackdaws love my big sphinx of quartz"
+    },
+    {
+      "idx": 15,
+      "label": 9,
+      "pred": -1,
+      "correct": false,
+      "generated": " The five boxing wizards jump quickly. The grass is"
+    },
+    {
+      "idx": 16,
+      "label": 4,
+      "pred": -1,
+      "correct": false,
+      "generated": " All questions asked by five experts amaze the judge"
+    },
+    {
+      "idx": 17,
+      "label": 2,
+      "pred": -1,
+      "correct": false,
+      "generated": " The grass is green. The sky is blue."
+    },
+    {
+      "idx": 18,
+      "label": 3,
+      "pred": -1,
+      "correct": false,
+      "generated": " All questions asked by five experts amaze the judge"
+    },
+    {
+      "idx": 19,
+      "label": 9,
+      "pred": -1,
+      "correct": false,
+      "generated": " The grass is green. The sky is blue."
+    },
+    {
+      "idx": 20,
+      "label": 9,
+      "pred": -1,
+      "correct": false,
+      "generated": " Jackdaws love my big jackdaw of"
+    },
+    {
+      "idx": 21,
+      "label": 3,
+      "pred": -1,
+      "correct": false,
+      "generated": " A big sphinx of quartz. The job requires"
+    },
+    {
+      "idx": 22,
+      "label": 4,
+      "pred": -1,
+      "correct": false,
+      "generated": " All questions asked by five watched experts amaze the"
+    },
+    {
+      "idx": 23,
+      "label": 6,
+      "pred": -1,
+      "correct": false,
+      "generated": " The grass is green. The sky is blue."
+    },
+    {
+      "idx": 24,
+      "label": 4,
+      "pred": -1,
+      "correct": false,
+      "generated": " The grass is green. The sky is blue."
+    },
+    {
+      "idx": 25,
+      "label": 1,
+      "pred": -1,
+      "correct": false,
+      "generated": " All questions asked by five experts amaze the judge"
+    },
+    {
+      "idx": 26,
+      "label": 5,
+      "pred": -1,
+      "correct": false,
+      "generated": " The grass is green. The sky is blue."
+    },
+    {
+      "idx": 27,
+      "label": 7,
+      "pred": -1,
+      "correct": false,
+      "generated": " A quick brown fox jumps over the lazy dog."
+    },
+    {
+      "idx": 28,
+      "label": 7,
+      "pred": -1,
+      "correct": false,
+      "generated": " The five boxing wizards jump quickly. The sphinx"
+    },
+    {
+      "idx": 29,
+      "label": 3,
+      "pred": -1,
+      "correct": false,
+      "generated": " The grass is green. The sky is blue."
+    }
+  ],
+  "time_seconds": 610.294058653526,
+  "example_seconds": [
+    18.11929168086499,
+    18.18532409425825,
+    18.178164564073086,
+    18.307811979204416,
+    18.21803994756192,
+    18.30208674632013,
+    18.121646822430193,
+    18.141819478943944,
+    18.129527545534074,
+    18.41605116520077,
+    18.190711465664208,
+    18.21815678384155,
+    18.11217374354601,
+    18.038142395205796,
+    21.844754168763757,
+    18.179738682694733,
+    18.152626113966107,
+    18.17246590089053,
+    18.179498209618032,
+    18.279344989918172,
+    18.193079703487456,
+    18.11679444462061,
+    18.093856189399958,
+    18.174348034895957,
+    17.84699454996735,
+    18.13577320240438,
+    18.14351862948388,
+    18.131484918296337,
+    18.121802392415702,
+    18.769175465218723
+  ],
+  "process_elapsed_seconds": 1630.104981715791,
+  "peak_memory_gb": 20.030370304,
+  "attention_diagnostics": {
+    "bigger_bird": {
+      "layers": 32,
+      "middle": 514,
+      "wide": 2056,
+      "local": 129,
+      "globals": 32,
+      "recent_window": 128,
+      "routing_mode": "last_query",
+      "route_chunk": 65536,
+      "configured_route_chunk": 1024,
+      "prefix_invariant": false,
+      "backend": "triton_sparse_flash",
+      "selection": "content_globals+local_mmr+long_range_mmr",
+      "route_slots": 675,
+      "block_m": 64,
+      "block_n": 64,
+      "query_tokens": 32881,
+      "source_tokens": 32881,
+      "cached_decode": false,
+      "reused_routes": false,
+      "decode_routing": "last_query"
+    }
+  },
+  "timing_note": "Cold includes first-use and compilation; warm repeats all 30 in the same process. Compilation is not isolated."
+}

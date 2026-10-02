@@ -1,0 +1,273 @@
+{
+  "task": "niah",
+  "exp": 0,
+  "seq_len": 65536,
+  "depth": 0.5,
+  "n_examples": 30,
+  "eval_samples": 128,
+  "seed": 42,
+  "dtype": "bfloat16",
+  "max_new_tokens": 10,
+  "use_cache": false,
+  "is_causal": true,
+  "model": "DeepSeek-R1-Distill-Llama-8B",
+  "gpu": "NVIDIA H100 80GB HBM3 MIG 3g.40gb",
+  "attention_config": {},
+  "commit": "eb7650a9046946514a4e4185c6a26539fb40e804",
+  "job_id": "61764659",
+  "setup_seconds": 43.61889668740332,
+  "prompt_manifest": "benchmarks/ruler_matched_exp19_61764659/prompts_65536.json",
+  "tokenizer": "checkpoint BPE (shared and hash-verified)",
+  "dense_backend": "forced FLASH_ATTENTION",
+  "phase": "warm",
+  "accuracy": 1.0,
+  "examples": [
+    {
+      "idx": 0,
+      "label": 7,
+      "pred": 7,
+      "correct": true,
+      "generated": " 6345717. So, the special magic"
+    },
+    {
+      "idx": 1,
+      "label": 2,
+      "pred": 2,
+      "correct": true,
+      "generated": " 3769472.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 2,
+      "label": 5,
+      "pred": 5,
+      "correct": true,
+      "generated": " 7697545. lack quartz, judge my"
+    },
+    {
+      "idx": 3,
+      "label": 4,
+      "pred": 4,
+      "correct": true,
+      "generated": " 2911154. ex. Glib j"
+    },
+    {
+      "idx": 4,
+      "label": 7,
+      "pred": 7,
+      "correct": true,
+      "generated": " 1021767.\n\nOkay, so I'm"
+    },
+    {
+      "idx": 5,
+      "label": 5,
+      "pred": 5,
+      "correct": true,
+      "generated": " 6994185.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 6,
+      "label": 9,
+      "pred": 9,
+      "correct": true,
+      "generated": " 6790409.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 7,
+      "label": 7,
+      "pred": 7,
+      "correct": true,
+      "generated": " 2236797.\n\nOkay, so I'm"
+    },
+    {
+      "idx": 8,
+      "label": 3,
+      "pred": 3,
+      "correct": true,
+      "generated": " 4223363.\n\nOkay, so I'm"
+    },
+    {
+      "idx": 9,
+      "label": 1,
+      "pred": 1,
+      "correct": true,
+      "generated": " 8609671.  brown fox jumps over"
+    },
+    {
+      "idx": 10,
+      "label": 4,
+      "pred": 4,
+      "correct": true,
+      "generated": " 5637544.\n\nOkay, so I'm"
+    },
+    {
+      "idx": 11,
+      "label": 7,
+      "pred": 7,
+      "correct": true,
+      "generated": " 1773837.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 12,
+      "label": 6,
+      "pred": 6,
+      "correct": true,
+      "generated": " 6807746.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 13,
+      "label": 5,
+      "pred": 5,
+      "correct": true,
+      "generated": " 7307725.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 14,
+      "label": 8,
+      "pred": 8,
+      "correct": true,
+      "generated": " 1336938.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 15,
+      "label": 1,
+      "pred": 1,
+      "correct": true,
+      "generated": " 5558051.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 16,
+      "label": 5,
+      "pred": 5,
+      "correct": true,
+      "generated": " 1014255.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 17,
+      "label": 9,
+      "pred": 9,
+      "correct": true,
+      "generated": " 8683189.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 18,
+      "label": 6,
+      "pred": 6,
+      "correct": true,
+      "generated": " 8122236.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 19,
+      "label": 3,
+      "pred": 3,
+      "correct": true,
+      "generated": " 2817613.\n\nOkay, so I'm"
+    },
+    {
+      "idx": 20,
+      "label": 6,
+      "pred": 6,
+      "correct": true,
+      "generated": " 4839776.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 21,
+      "label": 3,
+      "pred": 3,
+      "correct": true,
+      "generated": " 2373983.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 22,
+      "label": 5,
+      "pred": 5,
+      "correct": true,
+      "generated": " 9255975.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 23,
+      "label": 8,
+      "pred": 8,
+      "correct": true,
+      "generated": " 1480578.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 24,
+      "label": 2,
+      "pred": 2,
+      "correct": true,
+      "generated": " 8522652.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 25,
+      "label": 7,
+      "pred": 7,
+      "correct": true,
+      "generated": " 1749267.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 26,
+      "label": 6,
+      "pred": 6,
+      "correct": true,
+      "generated": " 5256666.\n\nOkay, so I'm"
+    },
+    {
+      "idx": 27,
+      "label": 3,
+      "pred": 3,
+      "correct": true,
+      "generated": " 6925883.\n\nOkay, so I'm"
+    },
+    {
+      "idx": 28,
+      "label": 4,
+      "pred": 4,
+      "correct": true,
+      "generated": " 5045214.\n\nOkay, so I'm"
+    },
+    {
+      "idx": 29,
+      "label": 5,
+      "pred": 5,
+      "correct": true,
+      "generated": " 3798155.\n\nOkay, so I'm"
+    }
+  ],
+  "time_seconds": 408.866753064096,
+  "example_seconds": [
+    12.511505303904414,
+    12.586849461309612,
+    12.52139357663691,
+    12.498362853191793,
+    12.557097050361335,
+    12.496829373762012,
+    12.518978450447321,
+    12.570581086911261,
+    12.48944626096636,
+    12.459193769842386,
+    16.16857818607241,
+    13.427488885819912,
+    12.51297759078443,
+    12.547718476504087,
+    15.047348151914775,
+    12.681374166160822,
+    12.304053002037108,
+    12.480412147939205,
+    12.720492829568684,
+    12.573979857377708,
+    12.484605823643506,
+    12.55754532944411,
+    12.611490283161402,
+    12.484985012561083,
+    12.233986732549965,
+    12.506780449301004,
+    12.298689637333155,
+    12.558892070315778,
+    12.513560845516622,
+    12.48149674385786
+  ],
+  "process_elapsed_seconds": 852.7082328554243,
+  "peak_memory_gb": 18.069155328,
+  "attention_diagnostics": {},
+  "timing_note": "Cold includes first-use and compilation; warm repeats all 30 in the same process. Compilation is not isolated."
+}

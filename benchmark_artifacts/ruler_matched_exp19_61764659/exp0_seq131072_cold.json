@@ -1,0 +1,273 @@
+{
+  "task": "niah",
+  "exp": 0,
+  "seq_len": 131072,
+  "depth": 0.5,
+  "n_examples": 30,
+  "eval_samples": 128,
+  "seed": 42,
+  "dtype": "bfloat16",
+  "max_new_tokens": 10,
+  "use_cache": false,
+  "is_causal": true,
+  "model": "DeepSeek-R1-Distill-Llama-8B",
+  "gpu": "NVIDIA H100 80GB HBM3 MIG 3g.40gb",
+  "attention_config": {},
+  "commit": "eb7650a9046946514a4e4185c6a26539fb40e804",
+  "job_id": "61764659",
+  "setup_seconds": 81.25731331575662,
+  "prompt_manifest": "benchmarks/ruler_matched_exp19_61764659/prompts_131072.json",
+  "tokenizer": "checkpoint BPE (shared and hash-verified)",
+  "dense_backend": "forced FLASH_ATTENTION",
+  "phase": "cold",
+  "accuracy": 1.0,
+  "examples": [
+    {
+      "idx": 0,
+      "label": 4,
+      "pred": 4,
+      "correct": true,
+      "generated": " 3486834.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 1,
+      "label": 4,
+      "pred": 4,
+      "correct": true,
+      "generated": " 4596634.  over the lazy dog"
+    },
+    {
+      "idx": 2,
+      "label": 8,
+      "pred": 8,
+      "correct": true,
+      "generated": " 8765738.  luck and zeal."
+    },
+    {
+      "idx": 3,
+      "label": 0,
+      "pred": 0,
+      "correct": true,
+      "generated": " 8905940. a jumps. Bright v"
+    },
+    {
+      "idx": 4,
+      "label": 1,
+      "pred": 1,
+      "correct": true,
+      "generated": " 9900951.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 5,
+      "label": 5,
+      "pred": 5,
+      "correct": true,
+      "generated": " 8271965. So, the special magic"
+    },
+    {
+      "idx": 6,
+      "label": 5,
+      "pred": 5,
+      "correct": true,
+      "generated": " 3299385.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 7,
+      "label": 3,
+      "pred": 3,
+      "correct": true,
+      "generated": " 8913063. 8913063."
+    },
+    {
+      "idx": 8,
+      "label": 2,
+      "pred": 2,
+      "correct": true,
+      "generated": " 3096682.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 9,
+      "label": 2,
+      "pred": 2,
+      "correct": true,
+      "generated": " 6483492.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 10,
+      "label": 7,
+      "pred": 7,
+      "correct": true,
+      "generated": " 8505467. love my big sphinx"
+    },
+    {
+      "idx": 11,
+      "label": 5,
+      "pred": 5,
+      "correct": true,
+      "generated": " 6778755.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 12,
+      "label": 8,
+      "pred": 8,
+      "correct": true,
+      "generated": " 9376618.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 13,
+      "label": 3,
+      "pred": 3,
+      "correct": true,
+      "generated": " 5295143. e is yellow. Here"
+    },
+    {
+      "idx": 14,
+      "label": 3,
+      "pred": 3,
+      "correct": true,
+      "generated": " 2310703.\n\nThe special magic emerald"
+    },
+    {
+      "idx": 15,
+      "label": 9,
+      "pred": 9,
+      "correct": true,
+      "generated": " 2696389. \n\nThe special magic on"
+    },
+    {
+      "idx": 16,
+      "label": 4,
+      "pred": 4,
+      "correct": true,
+      "generated": " 3551364.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 17,
+      "label": 2,
+      "pred": 2,
+      "correct": true,
+      "generated": " 8996292.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 18,
+      "label": 3,
+      "pred": 3,
+      "correct": true,
+      "generated": " 7430393.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 19,
+      "label": 9,
+      "pred": 9,
+      "correct": true,
+      "generated": " 6733269.  judged antique ivory buck"
+    },
+    {
+      "idx": 20,
+      "label": 9,
+      "pred": 9,
+      "correct": true,
+      "generated": " 1226139.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 21,
+      "label": 3,
+      "pred": 3,
+      "correct": true,
+      "generated": " 9926693. y judged antique ivory buck"
+    },
+    {
+      "idx": 22,
+      "label": 4,
+      "pred": 4,
+      "correct": true,
+      "generated": " 2494184.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 23,
+      "label": 6,
+      "pred": 6,
+      "correct": true,
+      "generated": " 4571036.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 24,
+      "label": 4,
+      "pred": 4,
+      "correct": true,
+      "generated": " 3901384.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 25,
+      "label": 1,
+      "pred": 1,
+      "correct": true,
+      "generated": " 2967391.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 26,
+      "label": 5,
+      "pred": 5,
+      "correct": true,
+      "generated": " 6653855. uor jugs."
+    },
+    {
+      "idx": 27,
+      "label": 7,
+      "pred": 7,
+      "correct": true,
+      "generated": " 4216387.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 28,
+      "label": 7,
+      "pred": 7,
+      "correct": true,
+      "generated": " 8371587. So, the special magic"
+    },
+    {
+      "idx": 29,
+      "label": 3,
+      "pred": 3,
+      "correct": true,
+      "generated": " 5585113.\n\n**Final Answer**\nThe"
+    }
+  ],
+  "time_seconds": 1038.8805690510198,
+  "example_seconds": [
+    37.375745004974306,
+    32.578268118202686,
+    32.56551611516625,
+    32.724130645394325,
+    32.606648304499686,
+    32.764098826795816,
+    32.40473980549723,
+    32.67236632760614,
+    32.42921706289053,
+    32.88577688578516,
+    32.38940154295415,
+    32.40621130447835,
+    33.43727042153478,
+    32.267153242602944,
+    32.60767056699842,
+    36.71554058883339,
+    32.683905960060656,
+    33.774214858189225,
+    33.016635161824524,
+    32.714205119758844,
+    32.575288377702236,
+    32.35346254426986,
+    32.410643039271235,
+    32.545768334530294,
+    31.865032393485308,
+    32.36637216806412,
+    32.6185885630548,
+    32.403371375985444,
+    32.41093088965863,
+    32.821808339096606
+  ],
+  "process_elapsed_seconds": 1120.3501827251166,
+  "peak_memory_gb": 20.027601408,
+  "attention_diagnostics": {},
+  "timing_note": "Cold includes first-use and compilation; warm repeats all 30 in the same process. Compilation is not isolated."
+}

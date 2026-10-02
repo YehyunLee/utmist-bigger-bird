@@ -1,0 +1,117 @@
+{
+  "task": "niah",
+  "exp": 18,
+  "seq_len": 4096,
+  "depth": 0.5,
+  "accuracy": 0.1,
+  "n_examples": 10,
+  "time_seconds": 121.98176980018616,
+  "peak_memory_gb": 18.569370624,
+  "random_baseline": 0.1,
+  "use_cache": false,
+  "is_causal": true,
+  "model": "DeepSeek-R1-Distill-Llama-8B",
+  "gpu": "NVIDIA A100-SXM4-40GB",
+  "attention_config": {
+    "top_k": 2048,
+    "low_rank_dim": 128,
+    "window_size": 256,
+    "gate_threshold": 0.5,
+    "peak_threshold": -1.0,
+    "linear_weight": 0.5,
+    "use_triton": false,
+    "always_global": true,
+    "num_route_queries": 4,
+    "adaptive_low_rank": true,
+    "routing_mode": "hybrid",
+    "novelty_ratio": 0.1,
+    "novelty_window": 64
+  },
+  "attention_diagnostics": {
+    "layers": 32,
+    "active_heads": 1024,
+    "total_heads": 1024,
+    "active_fraction": 1.0,
+    "route_k": 116,
+    "margin_mean": 0.456418514251709,
+    "margin_max": 1.4609375,
+    "peakiness_mean": -5.75750732421875,
+    "peakiness_max": -4.90625,
+    "used_triton_local": 0,
+    "used_triton_linear": 0,
+    "used_triton_global": 0,
+    "kernel_failures": 0
+  },
+  "examples": [
+    {
+      "idx": 0,
+      "label": 1,
+      "pred": -1,
+      "correct": false,
+      "generated": "the.\u0120the.\u0120the.\u0120the.\u0120the."
+    },
+    {
+      "idx": 1,
+      "label": 5,
+      "pred": 5,
+      "correct": true,
+      "generated": "25,G,back.\u010a\u010aW,back.\u010a\u010a"
+    },
+    {
+      "idx": 2,
+      "label": 1,
+      "pred": -1,
+      "correct": false,
+      "generated": ".\u010a\u010aH\u0120Pack\u0120my\u0120quick\u0120brown\u0120fox\u0120jug\u0120quick\u0120my"
+    },
+    {
+      "idx": 3,
+      "label": 6,
+      "pred": -1,
+      "correct": false,
+      "generated": ".\u010a\u010aG\u010a\u010a.\u010a\u010a.\u010a\u010a.\u010a\u010a.\u010a\u010a.\u010a\u010a.\u010a\u010a.\u010a\u010a"
+    },
+    {
+      "idx": 4,
+      "label": 0,
+      "pred": -1,
+      "correct": false,
+      "generated": "the.\u010a\u010avex\u010a\u010avex\u010a\u010aWell,"
+    },
+    {
+      "idx": 5,
+      "label": 4,
+      "pred": -1,
+      "correct": false,
+      "generated": ".\u010a\u010afivewboxedexp:.\u010a\u010a.\u010a\u010a"
+    },
+    {
+      "idx": 6,
+      "label": 3,
+      "pred": 8,
+      "correct": false,
+      "generated": "588.\u010a\u010aThe\u0120job\u0120requiresex:\u0120for\u0120quick\u0120j"
+    },
+    {
+      "idx": 7,
+      "label": 0,
+      "pred": -1,
+      "correct": false,
+      "generated": ".\u010a\u010aWait,\u0120is,\u0120for,\u0120for,\u0120v"
+    },
+    {
+      "idx": 8,
+      "label": 3,
+      "pred": -1,
+      "correct": false,
+      "generated": "box,\u0120do\u0120back.\u010a\u010aSo,\u0120the\u0120five\u0120experts"
+    },
+    {
+      "idx": 9,
+      "label": 1,
+      "pred": 5,
+      "correct": false,
+      "generated": "5.\u010a\u010aThe\u0120fivew\u0120boxing\u0120wizards.\u0120jump."
+    }
+  ]
+}

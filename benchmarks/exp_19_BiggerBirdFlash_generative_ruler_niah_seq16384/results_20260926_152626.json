@@ -1,0 +1,198 @@
+{
+  "task": "niah",
+  "exp": 19,
+  "seq_len": 16384,
+  "depth": 0.5,
+  "accuracy": 1.0,
+  "n_examples": 30,
+  "time_seconds": 413.81820464134216,
+  "peak_memory_gb": 16.597194752,
+  "random_baseline": 0.1,
+  "use_cache": false,
+  "is_causal": true,
+  "model": "DeepSeek-R1-Distill-Llama-8B",
+  "gpu": "NVIDIA H100 80GB HBM3 MIG 3g.40gb",
+  "attention_config": {
+    "middle_min": 512,
+    "middle_max": 2048,
+    "middle_ratio": 64,
+    "window_min": 1024,
+    "window_max": 8192,
+    "local_min": 128,
+    "local_max": 512,
+    "globals_min": 32,
+    "globals_max": 64,
+    "recent_window": 128,
+    "diversity": 0.05,
+    "low_rank_dim": 128,
+    "routing_mode": "last_query",
+    "route_chunk": 1024,
+    "use_triton": true
+  },
+  "attention_diagnostics": {
+    "bigger_bird": {
+      "layers": 32,
+      "middle": 512,
+      "wide": 1024,
+      "local": 128,
+      "globals": 32,
+      "recent_window": 128,
+      "routing_mode": "last_query",
+      "route_chunk": 4096,
+      "configured_route_chunk": 1024,
+      "prefix_invariant": false,
+      "backend": "triton_sparse_flash",
+      "selection": "content_globals+local_mmr+long_range_mmr",
+      "route_slots": 672,
+      "block_m": 64,
+      "block_n": 64,
+      "query_tokens": 4088,
+      "source_tokens": 4088,
+      "cached_decode": false,
+      "reused_routes": false,
+      "decode_routing": "last_query"
+    }
+  },
+  "examples": [
+    {
+      "idx": 0,
+      "label": 7,
+      "pred": 7,
+      "correct": true,
+      "generated": " 5146737. 5146737."
+    },
+    {
+      "idx": 1,
+      "label": 2,
+      "pred": 2,
+      "correct": true,
+      "generated": " 4274652.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 2,
+      "label": 7,
+      "pred": 7,
+      "correct": true,
+      "generated": " 8704037. The sky is blue."
+    },
+    {
+      "idx": 3,
+      "label": 9,
+      "pred": 9,
+      "correct": true,
+      "generated": " 1651039. ge. The five boxing"
+    },
+    {
+      "idx": 4,
+      "label": 8,
+      "pred": 8,
+      "correct": true,
+      "generated": " 1653308. 1653308."
+    },
+    {
+      "idx": 5,
+      "label": 0,
+      "pred": 0,
+      "correct": true,
+      "generated": " 8009710. The special magic indigo"
+    },
+    {
+      "idx": 6,
+      "label": 4,
+      "pred": 4,
+      "correct": true,
+      "generated": " 5750434. The grass is green."
+    },
+    {
+      "idx": 7,
+      "label": 3,
+      "pred": 3,
+      "correct": true,
+      "generated": " 1830403. . The five boxing wizards"
+    },
+    {
+      "idx": 8,
+      "label": 3,
+      "pred": 3,
+      "correct": true,
+      "generated": " 8349773.  wizards jump quickly."
+    },
+    {
+      "idx": 9,
+      "label": 2,
+      "pred": 2,
+      "correct": true,
+      "generated": " 4208102. The special magic amber-r"
+    },
+    {
+      "idx": 10,
+      "label": 1,
+      "pred": 1,
+      "correct": true,
+      "generated": " 6224581. The five boxing wizards jump"
+    },
+    {
+      "idx": 11,
+      "label": 8,
+      "pred": 8,
+      "correct": true,
+      "generated": " 7390008. The five boxing wizards jump"
+    },
+    {
+      "idx": 12,
+      "label": 4,
+      "pred": 4,
+      "correct": true,
+      "generated": " 3723144. Glib jocks quiz"
+    },
+    {
+      "idx": 13,
+      "label": 1,
+      "pred": 1,
+      "correct": true,
+      "generated": " 3367141. Here we go. There"
+    },
+    {
+      "idx": 14,
+      "label": 0,
+      "pred": 0,
+      "correct": true,
+      "generated": " 9519950. The sky is blue."
+    },
+    {
+      "idx": 15,
+      "label": 8,
+      "pred": 8,
+      "correct": true,
+      "generated": " 3239798. The sun is yellow."
+    },
+    {
+      "idx": 16,
+      "label": 2,
+      "pred": 2,
+      "correct": true,
+      "generated": " 2253522. The five boxing wizards jump"
+    },
+    {
+      "idx": 17,
+      "label": 1,
+      "pred": 1,
+      "correct": true,
+      "generated": " 9586041. 9586041."
+    },
+    {
+      "idx": 18,
+      "label": 5,
+      "pred": 5,
+      "correct": true,
+      "generated": " 3070755. quid jugs."
+    },
+    {
+      "idx": 19,
+      "label": 5,
+      "pred": 5,
+      "correct": true,
+      "generated": " 7146025. The five boxing wizards jump"
+    }
+  ]
+}

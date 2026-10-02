@@ -1,0 +1,117 @@
+{
+  "task": "niah",
+  "exp": 18,
+  "seq_len": 8192,
+  "depth": 0.5,
+  "accuracy": 0.0,
+  "n_examples": 10,
+  "time_seconds": 310.455570936203,
+  "peak_memory_gb": 19.397059584,
+  "random_baseline": 0.1,
+  "use_cache": false,
+  "is_causal": true,
+  "model": "DeepSeek-R1-Distill-Llama-8B",
+  "gpu": "NVIDIA A100-SXM4-40GB",
+  "attention_config": {
+    "top_k": 2048,
+    "low_rank_dim": 128,
+    "window_size": 256,
+    "gate_threshold": 0.5,
+    "peak_threshold": -1.0,
+    "linear_weight": 0.5,
+    "use_triton": false,
+    "always_global": true,
+    "num_route_queries": 4,
+    "adaptive_low_rank": true,
+    "routing_mode": "hybrid",
+    "novelty_ratio": 0.1,
+    "novelty_window": 64
+  },
+  "attention_diagnostics": {
+    "layers": 32,
+    "active_heads": 1024,
+    "total_heads": 1024,
+    "active_fraction": 1.0,
+    "route_k": 231,
+    "margin_mean": 0.39572644233703613,
+    "margin_max": 1.2109375,
+    "peakiness_mean": -6.54486083984375,
+    "peakiness_max": -5.59375,
+    "used_triton_local": 0,
+    "used_triton_linear": 0,
+    "used_triton_global": 0,
+    "kernel_failures": 0
+  },
+  "examples": [
+    {
+      "idx": 0,
+      "label": 2,
+      "pred": -1,
+      "correct": false,
+      "generated": "boxeWepromptlyjudgevory"
+    },
+    {
+      "idx": 1,
+      "label": 9,
+      "pred": -1,
+      "correct": false,
+      "generated": ".\u010a\u010aWaltz,badnymph,for"
+    },
+    {
+      "idx": 2,
+      "label": 3,
+      "pred": -1,
+      "correct": false,
+      "generated": ".\u010a\u010aWait,\u0120the\u0120quick\u0120brown\u0120fox\u0120jumps.\u0120So"
+    },
+    {
+      "idx": 3,
+      "label": 4,
+      "pred": -1,
+      "correct": false,
+      "generated": ".\u010a\u010a.\u010a\u010a.\u010a\u010a.\u010a\u010a.\u010a\u010a.\u010a\u010a\u010a\u010a.\u010a\u010a.\u010a\u010a.\u010a\u010a"
+    },
+    {
+      "idx": 4,
+      "label": 6,
+      "pred": -1,
+      "correct": false,
+      "generated": "\u0120fivew.\u010a\u010aThe\u0120final\u0120question\u0120asked\u0120by"
+    },
+    {
+      "idx": 5,
+      "label": 7,
+      "pred": -1,
+      "correct": false,
+      "generated": ".\u010a\u010a.\u010a.\u010a\u010a.\u010a\u010a.\u010a\u010a.\u010a\u010a.\u010a\u010a.\u010a\u010a.\u010a\u010a\u010a\u010a"
+    },
+    {
+      "idx": 6,
+      "label": 3,
+      "pred": -1,
+      "correct": false,
+      "generated": ".\u010a\u010af...\u010a\u010a.\u010a\u010a.\u010a\u010a.\u010a\u010a.\u010a\u010a.\u010a\u010a.\u010a\u010a.\u010a\u010a"
+    },
+    {
+      "idx": 7,
+      "label": 5,
+      "pred": -1,
+      "correct": false,
+      "generated": "Weproctlyjudg.\u0120G.\u010a\u010a"
+    },
+    {
+      "idx": 8,
+      "label": 6,
+      "pred": -1,
+      "correct": false,
+      "generated": ".\u010a\u010aThegrgrisfox,bes.\u0120.\u010a\u010a"
+    },
+    {
+      "idx": 9,
+      "label": 3,
+      "pred": -1,
+      "correct": false,
+      "generated": "Box.\u010a\u010aThe.\u010a\u010a.\u010a\u010a.\u010a\u010a.\u010a\u010a.\u010a\u010a.\u010a\u010a.\u010a\u010a"
+    }
+  ]
+}

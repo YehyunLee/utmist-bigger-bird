@@ -89,6 +89,14 @@ EXP_REGISTRY = {
           "gate_threshold": 0.5, "peak_threshold": -1.0,
           "linear_weight": 0.5, "use_triton": False, "always_global": True,
           "num_route_queries": 4}),
+    19: ("experiments.exp_19_bigger_bird_flash.model_llama", "BiggerBirdFlashAttention",
+         {"middle_min": 512, "middle_max": 2048, "middle_ratio": 64,
+          "window_min": 1024, "window_max": 8192,
+          "local_min": 128, "local_max": 512,
+          "globals_min": 32, "globals_max": 64,
+          "recent_window": 128, "diversity": 0.05,
+          "low_rank_dim": 128, "routing_mode": "last_query",
+          "route_chunk": 1024, "use_triton": True}),
 }
 
 
@@ -157,6 +165,8 @@ def collect_attention_diagnostics(model):
     """Aggregate optional per-layer sparse-attention diagnostics."""
     inner = getattr(model, "model", model)
     layers = getattr(inner, "layers", [])
+    bigger_bird = [getattr(layer.self_attn, "last_diagnostics", {}) for layer in layers]
+    bigger_bird = [item for item in bigger_bird if item]
     stats = [
         getattr(layer.self_attn, "last_stats", None)
         for layer in layers
@@ -164,7 +174,7 @@ def collect_attention_diagnostics(model):
     ]
     stats = [item for item in stats if item is not None]
     if not stats:
-        return {}
+        return {"bigger_bird": {"layers": len(bigger_bird), **bigger_bird[-1]}} if bigger_bird else {}
     total_heads = sum(int(item.total_heads) for item in stats)
     active_heads = sum(int(item.active_heads) for item in stats)
     return {
@@ -270,7 +280,11 @@ def main():
     print(f"{'='*70}\n")
 
     # --- Tokenizer ---
-    tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
+    if args.exp == 19:
+        from experiments.exp_19_bigger_bird_flash.tokenizer import load_checkpoint_tokenizer
+        tokenizer = load_checkpoint_tokenizer(MODEL_PATH)
+    else:
+        tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
     tokenizer.padding_side = "left"
