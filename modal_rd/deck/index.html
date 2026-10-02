@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Bigger Bird v3 — subquadratic long-context attention</title>
+<style>
+  :root { --fg:#1b1f24; --muted:#5b6470; --accent:#1f6feb; --good:#1a7f37; --bad:#cf222e; --bg:#fff; }
+  * { box-sizing: border-box; }
+  html, body { margin:0; height:100%; background:#e9ecef; font-family: -apple-system, "Segoe UI", Inter, Helvetica, Arial, sans-serif; color:var(--fg); }
+  .slide { display:none; position:absolute; inset:0; margin:auto; width:min(96vw, 170vh); height:min(54vw, 96vh);
+           background:var(--bg); padding:4.2% 5.5%; box-shadow:0 8px 30px rgba(0,0,0,.15); overflow:hidden; }
+  .slide.active { display:flex; flex-direction:column; }
+  h1 { font-size:2.6vw; margin:0 0 .6em; line-height:1.15; }
+  h2 { font-size:2.1vw; margin:0 0 .7em; }
+  p, li, td, th { font-size:1.25vw; line-height:1.45; }
+  li { margin:.25em 0; }
+  .muted { color:var(--muted); }
+  .accent { color:var(--accent); font-weight:600; }
+  .good { color:var(--good); font-weight:600; }
+  .bad { color:var(--bad); font-weight:600; }
+  .row { display:flex; gap:3%; flex:1; min-height:0; align-items:center; }
+  .col { flex:1; min-width:0; }
+  img { max-width:100%; max-height:62vh; object-fit:contain; display:block; margin:0 auto; }
+  table { border-collapse:collapse; margin:.4em 0; }
+  th, td { padding:.3em .8em; border-bottom:1px solid #d0d7de; text-align:right; }
+  th:first-child, td:first-child { text-align:left; }
+  th { color:var(--muted); font-weight:600; }
+  .big { font-size:4vw; font-weight:700; color:var(--accent); line-height:1; }
+  .kpis { display:flex; gap:4%; margin:1.2em 0; }
+  .kpi { flex:1; border-left:4px solid var(--accent); padding-left:1em; }
+  .kpi p { margin:.3em 0 0; }
+  .box { border:1px solid #d0d7de; border-radius:8px; padding:.8em 1.2em; background:#f6f8fa; }
+  code { font-family: ui-monospace, Menlo, monospace; font-size:.95em; background:#f6f8fa; padding:.05em .3em; border-radius:4px; }
+  .footer { position:absolute; bottom:2.5%; right:4%; font-size:.9vw; color:var(--muted); }
+</style>
+</head>
+<body>
+
+<section class="slide">
+  <h1>Bigger Bird v3:<br>sparse prefill that keeps dense-level retrieval at 128K</h1>
+  <p class="muted">UTMIST Bigger Bird · frozen DeepSeek-R1-Distill-Llama-8B · zero-shot · one H100</p>
+  <div class="kpis">
+    <div class="kpi"><div class="big">1.9×</div><p>faster prefill than dense FlashAttention at ~127K tokens (2.65× with a 4K window)</p></div>
+    <div class="kpi"><div class="big">30/30</div><p>exact retrieval @~127K at depths 0.5 and 0.1 (dense: 28/30, 28/30)</p></div>
+    <div class="kpi"><div class="big">O(n)</div><p>attention work per layer with fixed budgets; every layer sparse</p></div>
+  </div>
+  <p class="muted">Synthetic RULER-style needle-in-a-haystack, same prompts as earlier CCDB rounds. Details and limits at the end.</p>
+</section>
+
+<section class="slide">
+  <h2>Goal and where we started</h2>
+  <ul>
+    <li>Goal: <span class="accent">subquadratic attention</span> with quality close to dense on long-context retrieval.</li>
+    <li>Dense R1-Llama-8B retrieves the needle at 128K; cost grows ~n².</li>
+    <li>Eight CCDB R&amp;D rounds (fixed/learned patterns, Top-K, block routing, exp19 Bigger Bird):
+      <ul>
+        <li>All-sparse methods: <span class="good">6/6 at ~65K</span> but <span class="bad">0–1/6 at ~127K</span>, even with 16K routed tokens.</li>
+        <li>Top-K + first 16 layers dense: 6/6 at ~127K, but half the model is still quadratic.</li>
+        <li>Forcing the answer into every sparse layer (oracle) still failed, so <b>routing recall was not the whole story</b>.</li>
+      </ul></li>
+    <li>Today: moved to Modal H100s (about 10× faster per run than the 3g.40GB MIG slices) and rebuilt the R&amp;D loop around one fast diagnostic.</li>
+  </ul>
+</section>
+
+<section class="slide">
+  <h2>Diagnosis: what does each sparse pattern lose, per layer?</h2>
+  <div class="row">
+    <div class="col" style="flex:1.3"><img src="../figures/recall_layers.png" alt="per-layer fidelity"></div>
+    <div class="col">
+      <ul>
+        <li>One dense forward pass at ~127K. Per layer, compare each candidate pattern's attention output with exact attention.</li>
+        <li>exp19-like routing (local 128 + final-query top-4096): mid-prompt fidelity <span class="bad">~0.85 cosine</span>.</li>
+        <li>Adding attention sinks barely changes it (+0.001), so sinks were <b>not</b> the bug.</li>
+        <li>A wide local window plus per-head routed columns: <span class="good">0.95+</span>.</li>
+        <li>Errors at mid-prompt tokens compound over 32 layers, so a method can work at 65K and fail at 128K.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h2>Method: Bigger Bird v3</h2>
+  <div class="row">
+    <div class="col">
+      <p>Each query attends to a <b>union of key sets</b> in one Triton sparse FlashAttention kernel (single softmax):</p>
+      <ol>
+        <li><b>Sinks:</b> first 64 tokens, exact.</li>
+        <li><b>Selective local window:</b> previous 16,384 tokens, exact.</li>
+        <li><b>Content-routed long links:</b> 512 key columns <i>per head</i>, ranked by the attention of the final 64 prompt queries (the question).</li>
+        <li><b>Exact question tail:</b> the final 256 prompt queries attend to every key, O(256·n).</li>
+      </ol>
+      <p>Decode: exact attention over the full KV cache (O(n) per generated token).</p>
+    </div>
+    <div class="col box">
+      <p><b>Cost per layer</b>, prompt length n:</p>
+      <p>attention <code>n · (64 + 16384 + 512)</code><br>routing <code>64 · n</code> &nbsp; tail <code>256 · n</code></p>
+      <p>→ <span class="accent">linear in n</span> for fixed budgets (dense: n²/2).</p>
+      <p class="muted">Short prompts (n ≤ window) fall back to exact attention.</p>
+      <p class="muted">Code: <code>modal_rd/attention.py</code>, kernel <code>kernels/bigger_bird_flash.py</code></p>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h2>What mattered: ablations @~127K (depth 0.5, 6 prompts)</h2>
+  <div class="row">
+    <div class="col" style="flex:1.6"><img src="../figures/ablations.png" alt="ablations"></div>
+    <div class="col">
+      <ul>
+        <li><b>Exact question tail is essential:</b> 2/6 without it, 4/6 with 64 queries, 6/6 with 256.</li>
+        <li><b>Routed budget has a sweet spot:</b> 64 columns gives 0/6, 256–512 gives 6/6, 2K–4K gives 0–4/6.
+          More question-chosen columns shared by every prompt token <i>hurt</i>.</li>
+        <li>Not helpful: max-pooling routes, routing from spread-out queries, restricting routes to late queries.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h2>Scaling: prefill latency and retrieval vs context</h2>
+  <img src="../figures/scaling.png" alt="scaling" style="max-height:52vh">
+  <table style="margin-top:.5em">
+    <tr><th>tokens</th><th>dense</th><th>v3, window 4K</th><th>v3, window 16K (final)</th></tr>
+    <tr><td>~32K</td><td>1.70 s</td><td>1.52 s (1.1×)</td><td>2.13 s (0.8×)</td></tr>
+    <tr><td>~65K</td><td>5.03 s</td><td>3.11 s (1.6×)</td><td>4.35 s (1.2×)</td></tr>
+    <tr><td>~127K</td><td>16.22 s</td><td><b>6.12 s (2.65×)</b></td><td><b>8.50 s (1.9×)</b></td></tr>
+  </table>
+  <p class="muted">Sparse prefill doubles per doubling of context (linear); dense grows ~3.2× per doubling.</p>
+</section>
+
+<section class="slide">
+  <h2>Robustness: needle depth @~127K</h2>
+  <div class="row">
+    <div class="col" style="flex:1.4"><img src="../figures/depth.png" alt="depth"></div>
+    <div class="col">
+      <ul>
+        <li>The 4K window <span class="bad">fails shallow needles</span> (2/6 at depth 0.1 and 0.25).</li>
+        <li>A 16K local window fixes it: <span class="good">6/6 at every tested depth</span>.</li>
+        <li>Final config: 6/6, 6/6, 6/6, 6/6, 5/6 at depths 0.1 to 0.9; dense: 5/6, 6/6, 6/6, 5/6, 5/6.</li>
+        <li>Trade-off: about 1.9× instead of 2.65× faster at 127K.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h2>Confirmation: 30 prompts per context (24 held out)</h2>
+  <table>
+    <tr><th>context</th><th>arm</th><th>exact (all 30)</th><th>held-out 6–29</th><th>mean prefill</th></tr>
+    <tr><td>~65K</td><td>Dense FlashAttention</td><td>30/30</td><td>24/24</td><td>5.02 s</td></tr>
+    <tr><td>~65K</td><td>v3, window 4K</td><td>30/30</td><td>24/24</td><td>3.10 s</td></tr>
+    <tr><td>~65K</td><td>v3, window 16K</td><td>30/30</td><td>24/24</td><td>4.41 s</td></tr>
+    <tr><td>~127K</td><td>Dense FlashAttention</td><td>28/30</td><td>22/24</td><td>16.25 s</td></tr>
+    <tr><td>~127K</td><td>v3, window 4K</td><td>28/30</td><td>22/24</td><td>6.10 s</td></tr>
+    <tr><td>~127K</td><td><b>v3, window 16K (final)</b></td><td><b>30/30</b></td><td><b>24/24</b></td><td><b>8.61 s</b></td></tr>
+    <tr><td>~127K, depth 0.1</td><td>Dense FlashAttention</td><td>28/30</td><td>23/24</td><td>16.39 s</td></tr>
+    <tr><td>~127K, depth 0.1</td><td><b>v3, window 16K (final)</b></td><td><b>30/30</b></td><td><b>24/24</b></td><td><b>8.56 s</b></td></tr>
+  </table>
+  <p>The final config matches dense on every confirmation set, with <span class="accent">1.9× faster prefill at ~127K</span>.
+     A 2-prompt difference at n=30 is within noise: read this as <b>parity</b>, not "better than dense".</p>
+  <p class="muted">Prompts 0–5 were used for tuning. Prompts 6–29 share generator, seed and depth: a within-task held-out check, not broad generalization.</p>
+</section>
+
+<section class="slide">
+  <h2>Limits (please read before quoting numbers)</h2>
+  <ul>
+    <li><b>Task:</b> repository synthetic NIAH (RULER-style), one model, one seed; not the official RULER suite or general long-context QA.</li>
+    <li><b>Routing is not prefix-invariant:</b> routes come from the final prompt queries. Attention edges are causal, but earlier positions' routes depend on later text, so this is a full-prompt prefill method, not streaming attention.</li>
+    <li><b>Tuned</b> on 6 prompts (depths 0.1/0.25/0.5 @127K); 30-prompt confirmation is within-task.</li>
+    <li><b>Subquadratic = prefill attention work</b> with fixed budgets. MLPs dominate below ~32K; the KV cache still stores every token (memory unchanged); decode is exact O(n) per token.</li>
+    <li>Timings: single H100, BF16, batch 1, warmed (Triton specializes per length), first-forward CUDA-event time.</li>
+  </ul>
+</section>
+
+<section class="slide">
+  <h2>Next steps</h2>
+  <ul>
+    <li><b>Harder tasks:</b> multi-key / multi-value NIAH, variable tracking, LongBench-v2 subset.</li>
+    <li><b>Speed:</b> route the 16K window through a native sliding-window FlashAttention kernel; fuse the exact tail; budgets that grow with sqrt(n).</li>
+    <li><b>Causal variant:</b> per-chunk routing from visible prefix queries, for prefix invariance and cache equivalence.</li>
+    <li><b>Understand the routed-budget sweet spot:</b> why do too many shared question-routed columns degrade mid-prompt tokens?</li>
+    <li>Reproduce on a second model (e.g. Llama-3.1-8B-Instruct) and more seeds and depths.</li>
+  </ul>
+  <p class="muted">Reproduce: <code>modal run modal_rd/app.py --module modal_rd.eval_niah --args "--arm vs --attn '{...}' --bytes 512000 --n 30 --tag x"</code></p>
+</section>
+
+<div class="footer"><span id="num"></span> · ← → to navigate</div>
+<script>
+  const slides = [...document.querySelectorAll('.slide')];
+  let i = Math.max(0, Math.min(slides.length - 1, parseInt(location.hash.slice(1) || '1') - 1));
+  const show = () => { slides.forEach((s, j) => s.classList.toggle('active', j === i));
+                       document.getElementById('num').textContent = `${i + 1} / ${slides.length}`; location.hash = i + 1; };
+  document.addEventListener('keydown', e => {
+    if (['ArrowRight', 'PageDown', ' '].includes(e.key)) i = Math.min(slides.length - 1, i + 1);
+    if (['ArrowLeft', 'PageUp'].includes(e.key)) i = Math.max(0, i - 1);
+    show();
+  });
+  document.addEventListener('click', e => { i = e.clientX > innerWidth / 2 ? Math.min(slides.length - 1, i + 1) : Math.max(0, i - 1); show(); });
+  show();
+</script>
+</body>
+</html>
