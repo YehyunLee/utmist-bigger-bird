@@ -52,7 +52,7 @@
   .formula .qc { color:#b8860b; font-style:italic; } .formula .kc { color:#0f8f8f; font-style:italic; }
   .vecs { display:flex; gap:3vw; }
   .vec { border:3px solid; border-radius:10px; padding:.5em .9em; font-family:"Times New Roman", Georgia, serif;
-         font-style:italic; font-size:2.3vw; letter-spacing:.25em; }
+         font-style:italic; font-size:2.3vw; word-spacing:.45em; }
   .vec.vq { border-color:#e0b400; color:#b8860b; } .vec.vk { border-color:#2bb3b3; color:#0f8f8f; }
   .vec sub { font-size:.6em; letter-spacing:0; }
 
@@ -339,7 +339,7 @@ const VIS = {
   tokens: s => `<div class="toks">${TOKS.map((t, j) =>
       `<span class="tok${s.step && j === TOKS.length - 2 ? " cur" : s.step && j < TOKS.length - 2 ? " back" : ""}">${t}</span>`).join("")}</div>` +
     `<div class="toknote">${s.step ? "“blue” looks back at every token before it" : "a word, part of a word, or punctuation"}</div>`,
-  attn: () => `<div class="formula">Attention(<span class="qc">Q</span>, <span class="kc">K</span>, <i>V</i>) = softmax(<span class="qc">Q</span><span class="kc">K</span><sup>T</sup> / √<i>d</i>) <i>V</i></div>
+  attn: () => `<div class="formula">Attention(<span class="qc">Q</span>, <span class="kc">K</span>, <i>V</i>) = softmax(<span class="qc">Q</span><span class="kc">K</span><sup>T</sup> / √<i>d</i><sub><i>k</i></sub>) <i>V</i></div>
     <div class="vecs"><div class="vec vq">Q<sub>1</sub> Q<sub>2</sub> Q<sub>3</sub> … Q<sub>n</sub></div>
     <div class="vec vk">K<sub>1</sub> K<sub>2</sub> K<sub>3</sub> … K<sub>n</sub></div></div>`,
   quad: () => `<canvas class="quadcv" width="660" height="480"></canvas><div class="quadlab"></div>`,
