@@ -21,6 +21,7 @@
   .k-img .say { font-size:2.4vw; margin-top:.6em; }
   .k-photo img { border-radius:12px; max-height:64vh; }
   .k-section .say { font-size:4.4vw; font-weight:800; color:var(--accent); }
+  .secnum { display:block; font-size:1.3vw; font-weight:700; color:#9aa3b2; letter-spacing:.28em; margin-bottom:1em; }
   .num { font-size:9vw; font-weight:800; color:var(--accent); line-height:1; letter-spacing:-.03em; }
   .corner { position:absolute; top:4%; right:4%; height:7%; max-height:none !important; }
   .footer { position:absolute; bottom:2.5%; right:4%; font-size:.9vw; color:var(--muted); }
@@ -211,7 +212,7 @@ const S = [
   {kind: "hero", say: "An LLM that can scale efficiently to longer context windows.", corner: true},
   {img: A + "utmist_logo.png", kind: "img", say: "A UTMIST research project"},
 
-  {kind: "section", say: "The problem"},
+  {kind: "section", say: '<span class="secnum">PART 1</span>The problem'},
   {vis: "tokens", step: 0, say: "AI language models read text as small pieces called tokens."},
   {vis: "tokens", step: 1, say: "To understand each token, the model looks back at every token before it."},
   {vis: "attn", say: "This looking-back step is called attention.", sub: "every token's query (Q) is compared with every earlier token's key (K)"},
@@ -220,7 +221,7 @@ const S = [
   {kind: "num", num: "8 billion", say: "comparisons for one 128,000-token document", sub: "per attention head, and the model has 1,024 of them"},
   {say: "That's why long documents are slow and expensive."},
 
-  {kind: "section", say: "The idea"},
+  {kind: "section", say: '<span class="secnum">PART 2</span>The idea'},
   {say: "What if each token only looked at what matters?"},
   {vis: "models", say: "That's the idea behind sparse attention.", sub: "only a few tokens matter for understanding any one token"},
   {vis: "models", hl: true, say: "Many faster-attention designs exist. We started from Big Bird."},
@@ -231,7 +232,7 @@ const S = [
   {vis: "win", step: 1, say: "Big Bird's window takes everything nearby."},
   {vis: "win", step: 2, say: "Bigger Bird chooses where to look, based on what it needs to answer."},
 
-  {kind: "section", say: "How we test it"},
+  {kind: "section", say: '<span class="secnum">PART 3</span>How we test it'},
   {say: "Anyone can skip text. The question is whether the model still gets the right answer."},
   {vis: "prompt", say: "So we hide one fact inside a huge document, then ask for it."},
   {vis: "prompt", say: "If our shortcut skips that fact, the model can't answer."},
@@ -242,7 +243,7 @@ const S = [
   {say: "We run 30 different documents at 128,000 tokens."},
   {say: "Six were used to tune our method. The other 24 were never touched."},
 
-  {kind: "section", say: "The road here"},
+  {kind: "section", say: "<span class='secnum'>PART 4</span>What didn't work"},
   {vis: "wall", step: 0, say: "We tried 19 different designs."},
   {vis: "wall", step: 1, say: "The first fifteen ran on small models, on small tests."},
   {vis: "wall", step: 2, say: "Then we moved to a modern model and a much harder test."},
@@ -263,7 +264,7 @@ const S = [
   {vis: "img", img: F + "recall_layers.png", say: "Red is the ceiling: a cheat that already knows the true best spots."},
   {vis: "img", img: F + "recall_layers.png", say: "An early version of Bigger Bird (green) stays near that ceiling in all 32 layers."},
 
-  {kind: "section", say: "Our fix"},
+  {kind: "section", say: '<span class="secnum">PART 5</span>Our fix'},
   {vis: "fix", step: 0, say: "Each token now looks at four things."},
   {vis: "fix", step: 1, say: "One: the very beginning of the document."},
   {vis: "fix", step: 2, say: "Two: the nearby text, in full detail."},
@@ -284,7 +285,7 @@ const S = [
   {vis: "img", img: F + "ablations.png", say: "Right: how much of the text right before the answer reads everything.", sub: "none → 2 of 6 · a little → 4 of 6 · 256 tokens → 6 of 6"},
   {vis: "img", img: F + "ablations.png", say: "No retraining. Same model, same weights."},
 
-  {kind: "section", say: "Results"},
+  {kind: "section", say: '<span class="secnum">PART 6</span>Results'},
   {kind: "num", num: "30 / 30", say: "correct on 128,000-token documents"},
   {kind: "num", num: "28 / 30", say: "for the normal model", sub: "same documents; that 2-question gap is too small to count as a win"},
   {kind: "num", num: "1.9×", say: "faster to read the document"},
@@ -294,7 +295,7 @@ const S = [
   {vis: "img", img: F + "loglog.png", say: "That's linear growth, not quadratic.", sub: "measured slope 1.01 for Bigger Bird vs 1.65 for the normal model"},
   {vis: "img", img: F + "depth.png", say: "It works wherever the fact is hidden."},
 
-  {kind: "section", say: "Harder tests"},
+  {kind: "section", say: '<span class="secnum">PART 7</span>Harder tests'},
   {say: "The first test hides one easy fact. Real documents aren't that tidy."},
   {vis: "tests", say: "So we run six kinds of test."},
   {vis: "ex", ex: 0, say: "Lookalike facts: four similar facts are hidden. We ask about just one."},
@@ -308,16 +309,16 @@ const S = [
   {vis: "img", img: F + "tasks.png", say: "At 128,000 tokens, most of these stump both models.", sub: "12 prompts per test, so small differences aren't significant yet"},
   {vis: "prompt2", say: "Asked for all four numbers, Bigger Bird found all four. The normal model stopped at one."},
 
-  {kind: "section", say: "Looking ahead"},
+  {kind: "section", say: '<span class="secnum">PART 8</span>Looking ahead'},
   {vis: "img", img: F + "attn_bench.png", say: "At a million tokens, our attention is 18 times faster."},
   {vis: "img", img: F + "attn_bench.png", say: "That's speed only. This model can't read that far yet."},
 
-  {kind: "section", say: "What it can't do yet"},
+  {kind: "section", say: "<span class='secnum'>PART 9</span>What it can't do yet"},
   {vis: "ex", ex: 4, say: "On essay-like text at 128,000 tokens, it's behind.", sub: "11 out of 24 correct, vs 17 for the normal model"},
   {say: "These are test puzzles, not real-world questions yet."},
   {say: "It saves computing time, not memory."},
 
-  {kind: "section", say: "Next"},
+  {kind: "section", say: "<span class='secnum'>PART 10</span>What's next"},
   {say: "Test on real-world questions."},
   {say: "Close the gap on natural text."},
   {say: "Try models that can read past 128,000 tokens."},
