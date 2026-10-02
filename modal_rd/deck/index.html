@@ -217,7 +217,7 @@ const S = [
   {vis: "attn", say: "This looking-back step is called attention.", sub: "every token's query (Q) is compared with every earlier token's key (K)"},
   {vis: "quad", say: "Watch what happens as the document grows."},
   {vis: "quad", say: "Double the document, and attention does four times the work."},
-  {kind: "num", num: "8 billion", say: "comparisons for one 128,000-token document", sub: "per attention head — and the model has 1,024 of them"},
+  {kind: "num", num: "8 billion", say: "comparisons for one 128,000-token document", sub: "per attention head, and the model has 1,024 of them"},
   {say: "That's why long documents are slow and expensive."},
 
   {kind: "section", say: "The idea"},
@@ -259,9 +259,9 @@ const S = [
   {say: "So finding the fact wasn't the real problem."},
   {vis: "img", img: F + "recall_layers.png", say: "We measured how blurry each design's view gets.", sub: "each line is a design; higher = its output stays closer to the normal model's"},
   {vis: "img", img: F + "recall_layers.png", say: "1.0 would mean identical to the normal model, layer by layer."},
-  {vis: "img", img: F + "recall_layers.png", say: "The simple shortcuts — blue and orange — drift to about 0.85 in the middle layers."},
+  {vis: "img", img: F + "recall_layers.png", say: "The simple shortcuts (blue and orange) drift to about 0.85 in the middle layers."},
   {vis: "img", img: F + "recall_layers.png", say: "Red is the ceiling: a cheat that already knows the true best spots."},
-  {vis: "img", img: F + "recall_layers.png", say: "Bigger Bird — green — stays near that ceiling in all 32 layers."},
+  {vis: "img", img: F + "recall_layers.png", say: "Bigger Bird (green) stays near that ceiling in all 32 layers."},
 
   {kind: "section", say: "Our fix"},
   {vis: "fix", step: 0, say: "Each token now looks at four things."},
@@ -275,11 +275,11 @@ const S = [
   {vis: "route", step: 3, say: "Then every token can look at those spots, and the scan itself is cheap.", sub: "it touches each position once"},
   {vis: "img", img: F + "recall_layers.png", say: "How good are the reading lists? Nearly as good as an oracle's.", sub: "green (ours) sits next to red, a cheat that already knows the best spots"},
   {vis: "scale", step: 0, say: "And the nearby text never grows."},
-  {vis: "scale", step: 1, say: "32,000 tokens or a million — it is always the last 16,000.", sub: "document strips drawn to scale"},
-  {vis: "scale", step: 2, say: "Fixed sizes for every part — that's what makes the work grow linearly."},
+  {vis: "scale", step: 1, say: "32,000 tokens or a million, it is always the last 16,000.", sub: "document strips drawn to scale"},
+  {vis: "scale", step: 2, say: "Every part has a fixed size. That's what makes the work grow linearly."},
   {vis: "img", img: F + "ablations.png", say: "Two dials decided everything. Left: how many spots each head keeps."},
   {vis: "img", img: F + "ablations.png", say: "Too few, and the fact gets skipped: 0 of 6 at 64 spots."},
-  {vis: "img", img: F + "ablations.png", say: "But more is not better — thousands of spots dilute the signal.", sub: "best at a few hundred; only 3 of 6 with 4,000"},
+  {vis: "img", img: F + "ablations.png", say: "But more is not better. Thousands of spots dilute the signal.", sub: "best at a few hundred; only 3 of 6 with 4,000"},
   {vis: "img", img: F + "ablations.png", say: "Right: how much of the end reads everything.", sub: "none → 2 of 6 · a little → 4 of 6 · 256 tokens → 6 of 6"},
   {vis: "img", img: F + "ablations.png", say: "No retraining. Same model, same weights."},
 
@@ -515,7 +515,7 @@ const VIS = {
     const ROWS = [["32K tokens", 2.56], ["65K tokens", 5.2], ["128K tokens", 10.24], ["1M tokens", 80]];
     return `<div class="scwrap">` + ROWS.map(([lab, w]) =>
       `<div class="scrow"><span class="sclab">${lab}</span><div class="scbar" style="width:${w}vw"><i class="scwin">${s.step >= 1 ? "16K" : ""}</i></div></div>`).join("") +
-      (s.step >= 2 ? `<div class="scnote">64 at the start &nbsp;·&nbsp; 16,000 nearby &nbsp;·&nbsp; 512 chosen spots &nbsp;·&nbsp; 256 for the question — none of these grow</div>` : "") +
+      (s.step >= 2 ? `<div class="scnote">64 at the start &nbsp;·&nbsp; 16,000 nearby &nbsp;·&nbsp; 512 chosen spots &nbsp;·&nbsp; 256 for the question. None of these grow</div>` : "") +
       `</div>`;
   },
   wall: s => `<div class="wall">${WALL.map(([n, t], j) => {
