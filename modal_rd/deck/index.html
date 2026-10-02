@@ -2,230 +2,334 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Bigger Bird v3 — subquadratic long-context attention</title>
+<title>Bigger Bird — subquadratic long-context attention</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root { --fg:#1b1f24; --muted:#5b6470; --accent:#1f6feb; --good:#1a7f37; --bad:#cf222e; --bg:#fff; }
+  :root { --fg:#111418; --muted:#5b6470; --accent:#1f4fd8; --good:#1a7f37; --bad:#cf222e; --bird:#e8b800; }
   * { box-sizing: border-box; }
-  html, body { margin:0; height:100%; background:#e9ecef; font-family: -apple-system, "Segoe UI", Inter, Helvetica, Arial, sans-serif; color:var(--fg); }
+  html, body { margin:0; height:100%; background:#eceef1; color:var(--fg);
+               font-family: Inter, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; }
   .slide { display:none; position:absolute; inset:0; margin:auto; width:min(96vw, 170vh); height:min(54vw, 96vh);
-           background:var(--bg); padding:4.2% 5.5%; box-shadow:0 8px 30px rgba(0,0,0,.15); overflow:hidden; }
+           background:#fff; padding:4% 5.5%; box-shadow:0 8px 30px rgba(0,0,0,.12); overflow:hidden; }
   .slide.active { display:flex; flex-direction:column; }
-  h1 { font-size:2.6vw; margin:0 0 .6em; line-height:1.15; }
-  h2 { font-size:2.1vw; margin:0 0 .7em; }
-  p, li, td, th { font-size:1.25vw; line-height:1.45; }
-  li { margin:.25em 0; }
+  .center { justify-content:center; align-items:center; text-align:center; }
+  h1 { font-size:4.2vw; font-weight:800; margin:0; letter-spacing:-.02em; }
+  h2 { font-size:2.3vw; font-weight:700; margin:0 0 .6em; letter-spacing:-.01em; }
+  h3 { font-size:1.5vw; font-weight:600; margin:.2em 0 .4em; }
+  p, li, td, th { font-size:1.3vw; line-height:1.45; }
+  li { margin:.3em 0; }
+  .lead { font-size:1.8vw; font-weight:500; line-height:1.35; }
   .muted { color:var(--muted); }
   .accent { color:var(--accent); font-weight:600; }
   .good { color:var(--good); font-weight:600; }
   .bad { color:var(--bad); font-weight:600; }
   .row { display:flex; gap:3%; flex:1; min-height:0; align-items:center; }
   .col { flex:1; min-width:0; }
-  img { max-width:100%; max-height:62vh; object-fit:contain; display:block; margin:0 auto; }
+  img { max-width:100%; max-height:60vh; object-fit:contain; display:block; margin:0 auto; }
+  .photo { border-radius:10px; max-height:46vh; }
   table { border-collapse:collapse; margin:.4em 0; }
-  th, td { padding:.3em .8em; border-bottom:1px solid #d0d7de; text-align:right; }
+  th, td { padding:.32em .9em; border-bottom:1px solid #d8dde3; text-align:right; }
   th:first-child, td:first-child { text-align:left; }
   th { color:var(--muted); font-weight:600; }
-  .big { font-size:4vw; font-weight:700; color:var(--accent); line-height:1; }
-  .kpis { display:flex; gap:4%; margin:1.2em 0; }
-  .kpi { flex:1; border-left:4px solid var(--accent); padding-left:1em; }
-  .kpi p { margin:.3em 0 0; }
-  .box { border:1px solid #d0d7de; border-radius:8px; padding:.8em 1.2em; background:#f6f8fa; }
-  code { font-family: ui-monospace, Menlo, monospace; font-size:.95em; background:#f6f8fa; padding:.05em .3em; border-radius:4px; }
+  .big { font-size:4.2vw; font-weight:800; color:var(--accent); line-height:1; letter-spacing:-.02em; }
+  .kpis { display:flex; gap:4%; margin:1.4em 0 0; width:100%; }
+  .kpi { flex:1; text-align:left; border-left:5px solid var(--accent); padding-left:1em; }
+  .kpi p { margin:.35em 0 0; }
+  .box { border:1px solid #d8dde3; border-radius:10px; padding:.9em 1.2em; background:#f7f8fa; }
+  .prompt { font-family: ui-monospace, Menlo, monospace; font-size:1.05vw; line-height:1.55; background:#f7f8fa;
+            border:1px solid #d8dde3; border-radius:10px; padding:.9em 1.1em; white-space:pre-wrap; }
+  .needle { background:#fff3b0; font-weight:700; }
+  .q { background:#dbe7ff; font-weight:700; }
+  .steps { display:flex; gap:2.5%; width:100%; }
+  .step { flex:1; border:1px solid #d8dde3; border-radius:10px; padding:1em 1.1em; text-align:left; }
+  .step .n { font-size:2.4vw; font-weight:800; color:var(--accent); line-height:1; }
+  code { font-family: ui-monospace, Menlo, monospace; font-size:.92em; background:#f2f4f7; padding:.05em .3em; border-radius:4px; }
+  .corner { position:absolute; top:3.2%; right:3.5%; height:6%; }
   .footer { position:absolute; bottom:2.5%; right:4%; font-size:.9vw; color:var(--muted); }
+  .timeline { display:flex; justify-content:space-between; width:100%; margin-top:1em; }
+  .tl { flex:1; border-top:4px solid var(--accent); padding-top:.6em; margin-right:2%; text-align:left; }
+  .tl b { display:block; font-size:1.3vw; }
+  .tl span { font-size:1.15vw; color:var(--muted); }
 </style>
 </head>
 <body>
 
+<!-- 1. Title -->
+<section class="slide center">
+  <img class="corner" src="assets/utmist_logo.png" alt="UTMIST">
+  <img src="assets/bigger_bird_logo.png" alt="Bigger Bird" style="max-height:52vh">
+  <h1 style="margin-top:.3em">Bigger Bird</h1>
+  <p class="lead muted" style="margin:.4em 0 0">Content-aware sparse attention: dense-level long-context retrieval, linear scaling</p>
+</section>
+
+<!-- 2. Team + journey -->
 <section class="slide">
-  <h1>Bigger Bird v3:<br>sparse prefill that keeps dense-level retrieval at 128K</h1>
-  <p class="muted">UTMIST Bigger Bird · frozen DeepSeek-R1-Distill-Llama-8B · zero-shot · one H100</p>
-  <div class="kpis">
-    <div class="kpi"><div class="big">1.9×</div><p>faster prefill than dense FlashAttention at ~127K tokens (2.65× with a 4K window)</p></div>
-    <div class="kpi"><div class="big">30/30</div><p>exact retrieval @~127K at depths 0.5 and 0.1 (dense: 28/30, 28/30)</p></div>
-    <div class="kpi"><div class="big">17.8×</div><p>faster attention at 1M tokens; measured scaling exponent 1.01 vs dense 1.65</p></div>
+  <img class="corner" src="assets/utmist_logo.png" alt="UTMIST">
+  <h2>Where it started</h2>
+  <div class="row" style="align-items:flex-start">
+    <div class="col"><img class="photo" src="assets/devcon_proposal.png" alt="Explaining the proposal at DevCon">
+      <p class="muted" style="text-align:center">UTMIST DevCon, Feb 7 2026: explaining the original proposal</p></div>
+    <div class="col"><img class="photo" src="assets/devcon_team.jpg" alt="Bigger Bird team at DevCon">
+      <p class="muted" style="text-align:center">The Bigger Bird team, one of 30+ UTMIST projects at DevCon</p></div>
   </div>
-  <p class="muted">Synthetic RULER-style needle-in-a-haystack, same prompts as earlier CCDB rounds. Details and limits at the end.</p>
+  <div class="timeline">
+    <div class="tl"><b>Feb 2026</b><span>First meeting; content-aware attention proposal</span></div>
+    <div class="tl"><b>Feb 7</b><span>DevCon booth talk</span></div>
+    <div class="tl"><b>Feb 11</b><span>Project officially begins</span></div>
+    <div class="tl"><b>Spring–Sep</b><span>19 sparse-attention experiments; 8 cluster R&amp;D rounds</span></div>
+    <div class="tl" style="margin-right:0"><b>Oct 2</b><span>Bigger Bird v3 on H100s: dense-level retrieval at 128K</span></div>
+  </div>
 </section>
 
+<!-- 3. Problem -->
+<section class="slide center">
+  <h2>The problem: attention is quadratic</h2>
+  <p class="lead">Every token compares itself with every earlier token.</p>
+  <div class="kpis" style="max-width:80%">
+    <div class="kpi"><div class="big">2×</div><p>longer document</p></div>
+    <div class="kpi"><div class="big">4×</div><p>attention compute</p></div>
+    <div class="kpi"><div class="big">8 billion</div><p>token pairs per head, per layer, for one 128K-token prompt</p></div>
+  </div>
+  <p class="lead" style="margin-top:1.4em">Goal: <span class="accent">near-linear cost</span> while keeping the model's ability to <b>find information</b> in long documents.</p>
+</section>
+
+<!-- 4. Idea -->
 <section class="slide">
-  <h2>Goal and where we started</h2>
-  <ul>
-    <li>Goal: <span class="accent">subquadratic attention</span> with quality close to dense on long-context retrieval.</li>
-    <li>Dense R1-Llama-8B retrieves the needle at 128K; cost grows ~n².</li>
-    <li>Eight CCDB R&amp;D rounds (fixed/learned patterns, Top-K, block routing, exp19 Bigger Bird):
+  <h2>The idea: each token reads only what matters</h2>
+  <div class="row">
+    <div class="col">
+      <p>Big Bird uses <b>fixed</b> patterns. Bigger Bird picks keys by <b>content</b>:</p>
+      <table>
+        <tr><th>Big Bird</th><th style="text-align:left">Bigger Bird v3</th></tr>
+        <tr><td>Global tokens</td><td style="text-align:left">first 64 tokens (attention sinks) + <b>512 key columns per head chosen by the question</b></td></tr>
+        <tr><td>Local window</td><td style="text-align:left">previous 16,384 tokens, exact</td></tr>
+        <tr><td>Random links</td><td style="text-align:left">replaced by <b>content-routed</b> long-range links</td></tr>
+        <tr><td>—</td><td style="text-align:left"><b>new:</b> the final 256 tokens (the question) read everything</td></tr>
+      </table>
+    </div>
+    <div class="col box">
+      <h3>Cost per layer, prompt of n tokens</h3>
+      <p>Dense: every token × every earlier token ≈ <code>n²/2</code></p>
+      <p>Bigger Bird: every token × ~17K keys + 256 question tokens × n ≈ <code>17K·n</code></p>
+      <p>→ <span class="accent">linear in n</span>. All 32 layers are sparse.</p>
+      <p class="muted">Frozen DeepSeek-R1-Distill-Llama-8B: no training or fine-tuning. One Triton GPU kernel.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 5. Eval explained -->
+<section class="slide">
+  <h2>How we test it: "needle in a haystack"</h2>
+  <p>Hide one fact in a very long document, then ask for it. If the attention shortcut skips the fact, the model can't answer.</p>
+  <div class="prompt">The grass is green. The sky is blue. The sun is yellow. Here we go. There and back again.
+A quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs. …
+<span class="muted">( ~60,000 tokens of filler )</span>
+… How vexingly quick daft zebras jump. <span class="needle">The special magic golden-falcon is: 7606921.</span> The five boxing wizards jump quickly. …
+<span class="muted">( ~60,000 more tokens of filler )</span>
+… We promptly judged antique ivory buckles for the next prize. <span class="q">What is the special magic golden-falcon? The answer is:</span></div>
+  <p style="margin-top:.6em">Correct output: <code>7606921</code>. The <span class="needle">&nbsp;needle&nbsp;</span> can sit anywhere (its <b>depth</b>: 0.1 = near the start, 0.9 = near the end); the <span class="q">&nbsp;question&nbsp;</span> is always last.</p>
+</section>
+
+<!-- 6. Scoring / fairness -->
+<section class="slide">
+  <h2>How we score and time it</h2>
+  <div class="steps">
+    <div class="step"><div class="n">1</div><h3>Same prompts</h3>
+      <p>Dense and Bigger Bird see exactly the same prompts, token for token. Prompt sizes from 8K to ~127K tokens; the model's limit is 128K.</p></div>
+    <div class="step"><div class="n">2</div><h3>Exact answer</h3>
+      <p>The model writes up to 10 tokens. <b>Correct only if the full 7-digit number appears.</b> Last-digit or partial matches don't count.</p></div>
+    <div class="step"><div class="n">3</div><h3>Prefill time</h3>
+      <p>Time for the model to read the whole prompt once, the part attention makes expensive. Measured on one H100 after warm-up.</p></div>
+    <div class="step"><div class="n">4</div><h3>Held-out check</h3>
+      <p>Settings tuned on 6 prompts; confirmed on 24 more prompts the tuning never saw.</p></div>
+  </div>
+  <p class="muted" style="margin-top:1em">Baseline: the same model with standard dense FlashAttention. Greedy decoding, BF16, KV cache on.</p>
+</section>
+
+<!-- 7. Where we started -->
+<section class="slide">
+  <h2>Before today: everything broke at 128K</h2>
+  <div class="row">
+    <div class="col">
+      <table>
+        <tr><th>Approach (8 cluster R&amp;D rounds)</th><th>~65K</th><th>~127K</th></tr>
+        <tr><td>Dense attention</td><td>6/6</td><td>6/6</td></tr>
+        <tr><td>Previous Bigger Bird (exp 19, sqrt spans)</td><td>6/6</td><td class="bad">0/6</td></tr>
+        <tr><td>DeepSeek-style Top-K</td><td>—</td><td class="bad">0/6</td></tr>
+        <tr><td>4× bigger routing budget (16K keys)</td><td>—</td><td class="bad">1/3</td></tr>
+        <tr><td>Top-K + first 16 layers dense</td><td>—</td><td>6/6 <span class="muted">(still quadratic)</span></td></tr>
+      </table>
+    </div>
+    <div class="col">
       <ul>
-        <li>All-sparse methods: <span class="good">6/6 at ~65K</span> but <span class="bad">0–1/6 at ~127K</span>, even with 16K routed tokens.</li>
-        <li>Top-K + first 16 layers dense: 6/6 at ~127K, but half the model is still quadratic.</li>
-        <li>Forcing the answer into every sparse layer (oracle) still failed, so <b>routing recall was not the whole story</b>.</li>
-      </ul></li>
-    <li>Today: moved to Modal H100s (about 10× faster per run than the 3g.40GB MIG slices) and rebuilt the R&amp;D loop around one fast diagnostic.</li>
-  </ul>
+        <li>Even <b>forcing the answer</b> into every sparse layer still failed.</li>
+        <li>So "find the needle better" was the wrong fix. Something else was going wrong.</li>
+        <li>Each 128K run took hours on shared 3g.40GB GPU slices. We moved to full H100s (Modal), where it's ~16 s and 10 run at once.</li>
+      </ul>
+    </div>
+  </div>
 </section>
 
+<!-- 8. Diagnosis -->
 <section class="slide">
-  <h2>Diagnosis: what does each sparse pattern lose, per layer?</h2>
+  <h2>Diagnosis: the middle of the document was getting blurry</h2>
   <div class="row">
     <div class="col" style="flex:1.3"><img src="../figures/recall_layers.png" alt="per-layer fidelity"></div>
     <div class="col">
       <ul>
-        <li>One dense forward pass at ~127K. Per layer, compare each candidate pattern's attention output with exact attention.</li>
-        <li>exp19-like routing (local 128 + final-query top-4096): mid-prompt fidelity <span class="bad">~0.85 cosine</span>.</li>
-        <li>Adding attention sinks barely changes it (+0.001), so sinks were <b>not</b> the bug.</li>
-        <li>A wide local window plus per-head routed columns: <span class="good">0.95+</span>.</li>
-        <li>Errors at mid-prompt tokens compound over 32 layers, so a method can work at 65K and fail at 128K.</li>
+        <li>For each of the 32 layers we compared each shortcut's output with real attention (1.0 = identical).</li>
+        <li>Old routing: <span class="bad">~0.85</span> for tokens in the middle of the prompt.</li>
+        <li>Small errors <b>compound over 32 layers</b>. Fine at 65K, broken at 128K.</li>
+        <li>Wide local window + content-routed columns: <span class="good">0.95+</span>.</li>
       </ul>
     </div>
   </div>
 </section>
 
+<!-- 9. Ablations -->
 <section class="slide">
-  <h2>Method: Bigger Bird v3</h2>
-  <div class="row">
-    <div class="col">
-      <p>Each query attends to a <b>union of key sets</b> in one Triton sparse FlashAttention kernel (single softmax):</p>
-      <ol>
-        <li><b>Sinks:</b> first 64 tokens, exact.</li>
-        <li><b>Selective local window:</b> previous 16,384 tokens, exact.</li>
-        <li><b>Content-routed long links:</b> 512 key columns <i>per head</i>, ranked by the attention of the final 64 prompt queries (the question).</li>
-        <li><b>Exact question tail:</b> the final 256 prompt queries attend to every key, O(256·n).</li>
-      </ol>
-      <p>Decode: exact attention over the full KV cache (O(n) per generated token).</p>
-    </div>
-    <div class="col box">
-      <p><b>Cost per layer</b>, prompt length n:</p>
-      <p>attention <code>n · (64 + 16384 + 512)</code><br>routing <code>64 · n</code> &nbsp; tail <code>256 · n</code></p>
-      <p>→ <span class="accent">linear in n</span> for fixed budgets (dense: n²/2).</p>
-      <p class="muted">Short prompts (n ≤ window) fall back to exact attention.</p>
-      <p class="muted">Code: <code>modal_rd/attention.py</code>, kernel <code>kernels/bigger_bird_flash.py</code></p>
-    </div>
-  </div>
-</section>
-
-<section class="slide">
-  <h2>What mattered: ablations @~127K (depth 0.5, 6 prompts)</h2>
+  <h2>What mattered (each change tested on the same 6 prompts @127K)</h2>
   <div class="row">
     <div class="col" style="flex:1.6"><img src="../figures/ablations.png" alt="ablations"></div>
     <div class="col">
       <ul>
-        <li><b>Exact question tail is essential:</b> 2/6 without it, 4/6 with 64 queries, 6/6 with 256.</li>
-        <li><b>Routed budget has a sweet spot:</b> 64 columns gives 0/6, 256–512 gives 6/6, 2K–4K gives 0–4/6.
-          More question-chosen columns shared by every prompt token <i>hurt</i>.</li>
-        <li>Not helpful: max-pooling routes, routing from spread-out queries, restricting routes to late queries.</li>
+        <li><b>Let the question read everything:</b> 2/6 → 6/6. Cheap, because the question is only 256 tokens.</li>
+        <li><b>Fewer routed columns are better:</b> 512 → 6/6, 4,096 → 0/6. Too many question-chosen keys confuse the rest of the document.</li>
+        <li><b>Wider local window</b> (4K → 16K) fixed needles near the start of the document.</li>
       </ul>
     </div>
   </div>
 </section>
 
-<section class="slide">
-  <h2>Scaling: prefill latency and retrieval vs context</h2>
-  <img src="../figures/scaling.png" alt="scaling" style="max-height:52vh">
-  <table style="margin-top:.5em">
-    <tr><th>tokens</th><th>dense</th><th>v3, window 4K</th><th>v3, window 16K (final)</th></tr>
-    <tr><td>~32K</td><td>1.70 s</td><td>1.52 s (1.1×)</td><td>2.13 s (0.8×)</td></tr>
-    <tr><td>~65K</td><td>5.03 s</td><td>3.11 s (1.6×)</td><td>4.35 s (1.2×)</td></tr>
-    <tr><td>~127K</td><td>16.22 s</td><td><b>6.12 s (2.65×)</b></td><td><b>8.50 s (1.9×)</b></td></tr>
-  </table>
-  <p class="muted">Sparse prefill doubles per doubling of context (linear); dense grows ~3.2× per doubling.</p>
+<!-- 10. Headline result -->
+<section class="slide center">
+  <h2>Result at ~127K tokens (30 prompts each)</h2>
+  <div class="kpis" style="max-width:88%">
+    <div class="kpi"><div class="big">30/30</div><p>correct, needle in the middle<br><span class="muted">dense: 28/30</span></p></div>
+    <div class="kpi"><div class="big">30/30</div><p>correct, needle near the start<br><span class="muted">dense: 28/30</span></p></div>
+    <div class="kpi"><div class="big">1.9×</div><p>faster prefill<br><span class="muted">8.6 s vs 16.3 s</span></p></div>
+  </div>
+  <p class="lead" style="margin-top:1.3em">Same accuracy as dense: a 2-prompt gap at n=30 is noise, so this is parity, not a win.</p>
 </section>
 
+<!-- 11. Scaling -->
 <section class="slide">
-  <h2>Subquadratic in practice: fitted scaling exponent</h2>
+  <h2>Speed vs document length</h2>
+  <img src="../figures/scaling.png" alt="scaling" style="max-height:50vh">
+  <table style="margin:.5em auto 0">
+    <tr><th>prompt</th><th>dense</th><th>Bigger Bird (4K window)</th><th>Bigger Bird (16K window, final)</th></tr>
+    <tr><td>~32K tokens</td><td>1.70 s</td><td>1.52 s (1.1×)</td><td>2.13 s (0.8×)</td></tr>
+    <tr><td>~65K tokens</td><td>5.03 s</td><td>3.11 s (1.6×)</td><td>4.35 s (1.2×)</td></tr>
+    <tr><td>~127K tokens</td><td>16.22 s</td><td><b>6.12 s (2.65×)</b></td><td><b>8.50 s (1.9×)</b></td></tr>
+  </table>
+</section>
+
+<!-- 12. Scaling exponent -->
+<section class="slide">
+  <h2>Measured: linear, not quadratic</h2>
   <div class="row">
     <div class="col" style="flex:1.3"><img src="../figures/loglog.png" alt="log-log scaling"></div>
     <div class="col">
+      <p class="lead">On a log-log plot the slope is the growth rate: 1 = linear, 2 = quadratic.</p>
       <ul>
-        <li>Fit of full-model prefill time against prompt tokens, 32K to 127K, log-log:</li>
-        <li>Dense FlashAttention: <b>slope 1.65</b>, heading toward quadratic as attention dominates.</li>
-        <li>Bigger Bird v3: <span class="good">slope 1.01</span>, i.e. linear.</li>
-        <li>Below ~32K the MLPs dominate and the sparse path is no faster.</li>
+        <li>Dense: <b>1.65</b>, heading toward 2 as documents grow.</li>
+        <li>Bigger Bird: <span class="good">1.01</span>. Double the document, double the time.</li>
+        <li class="muted">Under ~32K tokens the rest of the model dominates, so sparse attention doesn't help there.</li>
       </ul>
     </div>
   </div>
 </section>
 
+<!-- 13. 1M tokens -->
 <section class="slide">
-  <h2>Attention alone, past the model's context limit</h2>
+  <h2>Looking ahead: one attention layer at up to 1 million tokens</h2>
   <div class="row">
     <div class="col" style="flex:1.3"><img src="../figures/attn_bench.png" alt="attention benchmark"></div>
     <div class="col">
       <ul>
-        <li>One attention layer with Llama-8B shapes on synthetic tensors, including routing and the exact tail.</li>
-        <li><b>1M tokens: 18.4 s → 1.04 s (17.8×)</b>. 512K: 8.7×. 256K: 4.2×.</li>
-        <li>Each doubling of context: dense costs ~4× more, Bigger Bird ~2× more.</li>
-        <li class="muted">Speed only. The model's position limit is 128K, so quality past 128K is untested.</li>
+        <li><b>1M tokens: 18.4 s → 1.0 s (17.8× faster).</b></li>
+        <li>512K: 8.7×. 256K: 4.2×. The gap widens with every doubling.</li>
+        <li class="muted">Speed only, on synthetic data with the real model's shapes. The model reads at most 128K tokens, so accuracy past that is untested.</li>
       </ul>
     </div>
   </div>
 </section>
 
+<!-- 14. Depth -->
 <section class="slide">
-  <h2>Beyond one needle: harder RULER variants (untuned)</h2>
-  <img src="../figures/tasks.png" alt="harder tasks" style="max-height:44vh">
-  <ul>
-    <li>At ~32K and ~65K the final config <span class="good">matches or beats dense on every variant</span>: multi-key 11/12 vs 9/12 and multi-value 6/12 vs 3/12 exact at 65K.</li>
-    <li>At ~127K these tasks are hard even for dense (multi-key 4/12, multi-value 0/12). On the essay haystack, sparse <span class="bad">trails dense: 11/24 vs 17/24</span>.</li>
-  </ul>
-</section>
-
-<section class="slide">
-  <h2>Robustness: needle depth @~127K</h2>
+  <h2>Does it matter where the needle is hidden?</h2>
   <div class="row">
     <div class="col" style="flex:1.4"><img src="../figures/depth.png" alt="depth"></div>
     <div class="col">
       <ul>
-        <li>The 4K window <span class="bad">fails shallow needles</span> (2/6 at depth 0.1 and 0.25).</li>
-        <li>A 16K local window fixes it: <span class="good">6/6 at every tested depth</span>.</li>
-        <li>Final config: 6/6, 6/6, 6/6, 6/6, 5/6 at depths 0.1 to 0.9; dense: 5/6, 6/6, 6/6, 5/6, 5/6.</li>
-        <li>Trade-off: about 1.9× instead of 2.65× faster at 127K.</li>
+        <li>Depth 0.1 = needle near the start (hardest: ~115K tokens between needle and question).</li>
+        <li>4K window: <span class="bad">2/6</span> at depths 0.1 and 0.25.</li>
+        <li>16K window (final): <span class="good">6/6 everywhere</span> except 5/6 at 0.9, where dense also gets 5/6.</li>
       </ul>
     </div>
   </div>
 </section>
 
+<!-- 15. Harder tasks explained -->
 <section class="slide">
-  <h2>Confirmation: 30 prompts per context (24 held out)</h2>
-  <table>
-    <tr><th>context</th><th>arm</th><th>exact (all 30)</th><th>held-out 6–29</th><th>mean prefill</th></tr>
-    <tr><td>~65K</td><td>Dense FlashAttention</td><td>30/30</td><td>24/24</td><td>5.02 s</td></tr>
-    <tr><td>~65K</td><td>v3, window 4K</td><td>30/30</td><td>24/24</td><td>3.10 s</td></tr>
-    <tr><td>~65K</td><td>v3, window 16K</td><td>30/30</td><td>24/24</td><td>4.41 s</td></tr>
-    <tr><td>~127K</td><td>Dense FlashAttention</td><td>28/30</td><td>22/24</td><td>16.25 s</td></tr>
-    <tr><td>~127K</td><td>v3, window 4K</td><td>28/30</td><td>22/24</td><td>6.10 s</td></tr>
-    <tr><td>~127K</td><td><b>v3, window 16K (final)</b></td><td><b>30/30</b></td><td><b>24/24</b></td><td><b>8.61 s</b></td></tr>
-    <tr><td>~127K, depth 0.1</td><td>Dense FlashAttention</td><td>28/30</td><td>23/24</td><td>16.39 s</td></tr>
-    <tr><td>~127K, depth 0.1</td><td><b>v3, window 16K (final)</b></td><td><b>30/30</b></td><td><b>24/24</b></td><td><b>8.56 s</b></td></tr>
-  </table>
-  <p>The final config matches dense on every confirmation set, with <span class="accent">1.9× faster prefill at ~127K</span>.
-     A 2-prompt difference at n=30 is within noise: read this as <b>parity</b>, not "better than dense".</p>
-  <p class="muted">Prompts 0–5 were used for tuning. Prompts 6–29 share generator, seed and depth: a within-task held-out check, not broad generalization.</p>
+  <h2>Harder versions of the test</h2>
+  <div class="steps">
+    <div class="step"><h3>Essay haystack</h3><p>Filler is real-sounding essay text instead of repeated pangrams. Harder to tell the needle from the filler.</p></div>
+    <div class="step"><h3>Multi-key</h3><p>4 needles with different keys (<i>golden-falcon</i>, <i>azure-comet</i>, …). Ask for one. Distractors look like the answer.</p></div>
+    <div class="step"><h3>Multi-value</h3><p>The same key appears 4 times with 4 numbers. <b>All 4</b> must be listed.</p></div>
+    <div class="step"><h3>Multi-query</h3><p>Ask for 4 different keys in one question. All 4 answers must be found.</p></div>
+  </div>
+  <div class="prompt" style="margin-top:1em">… <span class="needle">The special magic violet-thistle is: 3201885.</span> … <span class="needle">The special magic violet-thistle is: 7474932.</span> … (2 more) …
+<span class="q">What are all values for the special magic violet-thistle? The answer is:</span>
+Bigger Bird: <b>3201885, 7474932, 1236801, 3579629</b>    Dense: <b>3201885.</b> (stopped after one)</div>
+  <p class="muted">Recall = fraction of the correct values found. None of these tasks were used for tuning.</p>
 </section>
 
+<!-- 16. Harder tasks results -->
 <section class="slide">
-  <h2>Limits (please read before quoting numbers)</h2>
+  <h2>Harder tasks: matches dense, slightly ahead at 65K</h2>
+  <img src="../figures/tasks.png" alt="harder tasks" style="max-height:42vh">
   <ul>
-    <li><b>Task:</b> repository synthetic NIAH (RULER-style), one model, one seed; not the official RULER suite or general long-context QA.</li>
-    <li><b>Natural-text haystack at 127K:</b> sparse trails dense (11/24 vs 17/24 exact). Sweeping budgets, window, tail and routing queries did not close the gap.</li>
-    <li><b>Routing is not prefix-invariant:</b> routes come from the final prompt queries. Attention edges are causal, but earlier positions' routes depend on later text, so this is a full-prompt prefill method, not streaming attention.</li>
-    <li><b>Tuned</b> on 6 prompts (depths 0.1/0.25/0.5 @127K); 30-prompt confirmation is within-task.</li>
-    <li><b>Subquadratic = prefill attention work</b> with fixed budgets. MLPs dominate below ~32K; the KV cache still stores every token (memory unchanged); decode is exact O(n) per token.</li>
-    <li>Timings: single H100, BF16, batch 1, warmed (Triton specializes per length), first-forward CUDA-event time.</li>
+    <li>Up to ~65K tokens Bigger Bird <span class="good">matches or beats dense on every variant</span>. At 65K: multi-key 11/12 vs 9/12; multi-value 6/12 vs 3/12.</li>
+    <li>Every prompt where the two disagreed went to Bigger Bird (5–0), but 12 prompts per task isn't enough to call it significant (p ≈ 0.06).</li>
+    <li>At ~127K these are hard even for dense (multi-key 4/12). On the essay haystack Bigger Bird <span class="bad">trails: 11/24 vs 17/24</span>.</li>
   </ul>
 </section>
 
+<!-- 17. Limits -->
+<section class="slide">
+  <h2>Honest limits</h2>
+  <ul>
+    <li><b>Synthetic tests:</b> needle-in-a-haystack variants, one model, one random seed. Not the official RULER suite or real-world QA yet.</li>
+    <li><b>Essay text at 127K:</b> Bigger Bird trails dense (11/24 vs 17/24). Our tuning sweeps didn't close the gap.</li>
+    <li><b>Routing looks at the question first:</b> key choice uses the end of the prompt, so it suits "read a document, then answer". It is not streaming attention.</li>
+    <li><b>Memory unchanged:</b> the KV cache still stores every token. The savings are in compute.</li>
+    <li><b>Short prompts:</b> no speedup below ~32K tokens.</li>
+  </ul>
+</section>
+
+<!-- 18. Next steps -->
 <section class="slide">
   <h2>Next steps</h2>
   <ul>
-    <li><b>Close the 127K natural-text gap</b> (essay haystack 11/24 vs dense 17/24), e.g. per-chunk routing or light sparse-aware fine-tuning.</li>
-    <li><b>Real-text evals:</b> LongBench-v2 subset, variable tracking; quality past 128K with a longer-context model.</li>
-    <li><b>Speed:</b> route the 16K window through a native sliding-window FlashAttention kernel; fuse the exact tail; budgets that grow with sqrt(n).</li>
-    <li><b>Causal variant:</b> per-chunk routing from visible prefix queries, for prefix invariance and cache equivalence.</li>
-    <li><b>Understand the routed-budget sweet spot:</b> why do too many shared question-routed columns degrade mid-prompt tokens?</li>
-    <li>Reproduce on a second model (e.g. Llama-3.1-8B-Instruct) and more seeds and depths.</li>
+    <li><b>Close the 127K natural-text gap:</b> per-chunk routing, or light sparse-aware fine-tuning.</li>
+    <li><b>Real tasks:</b> LongBench-v2, multi-hop QA, code; more seeds and models (e.g. Llama-3.1-8B).</li>
+    <li><b>Past 128K:</b> test accuracy on a model with a longer context limit, where the 4–18× attention speedups apply.</li>
+    <li><b>Faster kernel:</b> native sliding-window FlashAttention for the 16K window; fuse the question tail.</li>
+    <li><b>Streaming version:</b> routing that only looks backwards, for chat and cached generation.</li>
   </ul>
-  <p class="muted">Reproduce: <code>modal run modal_rd/app.py --module modal_rd.eval_niah --args "--arm vs --attn '{...}' --bytes 512000 --n 30 --tag x"</code></p>
 </section>
 
-<div class="footer"><span id="num"></span> · ← → to navigate</div>
+<!-- 19. Thanks -->
+<section class="slide center">
+  <img class="corner" src="assets/utmist_logo.png" alt="UTMIST">
+  <img src="assets/bigger_bird_logo.png" alt="Bigger Bird" style="max-height:40vh">
+  <h1 style="margin-top:.3em;font-size:3.4vw">Thank you</h1>
+  <p class="lead muted">Questions? · Code and results: <code>modal_rd/</code> in the Bigger Bird repo</p>
+</section>
+
+<div class="footer"><span id="num"></span></div>
 <script>
   const slides = [...document.querySelectorAll('.slide')];
   let i = Math.max(0, Math.min(slides.length - 1, parseInt(location.hash.slice(1) || '1') - 1));
