@@ -16,7 +16,11 @@
   .slide.active { display:flex; }
   .say { font-size:3.3vw; font-weight:700; line-height:1.25; letter-spacing:-.015em; margin:0; max-width:90%; }
   .k-img .say { font-size:2.4vw; margin-top:.6em; }
-  .k-title img { max-height:56vh; } .k-title .say { font-size:5vw; font-weight:800; margin-top:.3em; }
+  .k-hero .row { display:flex; align-items:center; gap:3.5vw; }
+  .k-hero .row img { max-height:23vh; }
+  .k-hero .big { font-size:5.5vw; font-weight:800; letter-spacing:-.02em; line-height:1.1; text-align:left; }
+  .k-hero .small { font-size:2.1vw; font-weight:500; color:var(--muted); margin-top:.5em; text-align:left; }
+  .k-hero .say { margin-top:1.2em; }
   .k-section .say { font-size:4.4vw; font-weight:800; color:var(--accent); }
   .sub { font-size:1.6vw; color:var(--muted); margin:.9em 0 0; max-width:85%; line-height:1.4; }
   .num { font-size:9vw; font-weight:800; color:var(--accent); line-height:1; letter-spacing:-.03em; }
@@ -55,7 +59,7 @@
 // say = the one sentence on screen; sub = optional small line under it.
 const F = "../figures/", A = "assets/";
 const S = [
-  {kind: "title", img: A + "bigger_bird_banner.png", corner: true},
+  {kind: "hero", corner: true},
   {img: A + "utmist_logo.png", kind: "img", say: "A UTMIST research project"},
   {kind: "photo", img: A + "devcon_proposal.png", say: "February 2026: we pitched an idea at UTMIST DevCon."},
   {kind: "photo", img: A + "devcon_team.jpg", say: "This is the team."},
@@ -146,7 +150,7 @@ const S = [
   {say: "Close the gap on natural text."},
   {say: "Try models that can read past 128,000 tokens."},
 
-  {kind: "title", img: A + "bigger_bird_banner.png", say: "Thank you", corner: true},
+  {kind: "hero", say: "Thank you", corner: true},
 ];
 
 const PROMPT = `The grass is green. The sky is blue. The sun is yellow. Here we go. …
@@ -183,6 +187,8 @@ S.forEach(s => {
   if (s.kind === "timeline")
     html += `<div class="timeline">${TIMELINE.map(([d, t], j) =>
       `<div class="tl${s.tl === undefined ? "" : j === s.tl ? " on" : " off"}"><b>${d}</b><span>${t}</span></div>`).join("")}</div>`;
+  if (s.kind === "hero")
+    html += `<div class="row"><img src="${A}bigger_bird_logo.png" alt="Bigger Bird"><div><div class="big">Bigger Bird</div><div class="small">Content-Aware Sparse Transformer Attention</div></div></div>`;
   if (s.kind === "partners")
     html += (s.say ? `<p class="ptitle">${s.say}</p>` : "") + `<div class="pgrid">` + PARTNERS.map(p => {
       let v = p.text
