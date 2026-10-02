@@ -117,6 +117,10 @@
            font-style:normal; font-size:.85vw; font-weight:800; color:#fff; display:flex; align-items:center; justify-content:center; }
   .scnote { font-family:ui-monospace, Menlo, monospace; font-size:1.15vw; color:var(--muted); margin-top:.6vw; }
 
+  /* Quadratic vs linear growth chart */
+  .expl svg { width:min(82vw, 1000px); }
+  .expl .cur { transition:opacity .25s; } .expl .cur.off { opacity:.15; }
+
   /* Struggle wall */
   .wall { display:grid; grid-template-columns:repeat(5, 1fr); gap:.7vw; width:100%; }
   .wt { border:2px solid #e1e4ea; border-radius:.8vw; padding:.55em .5em; text-align:left; background:#fff; transition:opacity .25s, background .25s, border-color .25s; }
@@ -219,7 +223,7 @@ const S = [
   {vis: "quad", say: "Watch what happens as the context window grows."},
   {vis: "quad", say: "Double the context window, and attention does four times the work."},
   {kind: "num", num: "8 billion", say: "comparisons for one 128,000-token document", sub: "per attention head, and the model has 1,024 of them"},
-  {say: "That's why long documents are slow and expensive."},
+  {vis: "expl", say: "That's why long documents are slow and expensive.", sub: "a sparse design should grow in a line instead"},
 
   {kind: "section", say: '<span class="secnum">PART 2</span>The idea'},
   {say: "What if each token only looked at what matters?"},
@@ -518,6 +522,29 @@ const VIS = {
       `<div class="scrow"><span class="sclab">${lab}</span><div class="scbar" style="width:${w}vw"><i class="scwin">${s.step >= 1 ? "16K" : ""}</i></div></div>`).join("") +
       (s.step >= 2 ? `<div class="scnote">64 at the start &nbsp;·&nbsp; 16,000 nearby &nbsp;·&nbsp; 512 chosen spots &nbsp;·&nbsp; 256 for the question. None of these grow</div>` : "") +
       `</div>`;
+  },
+  expl: s => {
+    const W = 900, H = 400, pad = 70, N = 1048576;
+    const x = n => pad + (n / N) * (W - pad - 20), y = v => H - pad - (v / 550e9) * (H - pad - 30);
+    const quad = [], lin = [];
+    for (let n = 8192; n <= N; n *= Math.SQRT2) { quad.push(`${x(n)},${y(n * n / 2)}`); lin.push(`${x(n)},${y(n * 16960)}`); }
+    quad.push(`${x(N)},${y(N * N / 2)}`); lin.push(`${x(N)},${y(N * 16960)}`);
+    const ticks = [32768, 131072, 262144, 524288, 1048576].map(n =>
+      `<text x="${x(n)}" y="${H - pad + 26}" font-size="17" fill="#8a93a3" text-anchor="middle">${n >= 1e6 ? "1M" : n / 1024 + "K"}</text>` +
+      `<line x1="${x(n)}" y1="${H - pad + 4}" x2="${x(n)}" y2="${H - pad}" stroke="#c9ced6"/>`).join("");
+    const here = `<line x1="${x(131072)}" y1="${y(8.6e9)}" x2="${x(131072)}" y2="${H - pad}" stroke="#c9ced6" stroke-dasharray="4"/>` +
+      `<circle cx="${x(131072)}" cy="${y(8.6e9)}" r="6" fill="#e4572e"/>` +
+      `<text x="${x(131072)}" y="${y(8.6e9) - 14}" font-size="19" font-weight="700" fill="#e4572e" text-anchor="middle">8 billion (128K)</text>` +
+      `<circle cx="${x(N)}" cy="${y(N * N / 2)}" r="6" fill="#1f4fd8"/>` +
+      `<text x="${x(N) - 14}" y="${y(N * N / 2) - 14}" font-size="19" font-weight="700" fill="#1f4fd8" text-anchor="end">550 billion (1M)</text>`;
+    const linlab = `<text x="${x(524288)}" y="${y(524288 * 16960) - 14}" font-size="19" font-weight="700" fill="#57a04e" text-anchor="middle">Bigger Bird, linear in theory</text>`;
+    return `<div class="expl"><svg viewBox="0 0 ${W} ${H + 40}">
+      <line x1="${pad}" y1="${H - pad}" x2="${W - 20}" y2="${H - pad}" stroke="#8a93a3" stroke-width="2"/>
+      <line x1="${pad}" y1="${H - pad}" x2="${pad}" y2="20" stroke="#8a93a3" stroke-width="2"/>
+      <text x="18" y="${(H - pad) / 2}" font-size="17" fill="#8a93a3" transform="rotate(-90 18 ${(H - pad) / 2})" text-anchor="middle">comparisons</text>${ticks}${here}
+      <polyline points="${quad.join(" ")}" fill="none" stroke="#1f4fd8" stroke-width="4"/>
+      <polyline points="${lin.join(" ")}" fill="none" stroke="#57a04e" stroke-width="4" stroke-dasharray="9 6"/>${linlab}
+    </svg></div>`;
   },
   wall: s => `<div class="wall">${WALL.map(([n, t], j) => {
       const k = j + 1, era2 = k >= 16;
