@@ -225,9 +225,8 @@ const S = [
   {vis: "wall", step: 1, say: "The first fifteen ran on small models, on small tests."},
   {vis: "wall", step: 2, say: "Then we moved to a modern model and a much harder test."},
   {vis: "stats", step: 1, say: "19 designs."},
-  {vis: "stats", step: 2, say: "8 full rounds of tests on Canada's research computers."},
-  {vis: "stats", step: 3, say: "86 recorded runs on Modal."},
-  {vis: "stats", step: 4, say: "And about 290 saved versions of the code along the way."},
+  {vis: "stats", step: 2, say: "86 recorded runs on Modal."},
+  {vis: "stats", step: 3, say: "And about 290 saved versions of the code along the way."},
   {say: "For months, every fully sparse version failed on long documents."},
   {say: "They worked at 65,000 tokens.", sub: "about a 200-page book"},
   {say: "They broke at 128,000 tokens.", sub: "about 400 pages: the most this model can read"},
@@ -276,7 +275,7 @@ const S = [
   {vis: "img", img: F + "attn_bench.png", say: "That's speed only. This model can't read that far yet."},
 
   {kind: "section", say: "What it can't do yet"},
-  {say: "On essay-like text at 128,000 tokens, it's behind.", sub: "11 out of 24 correct, vs 17 for the normal model"},
+  {vis: "ex", ex: 4, say: "On essay-like text at 128,000 tokens, it's behind.", sub: "11 out of 24 correct, vs 17 for the normal model"},
   {say: "These are test puzzles, not real-world questions yet."},
   {say: "It saves computing time, not memory."},
 
@@ -325,7 +324,7 @@ const WALL = [
   ["", "Native sparse attention"], ["", "S2-HHST"], ["", "Dynamic context window"], ["", "Token drop + top-K"], ["", "Bigger Bird on BigBird"],
   ["", "NSA free-rider"], ["", "Coarse-to-fine"], ["", "Confidence-gated"], ["", "Bigger Bird, fast kernel"],
 ];
-const STATS = [["19", "designs"], ["8", "cluster rounds"], ["86", "Modal runs"], ["~290", "code versions"]];
+const STATS = [["19", "designs"], ["86", "Modal runs"], ["~290", "code versions"]];
 const BOARD = [
   ["Normal (dense) attention", "6/6", "6/6", "good"],
   ["Previous Bigger Bird", "6/6", "0/6", "bad"],
@@ -353,9 +352,10 @@ Answer: all four numbers`],
 <span class="q">What is the special magic 6f1c2a9e-41b7-4d0a-9c3e-b27a5d81e0f4?</span>
 
 Answer: 3d84a1c0-7be2-49f1-a6d5-0c93e7b1f258`],
-  ["Real text", `<span class="dim">The best way to do great work is to find what you genuinely love. Most people drift toward
-whatever is easiest, and only later ask what they would have chosen …</span>
-… <span class="needle">The special magic golden-falcon is: 7606921.</span> …
+  ["Real text", `<span class="dim">Cities are machines for serendipity. Density creates collisions between people who
+would never otherwise meet, and those collisions are the raw material of new companies.
+Writing is thinking. When you force yourself to explain an idea clearly, you often find
+that the idea was not as solid as it seemed.</span> … <span class="needle">The special magic golden-falcon is: 7606921.</span> …
 <span class="dim">… (tens of thousands of tokens of essays) …</span>
 <span class="q">What is the special magic golden-falcon?</span>`],
 ];
