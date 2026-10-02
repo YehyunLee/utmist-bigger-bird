@@ -2,346 +2,161 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Bigger Bird — subquadratic long-context attention</title>
+<title>Bigger Bird</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
 <style>
-  :root { --fg:#111418; --muted:#5b6470; --accent:#1f4fd8; --good:#1a7f37; --bad:#cf222e; --bird:#e8b800; }
+  :root { --fg:#111418; --muted:#6b7280; --accent:#1f4fd8; --good:#1a7f37; --bad:#cf222e; }
   * { box-sizing: border-box; }
   html, body { margin:0; height:100%; background:#eceef1; color:var(--fg);
                font-family: Inter, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; }
   .slide { display:none; position:absolute; inset:0; margin:auto; width:min(96vw, 170vh); height:min(54vw, 96vh);
-           background:#fff; padding:4% 5.5%; box-shadow:0 8px 30px rgba(0,0,0,.12); overflow:hidden; }
-  .slide.active { display:flex; flex-direction:column; }
-  .center { justify-content:center; align-items:center; text-align:center; }
-  h1 { font-size:4.2vw; font-weight:800; margin:0; letter-spacing:-.02em; }
-  h2 { font-size:2.3vw; font-weight:700; margin:0 0 .6em; letter-spacing:-.01em; }
-  h3 { font-size:1.5vw; font-weight:600; margin:.2em 0 .4em; }
-  p, li, td, th { font-size:1.3vw; line-height:1.45; }
-  li { margin:.3em 0; }
-  .lead { font-size:1.8vw; font-weight:500; line-height:1.35; }
-  .muted { color:var(--muted); }
-  .accent { color:var(--accent); font-weight:600; }
-  .good { color:var(--good); font-weight:600; }
-  .bad { color:var(--bad); font-weight:600; }
-  .row { display:flex; gap:3%; flex:1; min-height:0; align-items:center; }
-  .col { flex:1; min-width:0; }
-  img { max-width:100%; max-height:60vh; object-fit:contain; display:block; margin:0 auto; }
-  .photo { border-radius:10px; max-height:46vh; }
-  table { border-collapse:collapse; margin:.4em 0; }
-  th, td { padding:.32em .9em; border-bottom:1px solid #d8dde3; text-align:right; }
-  th:first-child, td:first-child { text-align:left; }
-  th { color:var(--muted); font-weight:600; }
-  .big { font-size:4.2vw; font-weight:800; color:var(--accent); line-height:1; letter-spacing:-.02em; }
-  .kpis { display:flex; gap:4%; margin:1.4em 0 0; width:100%; }
-  .kpi { flex:1; text-align:left; border-left:5px solid var(--accent); padding-left:1em; }
-  .kpi p { margin:.35em 0 0; }
-  .box { border:1px solid #d8dde3; border-radius:10px; padding:.9em 1.2em; background:#f7f8fa; }
-  .prompt { font-family: ui-monospace, Menlo, monospace; font-size:1.05vw; line-height:1.55; background:#f7f8fa;
-            border:1px solid #d8dde3; border-radius:10px; padding:.9em 1.1em; white-space:pre-wrap; }
-  .needle { background:#fff3b0; font-weight:700; }
-  .q { background:#dbe7ff; font-weight:700; }
-  .steps { display:flex; gap:2.5%; width:100%; }
-  .step { flex:1; border:1px solid #d8dde3; border-radius:10px; padding:1em 1.1em; text-align:left; }
-  .step .n { font-size:2.4vw; font-weight:800; color:var(--accent); line-height:1; }
-  code { font-family: ui-monospace, Menlo, monospace; font-size:.92em; background:#f2f4f7; padding:.05em .3em; border-radius:4px; }
-  .corner { position:absolute; top:3.2%; right:3.5%; height:6%; }
+           background:#fff; padding:5% 8%; box-shadow:0 8px 30px rgba(0,0,0,.12); overflow:hidden;
+           flex-direction:column; justify-content:center; align-items:center; text-align:center; }
+  .slide.active { display:flex; }
+  .say { font-size:3.3vw; font-weight:700; line-height:1.25; letter-spacing:-.015em; margin:0; max-width:90%; }
+  .slide.img .say { font-size:2.4vw; margin-top:.6em; }
+  .section .say { font-size:4.4vw; font-weight:800; color:var(--accent); }
+  .sub { font-size:1.6vw; color:var(--muted); margin:.9em 0 0; max-width:85%; line-height:1.4; }
+  .num { font-size:9vw; font-weight:800; color:var(--accent); line-height:1; letter-spacing:-.03em; }
+  .slide img { max-width:100%; max-height:62vh; object-fit:contain; }
+  .slide.photo img { border-radius:12px; max-height:64vh; }
+  .good { color:var(--good); } .bad { color:var(--bad); } .accent { color:var(--accent); }
+  .prompt { font-family: ui-monospace, Menlo, monospace; font-size:1.35vw; line-height:1.6; text-align:left;
+            background:#f7f8fa; border:1px solid #d8dde3; border-radius:12px; padding:1em 1.3em; max-width:92%;
+            white-space:pre-wrap; }
+  .needle { background:#fff3b0; font-weight:700; } .q { background:#dbe7ff; font-weight:700; }
+  .dim { color:var(--muted); }
+  .corner { position:absolute; top:4%; right:4%; height:7%; max-height:none !important; }
   .footer { position:absolute; bottom:2.5%; right:4%; font-size:.9vw; color:var(--muted); }
-  .timeline { display:flex; justify-content:space-between; width:100%; margin-top:1em; }
-  .tl { flex:1; border-top:4px solid var(--accent); padding-top:.6em; margin-right:2%; text-align:left; }
-  .tl b { display:block; font-size:1.3vw; }
-  .tl span { font-size:1.15vw; color:var(--muted); }
 </style>
 </head>
 <body>
-
-<!-- 1. Title -->
-<section class="slide center">
-  <img class="corner" src="assets/utmist_logo.png" alt="UTMIST">
-  <img src="assets/bigger_bird_logo.png" alt="Bigger Bird" style="max-height:52vh">
-  <h1 style="margin-top:.3em">Bigger Bird</h1>
-  <p class="lead muted" style="margin:.4em 0 0">Content-aware sparse attention: dense-level long-context retrieval, linear scaling</p>
-</section>
-
-<!-- 2. Team + journey -->
-<section class="slide">
-  <img class="corner" src="assets/utmist_logo.png" alt="UTMIST">
-  <h2>Where it started</h2>
-  <div class="row" style="align-items:flex-start">
-    <div class="col"><img class="photo" src="assets/devcon_proposal.png" alt="Explaining the proposal at DevCon">
-      <p class="muted" style="text-align:center">UTMIST DevCon, Feb 7 2026: explaining the original proposal</p></div>
-    <div class="col"><img class="photo" src="assets/devcon_team.jpg" alt="Bigger Bird team at DevCon">
-      <p class="muted" style="text-align:center">The Bigger Bird team, one of 30+ UTMIST projects at DevCon</p></div>
-  </div>
-  <div class="timeline">
-    <div class="tl"><b>Feb 2026</b><span>First meeting; content-aware attention proposal</span></div>
-    <div class="tl"><b>Feb 7</b><span>DevCon booth talk</span></div>
-    <div class="tl"><b>Feb 11</b><span>Project officially begins</span></div>
-    <div class="tl"><b>Spring–Sep</b><span>19 sparse-attention experiments; 8 cluster R&amp;D rounds</span></div>
-    <div class="tl" style="margin-right:0"><b>Oct 2</b><span>Bigger Bird v3 on H100s: dense-level retrieval at 128K</span></div>
-  </div>
-</section>
-
-<!-- 3. Problem -->
-<section class="slide center">
-  <h2>The problem: attention is quadratic</h2>
-  <p class="lead">Every token compares itself with every earlier token.</p>
-  <div class="kpis" style="max-width:80%">
-    <div class="kpi"><div class="big">2×</div><p>longer document</p></div>
-    <div class="kpi"><div class="big">4×</div><p>attention compute</p></div>
-    <div class="kpi"><div class="big">8 billion</div><p>token pairs per head, per layer, for one 128K-token prompt</p></div>
-  </div>
-  <p class="lead" style="margin-top:1.4em">Goal: <span class="accent">near-linear cost</span> while keeping the model's ability to <b>find information</b> in long documents.</p>
-</section>
-
-<!-- 4. Idea -->
-<section class="slide">
-  <h2>The idea: each token reads only what matters</h2>
-  <div class="row">
-    <div class="col">
-      <p>Big Bird uses <b>fixed</b> patterns. Bigger Bird picks keys by <b>content</b>:</p>
-      <table>
-        <tr><th>Big Bird</th><th style="text-align:left">Bigger Bird v3</th></tr>
-        <tr><td>Global tokens</td><td style="text-align:left">first 64 tokens (attention sinks) + <b>512 key columns per head chosen by the question</b></td></tr>
-        <tr><td>Local window</td><td style="text-align:left">previous 16,384 tokens, exact</td></tr>
-        <tr><td>Random links</td><td style="text-align:left">replaced by <b>content-routed</b> long-range links</td></tr>
-        <tr><td>—</td><td style="text-align:left"><b>new:</b> the final 256 tokens (the question) read everything</td></tr>
-      </table>
-    </div>
-    <div class="col box">
-      <h3>Cost per layer, prompt of n tokens</h3>
-      <p>Dense: every token × every earlier token ≈ <code>n²/2</code></p>
-      <p>Bigger Bird: every token × ~17K keys + 256 question tokens × n ≈ <code>17K·n</code></p>
-      <p>→ <span class="accent">linear in n</span>. All 32 layers are sparse.</p>
-      <p class="muted">Frozen DeepSeek-R1-Distill-Llama-8B: no training or fine-tuning. One Triton GPU kernel.</p>
-    </div>
-  </div>
-</section>
-
-<!-- 5. Eval explained -->
-<section class="slide">
-  <h2>How we test it: "needle in a haystack"</h2>
-  <p>Hide one fact in a very long document, then ask for it. If the attention shortcut skips the fact, the model can't answer.</p>
-  <div class="prompt">The grass is green. The sky is blue. The sun is yellow. Here we go. There and back again.
-A quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs. …
-<span class="muted">( ~60,000 tokens of filler )</span>
-… How vexingly quick daft zebras jump. <span class="needle">The special magic golden-falcon is: 7606921.</span> The five boxing wizards jump quickly. …
-<span class="muted">( ~60,000 more tokens of filler )</span>
-… We promptly judged antique ivory buckles for the next prize. <span class="q">What is the special magic golden-falcon? The answer is:</span></div>
-  <p style="margin-top:.6em">Correct output: <code>7606921</code>. The <span class="needle">&nbsp;needle&nbsp;</span> can sit anywhere (its <b>depth</b>: 0.1 = near the start, 0.9 = near the end); the <span class="q">&nbsp;question&nbsp;</span> is always last.</p>
-</section>
-
-<!-- 6. Scoring / fairness -->
-<section class="slide">
-  <h2>How we score and time it</h2>
-  <div class="steps">
-    <div class="step"><div class="n">1</div><h3>Same prompts</h3>
-      <p>Dense and Bigger Bird see exactly the same prompts, token for token. Prompt sizes from 8K to ~127K tokens; the model's limit is 128K.</p></div>
-    <div class="step"><div class="n">2</div><h3>Exact answer</h3>
-      <p>The model writes up to 10 tokens. <b>Correct only if the full 7-digit number appears.</b> Last-digit or partial matches don't count.</p></div>
-    <div class="step"><div class="n">3</div><h3>Prefill time</h3>
-      <p>Time for the model to read the whole prompt once, the part attention makes expensive. Measured on one H100 after warm-up.</p></div>
-    <div class="step"><div class="n">4</div><h3>Held-out check</h3>
-      <p>Settings tuned on 6 prompts; confirmed on 24 more prompts the tuning never saw.</p></div>
-  </div>
-  <p class="muted" style="margin-top:1em">Baseline: the same model with standard dense FlashAttention. Greedy decoding, BF16, KV cache on.</p>
-</section>
-
-<!-- 7. Where we started -->
-<section class="slide">
-  <h2>Before today: everything broke at 128K</h2>
-  <div class="row">
-    <div class="col">
-      <table>
-        <tr><th>Approach (8 cluster R&amp;D rounds)</th><th>~65K</th><th>~127K</th></tr>
-        <tr><td>Dense attention</td><td>6/6</td><td>6/6</td></tr>
-        <tr><td>Previous Bigger Bird (exp 19, sqrt spans)</td><td>6/6</td><td class="bad">0/6</td></tr>
-        <tr><td>DeepSeek-style Top-K</td><td>—</td><td class="bad">0/6</td></tr>
-        <tr><td>4× bigger routing budget (16K keys)</td><td>—</td><td class="bad">1/3</td></tr>
-        <tr><td>Top-K + first 16 layers dense</td><td>—</td><td>6/6 <span class="muted">(still quadratic)</span></td></tr>
-      </table>
-    </div>
-    <div class="col">
-      <ul>
-        <li>Even <b>forcing the answer</b> into every sparse layer still failed.</li>
-        <li>So "find the needle better" was the wrong fix. Something else was going wrong.</li>
-        <li>Each 128K run took hours on shared 3g.40GB GPU slices. We moved to full H100s (Modal), where it's ~16 s and 10 run at once.</li>
-      </ul>
-    </div>
-  </div>
-</section>
-
-<!-- 8. Diagnosis -->
-<section class="slide">
-  <h2>Diagnosis: the middle of the document was getting blurry</h2>
-  <div class="row">
-    <div class="col" style="flex:1.3"><img src="../figures/recall_layers.png" alt="per-layer fidelity"></div>
-    <div class="col">
-      <ul>
-        <li>For each of the 32 layers we compared each shortcut's output with real attention (1.0 = identical).</li>
-        <li>Old routing: <span class="bad">~0.85</span> for tokens in the middle of the prompt.</li>
-        <li>Small errors <b>compound over 32 layers</b>. Fine at 65K, broken at 128K.</li>
-        <li>Wide local window + content-routed columns: <span class="good">0.95+</span>.</li>
-      </ul>
-    </div>
-  </div>
-</section>
-
-<!-- 9. Ablations -->
-<section class="slide">
-  <h2>What mattered (each change tested on the same 6 prompts @127K)</h2>
-  <div class="row">
-    <div class="col" style="flex:1.6"><img src="../figures/ablations.png" alt="ablations"></div>
-    <div class="col">
-      <ul>
-        <li><b>Let the question read everything:</b> 2/6 → 6/6. Cheap, because the question is only 256 tokens.</li>
-        <li><b>Fewer routed columns are better:</b> 512 → 6/6, 4,096 → 0/6. Too many question-chosen keys confuse the rest of the document.</li>
-        <li><b>Wider local window</b> (4K → 16K) fixed needles near the start of the document.</li>
-      </ul>
-    </div>
-  </div>
-</section>
-
-<!-- 10. Headline result -->
-<section class="slide center">
-  <h2>Result at ~127K tokens (30 prompts each)</h2>
-  <div class="kpis" style="max-width:88%">
-    <div class="kpi"><div class="big">30/30</div><p>correct, needle in the middle<br><span class="muted">dense: 28/30</span></p></div>
-    <div class="kpi"><div class="big">30/30</div><p>correct, needle near the start<br><span class="muted">dense: 28/30</span></p></div>
-    <div class="kpi"><div class="big">1.9×</div><p>faster prefill<br><span class="muted">8.6 s vs 16.3 s</span></p></div>
-  </div>
-  <p class="lead" style="margin-top:1.3em">Same accuracy as dense: a 2-prompt gap at n=30 is noise, so this is parity, not a win.</p>
-</section>
-
-<!-- 11. Scaling -->
-<section class="slide">
-  <h2>Speed vs document length</h2>
-  <img src="../figures/scaling.png" alt="scaling" style="max-height:50vh">
-  <table style="margin:.5em auto 0">
-    <tr><th>prompt</th><th>dense</th><th>Bigger Bird (4K window)</th><th>Bigger Bird (16K window, final)</th></tr>
-    <tr><td>~32K tokens</td><td>1.70 s</td><td>1.52 s (1.1×)</td><td>2.13 s (0.8×)</td></tr>
-    <tr><td>~65K tokens</td><td>5.03 s</td><td>3.11 s (1.6×)</td><td>4.35 s (1.2×)</td></tr>
-    <tr><td>~127K tokens</td><td>16.22 s</td><td><b>6.12 s (2.65×)</b></td><td><b>8.50 s (1.9×)</b></td></tr>
-  </table>
-</section>
-
-<!-- 12. Scaling exponent -->
-<section class="slide">
-  <h2>Measured: linear, not quadratic</h2>
-  <div class="row">
-    <div class="col" style="flex:1.3"><img src="../figures/loglog.png" alt="log-log scaling"></div>
-    <div class="col">
-      <p class="lead">On a log-log plot the slope is the growth rate: 1 = linear, 2 = quadratic.</p>
-      <ul>
-        <li>Dense: <b>1.65</b>, heading toward 2 as documents grow.</li>
-        <li>Bigger Bird: <span class="good">1.01</span>. Double the document, double the time.</li>
-        <li class="muted">Under ~32K tokens the rest of the model dominates, so sparse attention doesn't help there.</li>
-      </ul>
-    </div>
-  </div>
-</section>
-
-<!-- 13. 1M tokens -->
-<section class="slide">
-  <h2>Looking ahead: one attention layer at up to 1 million tokens</h2>
-  <div class="row">
-    <div class="col" style="flex:1.3"><img src="../figures/attn_bench.png" alt="attention benchmark"></div>
-    <div class="col">
-      <ul>
-        <li><b>1M tokens: 18.4 s → 1.0 s (17.8× faster).</b></li>
-        <li>512K: 8.7×. 256K: 4.2×. The gap widens with every doubling.</li>
-        <li class="muted">Speed only, on synthetic data with the real model's shapes. The model reads at most 128K tokens, so accuracy past that is untested.</li>
-      </ul>
-    </div>
-  </div>
-</section>
-
-<!-- 14. Depth -->
-<section class="slide">
-  <h2>Does it matter where the needle is hidden?</h2>
-  <div class="row">
-    <div class="col" style="flex:1.4"><img src="../figures/depth.png" alt="depth"></div>
-    <div class="col">
-      <ul>
-        <li>Depth 0.1 = needle near the start (hardest: ~115K tokens between needle and question).</li>
-        <li>4K window: <span class="bad">2/6</span> at depths 0.1 and 0.25.</li>
-        <li>16K window (final): <span class="good">6/6 everywhere</span> except 5/6 at 0.9, where dense also gets 5/6.</li>
-      </ul>
-    </div>
-  </div>
-</section>
-
-<!-- 15. Harder tasks explained -->
-<section class="slide">
-  <h2>Harder versions of the test</h2>
-  <div class="steps">
-    <div class="step"><h3>Essay haystack</h3><p>Filler is real-sounding essay text instead of repeated pangrams. Harder to tell the needle from the filler.</p></div>
-    <div class="step"><h3>Multi-key</h3><p>4 needles with different keys (<i>golden-falcon</i>, <i>azure-comet</i>, …). Ask for one. Distractors look like the answer.</p></div>
-    <div class="step"><h3>Multi-value</h3><p>The same key appears 4 times with 4 numbers. <b>All 4</b> must be listed.</p></div>
-    <div class="step"><h3>Multi-query</h3><p>Ask for 4 different keys in one question. All 4 answers must be found.</p></div>
-  </div>
-  <div class="prompt" style="margin-top:1em">… <span class="needle">The special magic violet-thistle is: 3201885.</span> … <span class="needle">The special magic violet-thistle is: 7474932.</span> … (2 more) …
-<span class="q">What are all values for the special magic violet-thistle? The answer is:</span>
-Bigger Bird: <b>3201885, 7474932, 1236801, 3579629</b>    Dense: <b>3201885.</b> (stopped after one)</div>
-  <p class="muted">Recall = fraction of the correct values found. None of these tasks were used for tuning.</p>
-</section>
-
-<!-- 16. Harder tasks results -->
-<section class="slide">
-  <h2>Harder tasks: matches dense, slightly ahead at 65K</h2>
-  <img src="../figures/tasks.png" alt="harder tasks" style="max-height:42vh">
-  <ul>
-    <li>Up to ~65K tokens Bigger Bird <span class="good">matches or beats dense on every variant</span>. At 65K: multi-key 11/12 vs 9/12; multi-value 6/12 vs 3/12.</li>
-    <li>Every prompt where the two disagreed went to Bigger Bird (5–0), but 12 prompts per task isn't enough to call it significant (p ≈ 0.06).</li>
-    <li>At ~127K these are hard even for dense (multi-key 4/12). On the essay haystack Bigger Bird <span class="bad">trails: 11/24 vs 17/24</span>.</li>
-  </ul>
-</section>
-
-<!-- 17. Limits -->
-<section class="slide">
-  <h2>Honest limits</h2>
-  <ul>
-    <li><b>Synthetic tests:</b> needle-in-a-haystack variants, one model, one random seed. Not the official RULER suite or real-world QA yet.</li>
-    <li><b>Essay text at 127K:</b> Bigger Bird trails dense (11/24 vs 17/24). Our tuning sweeps didn't close the gap.</li>
-    <li><b>Routing looks at the question first:</b> key choice uses the end of the prompt, so it suits "read a document, then answer". It is not streaming attention.</li>
-    <li><b>Memory unchanged:</b> the KV cache still stores every token. The savings are in compute.</li>
-    <li><b>Short prompts:</b> no speedup below ~32K tokens.</li>
-  </ul>
-</section>
-
-<!-- 18. Next steps -->
-<section class="slide">
-  <h2>Next steps</h2>
-  <ul>
-    <li><b>Close the 127K natural-text gap:</b> per-chunk routing, or light sparse-aware fine-tuning.</li>
-    <li><b>Real tasks:</b> LongBench-v2, multi-hop QA, code; more seeds and models (e.g. Llama-3.1-8B).</li>
-    <li><b>Past 128K:</b> test accuracy on a model with a longer context limit, where the 4–18× attention speedups apply.</li>
-    <li><b>Faster kernel:</b> native sliding-window FlashAttention for the 16K window; fuse the question tail.</li>
-    <li><b>Streaming version:</b> routing that only looks backwards, for chat and cached generation.</li>
-  </ul>
-</section>
-
-<!-- 19. Thanks -->
-<section class="slide center">
-  <img class="corner" src="assets/utmist_logo.png" alt="UTMIST">
-  <img src="assets/bigger_bird_logo.png" alt="Bigger Bird" style="max-height:40vh">
-  <h1 style="margin-top:.3em;font-size:3.4vw">Thank you</h1>
-  <p class="lead muted">Questions? · Code and results: <code>modal_rd/</code> in the Bigger Bird repo</p>
-</section>
-
+<div id="deck"></div>
 <div class="footer"><span id="num"></span></div>
 <script>
-  const slides = [...document.querySelectorAll('.slide')];
-  let i = Math.max(0, Math.min(slides.length - 1, parseInt(location.hash.slice(1) || '1') - 1));
-  const show = () => { slides.forEach((s, j) => s.classList.toggle('active', j === i));
-                       document.getElementById('num').textContent = `${i + 1} / ${slides.length}`; location.hash = i + 1; };
-  document.addEventListener('keydown', e => {
-    if (['ArrowRight', 'PageDown', ' '].includes(e.key)) i = Math.min(slides.length - 1, i + 1);
-    if (['ArrowLeft', 'PageUp'].includes(e.key)) i = Math.max(0, i - 1);
-    show();
-  });
-  document.addEventListener('click', e => { i = e.clientX > innerWidth / 2 ? Math.min(slides.length - 1, i + 1) : Math.max(0, i - 1); show(); });
+// Each entry is one slide. kind: section | img | photo | num | (default text).
+// say = the one sentence on screen; sub = optional small line under it.
+const F = "../figures/", A = "assets/";
+const S = [
+  {kind: "img", img: A + "bigger_bird_logo.png", say: "Bigger Bird", corner: true},
+  {img: A + "utmist_logo.png", kind: "img", say: "A UTMIST research project"},
+  {kind: "photo", img: A + "devcon_proposal.png", say: "February 2026: we pitched an idea at UTMIST DevCon."},
+  {kind: "photo", img: A + "devcon_team.jpg", say: "This is the team."},
+  {say: "Today, here's what we found."},
+
+  {kind: "section", say: "The problem"},
+  {say: "AI language models read text as small pieces called tokens."},
+  {say: "To understand each token, the model looks back at every token before it."},
+  {say: "This looking-back step is called attention."},
+  {say: "Double the document, and attention does four times the work."},
+  {kind: "num", num: "8 billion", say: "comparisons for one 128,000-token document", sub: "and that's repeated in every layer of the model"},
+  {say: "That's why long documents are slow and expensive."},
+
+  {kind: "section", say: "The idea"},
+  {say: "What if each token only looked at what matters?"},
+  {say: "That's called sparse attention."},
+  {say: "Older methods, like Big Bird, look at fixed spots."},
+  {say: "Bigger Bird chooses where to look based on what the text says."},
+
+  {kind: "section", say: "How we test it"},
+  {say: "Skipping text is easy. Still understanding it is the hard part."},
+  {say: "So we hide one fact inside a huge document."},
+  {kind: "prompt", say: "Then we ask for it."},
+  {say: "If our shortcut skips that fact, the model can't answer."},
+  {say: "It only counts if the whole 7-digit number is right."},
+  {say: "We compare against the normal model, on the exact same documents."},
+
+  {kind: "section", say: "The road here"},
+  {say: "For months, every shortcut we tried failed on long documents."},
+  {say: "They worked at 65,000 tokens.", sub: "about a 200-page book"},
+  {say: "They broke at 128,000 tokens.", sub: "about 400 pages: the most this model can read"},
+  {say: "Even when we handed the model the answer, it still failed."},
+  {say: "So finding the fact wasn't the real problem."},
+
+  {kind: "img", img: F + "recall_layers.png", say: "We measured how blurry each layer's view of the document gets."},
+  {say: "Small blur in the middle of the document adds up over 32 layers."},
+
+  {kind: "section", say: "Our fix"},
+  {say: "Each token now looks at four things."},
+  {say: "One: the very beginning of the document."},
+  {say: "Two: the nearby text, in full detail."},
+  {say: "Three: a few hundred spots the question cares about."},
+  {say: "Four: the question itself reads everything."},
+  {kind: "img", img: F + "ablations.png", say: "Surprise: looking at fewer spots worked better than more."},
+  {say: "No retraining. Same model, same weights."},
+
+  {kind: "section", say: "Results"},
+  {kind: "num", num: "30 / 30", say: "correct on 128,000-token documents"},
+  {kind: "num", num: "28 / 30", say: "for the normal model", sub: "same documents; that 2-question gap is too small to count as a win"},
+  {kind: "num", num: "1.9×", say: "faster to read the document"},
+  {kind: "img", img: F + "scaling.png", say: "The longer the document, the bigger the speed gap."},
+  {say: "Normal model: double the length, about three times the time."},
+  {say: "Bigger Bird: double the length, two times the time."},
+  {kind: "img", img: F + "loglog.png", say: "That's linear growth, not quadratic."},
+  {kind: "img", img: F + "depth.png", say: "It works wherever the fact is hidden."},
+
+  {kind: "section", say: "Harder tests"},
+  {say: "What if there are lookalike facts, or many answers?"},
+  {kind: "img", img: F + "tasks.png", say: "Up to 65,000 tokens, Bigger Bird matches or beats the normal model."},
+  {kind: "prompt2", say: "Asked for all four numbers, Bigger Bird found all four. The normal model stopped at one."},
+
+  {kind: "section", say: "Looking ahead"},
+  {kind: "img", img: F + "attn_bench.png", say: "At a million tokens, our attention is 18 times faster."},
+  {say: "That's speed only. This model can't read that far yet."},
+
+  {kind: "section", say: "What it can't do yet"},
+  {say: "On essay-like text at 128,000 tokens, it's behind.", sub: "11 out of 24 correct, vs 17 for the normal model"},
+  {say: "These are test puzzles, not real-world questions yet."},
+  {say: "It saves computing time, not memory."},
+
+  {kind: "section", say: "Next"},
+  {say: "Test on real-world questions."},
+  {say: "Close the gap on natural text."},
+  {say: "Try models that can read past 128,000 tokens."},
+
+  {kind: "img", img: A + "bigger_bird_logo.png", say: "Thank you", corner: true},
+];
+
+const PROMPT = `The grass is green. The sky is blue. The sun is yellow. Here we go. …
+<span class="dim">( 60,000 tokens of filler )</span>
+… <span class="needle">The special magic golden-falcon is: 7606921.</span> …
+<span class="dim">( 60,000 more tokens of filler )</span>
+… <span class="q">What is the special magic golden-falcon?</span>`;
+const PROMPT2 = `… <span class="needle">The special magic violet-thistle is: 3201885.</span> …
+… <span class="needle">The special magic violet-thistle is: 7474932.</span> … <span class="dim">(two more)</span>
+<span class="q">What are all values for the special magic violet-thistle?</span>
+
+Bigger Bird:  3201885, 7474932, 1236801, 3579629
+Normal model: 3201885.`;
+
+const deck = document.getElementById("deck");
+S.forEach(s => {
+  const el = document.createElement("section");
+  el.className = "slide " + (s.kind === "photo" ? "img photo" : s.kind || "");
+  let html = "";
+  if (s.corner) html += `<img class="corner" src="${A}utmist_logo.png" alt="UTMIST">`;
+  if (s.img) html += `<img src="${s.img}" alt="">`;
+  if (s.kind === "num") html += `<div class="num">${s.num}</div>`;
+  if (s.kind === "prompt") html += `<div class="prompt">${PROMPT}</div>`;
+  if (s.kind === "prompt2") html += `<div class="prompt">${PROMPT2}</div>`;
+  html += `<p class="say"${s.kind && s.kind.startsWith("prompt") ? ' style="font-size:2.4vw;margin-top:.7em"' : ""}>${s.say}</p>`;
+  if (s.sub) html += `<p class="sub">${s.sub}</p>`;
+  el.innerHTML = html;
+  deck.appendChild(el);
+});
+
+const slides = [...document.querySelectorAll(".slide")];
+let i = Math.max(0, Math.min(slides.length - 1, parseInt(location.hash.slice(1) || "1") - 1));
+const show = () => { slides.forEach((s, j) => s.classList.toggle("active", j === i));
+                     document.getElementById("num").textContent = `${i + 1} / ${slides.length}`; location.hash = i + 1; };
+document.addEventListener("keydown", e => {
+  if (["ArrowRight", "PageDown", " "].includes(e.key)) i = Math.min(slides.length - 1, i + 1);
+  if (["ArrowLeft", "PageUp"].includes(e.key)) i = Math.max(0, i - 1);
   show();
+});
+document.addEventListener("click", e => { i = e.clientX > innerWidth / 2 ? Math.min(slides.length - 1, i + 1) : Math.max(0, i - 1); show(); });
+show();
 </script>
 </body>
 </html>
