@@ -14,8 +14,25 @@ import triton.language as tl
 
 def context_schedule(n, *, middle_min=512, middle_max=2048, middle_ratio=64,
                      window_min=1024, window_max=8192, local_min=128,
-                     local_max=512, globals_min=32, globals_max=64):
-    # Parameters scale from the observed context; budgets remain capped.
+                     local_max=512, globals_min=32, globals_max=64,
+                     budget_scaling="linear", budget_factor=1.0):
+    """Choose a bounded routed-token budget from the current context length.
+
+    sqrt mode allocates a 512-token-quantized budget proportional to sqrt(n),
+    giving O(n sqrt(n)) routed attention work before the configured cap.
+    """
+    if budget_scaling == "sqrt":
+        if budget_factor <= 0:
+            raise ValueError("budget_factor must be positive")
+        total = max(512, math.ceil(1024 * budget_factor * math.sqrt(max(1, n) / 8192) / 512) * 512)
+        glob = min(globals_max, max(globals_min, math.ceil(total * 0.08 / 32) * 32))
+        local = min(local_max, max(local_min, math.ceil(total * 0.22 / 32) * 32))
+        middle = max(32, total - glob - local)
+        wide = min(window_max, max(window_min, math.ceil(n / 16)))
+        return dict(middle=min(middle, n), wide=min(wide, n),
+                    local=min(local, n), globals=min(glob, n))
+    if budget_scaling != "linear":
+        raise ValueError("budget_scaling must be linear or sqrt")
     middle = min(middle_max, max(middle_min, math.ceil(n / middle_ratio)))
     wide = min(window_max, max(window_min, math.ceil(n / 16)))
     local = min(local_max, max(local_min, math.ceil(wide / 16)))
@@ -54,16 +71,19 @@ def _scores(Q, K, MASK, REL, SAL,
     tl.store(SAL + bh * N + pos, tl.where(valid, salience, -float("inf")), pos < N)
 
 
-def content_scores(q, k, qpos, token_mask, num_heads, low_rank_dim):
+def content_scores(q, k, qpos, token_mask, num_heads, low_rank_dim, query_window=1):
     bh, n, d = k.shape
     low = min(d, low_rank_dim)
+    qindex = qpos - (n - q.shape[1])
+    qstart = max(0, qindex + 1 - query_window)
+    qsummary = q[:, qstart:qindex + 1, :low].float().mean(1, keepdim=True).to(q.dtype)
     rel = torch.empty((bh, n), dtype=torch.float32, device=q.device)
     sal = torch.empty_like(rel)
     _scores[(triton.cdiv(n, 64), bh)](
-        q, k, token_mask if token_mask is not None else q, rel, sal,
-        *q.stride(), *k.stride(),
+        qsummary, k, token_mask if token_mask is not None else q, rel, sal,
+        *qsummary.stride(), *k.stride(),
         *(token_mask.stride() if token_mask is not None else (0, 0)),
-        n, d, low, num_heads, qpos, qpos - (n - q.shape[1]), token_mask is not None,
+        n, d, low, num_heads, qpos, 0, token_mask is not None,
         64, triton.next_power_of_2(low), num_warps=4)
     return rel, sal
 
@@ -149,7 +169,7 @@ def _coverage_globals(salience, visible, count):
 def select_bigger_bird(q, k, *, schedule, token_mask=None, num_heads=32,
                       recent_window=128, diversity=0.05, low_rank_dim=128,
                       routing_mode="last_query", route_chunk=1024,
-                      schedule_kwargs=None):
+                      schedule_kwargs=None, query_window=1, max_route_groups=8):
     """Return [BH,groups,K] unique indices and the routing group width.
 
     last_query reproduces the existing full-context routing convention, which
@@ -163,18 +183,22 @@ def select_bigger_bird(q, k, *, schedule, token_mask=None, num_heads=32,
         if q.shape[1] != 1:
             raise ValueError("Cached routing currently supports one query token at a time")
         routing_mode = "last_query"
-    if routing_mode not in ("last_query", "causal_chunk"):
-        raise ValueError("routing_mode must be last_query or causal_chunk")
-    chunk = max(64, triton.next_power_of_2(n)) if routing_mode == "last_query" else route_chunk
+    if routing_mode not in ("last_query", "causal_chunk", "bounded_prefix"):
+        raise ValueError("unsupported Bigger Bird routing mode")
+    if routing_mode == "bounded_prefix":
+        chunk = max(64, triton.next_power_of_2(triton.cdiv(n, max_route_groups)))
+    else:
+        chunk = max(64, triton.next_power_of_2(n)) if routing_mode == "last_query" else route_chunk
     if chunk % 32:
         raise ValueError("route_chunk must be a multiple of 32")
     rows = []
     max_selected = schedule["middle"] + schedule["local"] + schedule["globals"]
     for start in range(0, n, chunk):
         qpos = n - 1 if routing_mode == "last_query" else start
-        rel, sal = content_scores(q, k, qpos, token_mask, num_heads, low_rank_dim)
+        rel, sal = content_scores(q, k, qpos, token_mask, num_heads,
+                                  low_rank_dim, query_window=query_window)
         visible = qpos + 1
-        current = context_schedule(visible, **(schedule_kwargs or {})) if routing_mode == "causal_chunk" else schedule
+        current = context_schedule(visible, **(schedule_kwargs or {})) if routing_mode in ("causal_chunk", "bounded_prefix") else schedule
         wide_start = max(0, visible - current["wide"])
         recent_start = max(0, visible - recent_window)
         # Local filtering inside a growing neighborhood, excluding the exact

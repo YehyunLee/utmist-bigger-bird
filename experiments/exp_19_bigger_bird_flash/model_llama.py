@@ -20,7 +20,8 @@ class BiggerBirdFlashAttention(LlamaSparseAttention):
                  globals_max=64, recent_window=128, diversity=0.05,
                  low_rank_dim=128, routing_mode="last_query",
                  route_chunk=1024, use_triton=True, block_m=64,
-                 block_n=64):
+                 block_n=64, budget_scaling="linear", budget_factor=1.0,
+                 query_window=1, max_route_groups=8):
         super().__init__(base_attn)
         if not use_triton:
             raise ValueError("This experiment requires the Triton FlashAttention backend")
@@ -30,14 +31,23 @@ class BiggerBirdFlashAttention(LlamaSparseAttention):
             raise ValueError("All context/budget parameters must be positive")
         if middle_min > middle_max or window_min > window_max or local_min > local_max or globals_min > globals_max:
             raise ValueError("Minimum budget/window values must not exceed maxima")
-        if diversity < 0 or routing_mode not in ("last_query", "causal_chunk"):
+        if diversity < 0 or routing_mode not in ("last_query", "causal_chunk", "bounded_prefix"):
             raise ValueError("Invalid diversity or routing mode")
+        if query_window < 1 or max_route_groups < 1:
+            raise ValueError("query_window and max_route_groups must be positive")
+        if budget_scaling not in ("linear", "sqrt") or budget_factor <= 0:
+            raise ValueError("Invalid budget scaling configuration")
         if routing_mode == "causal_chunk" and route_chunk % block_m:
             raise ValueError("Causal route chunks must align with the query tile size")
         self.schedule_kwargs = dict(middle_min=middle_min, middle_max=middle_max,
             middle_ratio=middle_ratio, window_min=window_min, window_max=window_max,
             local_min=local_min, local_max=local_max,
-            globals_min=globals_min, globals_max=globals_max)
+            globals_min=globals_min, globals_max=globals_max,
+            budget_scaling=budget_scaling, budget_factor=budget_factor)
+        self.budget_scaling = budget_scaling
+        self.budget_factor = budget_factor
+        self.query_window = query_window
+        self.max_route_groups = max_route_groups
         self.recent_window = recent_window
         self.diversity = diversity
         self.low_rank_dim = low_rank_dim
@@ -83,10 +93,13 @@ class BiggerBirdFlashAttention(LlamaSparseAttention):
             raise ValueError("Bigger Bird v2 currently supports causal inference only")
         n = K.shape[1]
         decode = Q.shape[1] < n
-        anchor = ((n - 1) // self.route_chunk) * self.route_chunk
-        schedule_n = anchor + 1 if self.routing_mode == "causal_chunk" else n
+        route_quantum = self.route_chunk
+        if self.routing_mode == "bounded_prefix":
+            route_quantum = max(64, 1 << ((n + self.max_route_groups - 1) // self.max_route_groups - 1).bit_length())
+        anchor = ((n - 1) // route_quantum) * route_quantum
+        schedule_n = anchor + 1 if self.routing_mode in ("causal_chunk", "bounded_prefix") else n
         actual_schedule = context_schedule(schedule_n, **self.schedule_kwargs)
-        reused = (decode and self.routing_mode == "causal_chunk"
+        reused = (decode and self.routing_mode in ("causal_chunk", "bounded_prefix")
                   and self._cached_anchor == anchor and self._cached_routes is not None)
         if reused:
             indices = self._cached_routes
@@ -97,12 +110,15 @@ class BiggerBirdFlashAttention(LlamaSparseAttention):
                 token_mask=token_mask, num_heads=num_heads,
                 recent_window=self.recent_window, diversity=self.diversity,
                 low_rank_dim=self.low_rank_dim, routing_mode=self.routing_mode,
-                route_chunk=self.route_chunk, schedule_kwargs=self.schedule_kwargs)
+                route_chunk=self.route_chunk, schedule_kwargs=self.schedule_kwargs,
+                query_window=self.query_window, max_route_groups=self.max_route_groups)
         self._cached_routes = indices[:, -1:, :].detach().clone()
         self._cached_anchor = anchor
         self.last_diagnostics = dict(actual_schedule, recent_window=self.recent_window,
             routing_mode=self.routing_mode, route_chunk=chunk, configured_route_chunk=self.route_chunk,
-            prefix_invariant=self.routing_mode == "causal_chunk",
+            budget_scaling=self.budget_scaling, budget_factor=self.budget_factor,
+            query_window=self.query_window, max_route_groups=self.max_route_groups,
+            prefix_invariant=self.routing_mode in ("causal_chunk", "bounded_prefix"),
             backend="triton_sparse_flash", selection="content_globals+local_mmr+long_range_mmr",
             route_slots=indices.shape[-1], block_m=self.block_m, block_n=self.block_n)
         self.last_diagnostics.update(query_tokens=Q.shape[1], source_tokens=n,
