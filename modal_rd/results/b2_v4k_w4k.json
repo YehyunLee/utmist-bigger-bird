@@ -1,0 +1,202 @@
+{
+  "arm": "vs",
+  "attn": {
+    "sink": 64,
+    "window": 4096,
+    "vertical": 4096
+  },
+  "dense_layers": [],
+  "gpu": "NVIDIA H100 80GB HBM3",
+  "torch": "2.13.0+cu130",
+  "max_new": 10,
+  "cache": true,
+  "warm": "all",
+  "runs": [
+    {
+      "bytes": 512000,
+      "depth": 0.5,
+      "n": 6,
+      "exact": 1,
+      "last_digit": 1,
+      "mean_prefill_s": 5.795378336588541,
+      "mean_tokens": 127544.83333333333,
+      "peak_gb": 48.095451136,
+      "examples": [
+        {
+          "idx": 0,
+          "tokens": 127633,
+          "token_sha256": "6109c5f302a15768792beaa90101088306ce65e7ad955979b95eab35bab1093d",
+          "answer": "7606921",
+          "generated": " How vexingly quick daft zebras jump.",
+          "generated_ids": [
+            2650,
+            84265,
+            11559,
+            4062,
+            3067,
+            728,
+            14017,
+            71861,
+            7940,
+            13
+          ],
+          "exact": false,
+          "last_digit": false,
+          "prefill_s": 5.80549609375,
+          "wall_s": 6.0556410810000045,
+          "forwards": 10,
+          "peak_gb": 48.070162432,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.2255859375,
+            "slots": 4096
+          }
+        },
+        {
+          "idx": 1,
+          "tokens": 127734,
+          "token_sha256": "8b311f2838967ab75437bb456aeb2c3e0bf4ba29f28bfcabcd7559851e33b7a5",
+          "answer": "8327462",
+          "generated": " How vexingly quick daft zebras jump.",
+          "generated_ids": [
+            2650,
+            84265,
+            11559,
+            4062,
+            3067,
+            728,
+            14017,
+            71861,
+            7940,
+            13
+          ],
+          "exact": false,
+          "last_digit": false,
+          "prefill_s": 5.7801474609375,
+          "wall_s": 6.030358651,
+          "forwards": 10,
+          "peak_gb": 48.095451136,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.185546875,
+            "slots": 4096
+          }
+        },
+        {
+          "idx": 2,
+          "tokens": 127606,
+          "token_sha256": "fa641b562f0a7fd7647d4b02ecec642d345521160ccc7de97c94d98180e816cf",
+          "answer": "2137837",
+          "generated": " 2137837. All questions asked by five",
+          "generated_ids": [
+            220,
+            11702,
+            26008,
+            22,
+            13,
+            2052,
+            4860,
+            4691,
+            555,
+            4330
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 5.78973779296875,
+          "wall_s": 6.041095864999988,
+          "forwards": 10,
+          "peak_gb": 48.063399936,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.3408203125,
+            "slots": 4096
+          }
+        },
+        {
+          "idx": 3,
+          "tokens": 127219,
+          "token_sha256": "b54ba95895462694645a8f046a2b44e26b1481a79451e3c2f59e9fd83b5e966a",
+          "answer": "2627353",
+          "generated": " How vexingly quick daft zebras jump.",
+          "generated_ids": [
+            2650,
+            84265,
+            11559,
+            4062,
+            3067,
+            728,
+            14017,
+            71861,
+            7940,
+            13
+          ],
+          "exact": false,
+          "last_digit": false,
+          "prefill_s": 5.80336572265625,
+          "wall_s": 6.055087468000011,
+          "forwards": 10,
+          "peak_gb": 47.966495744,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.2802734375,
+            "slots": 4096
+          }
+        },
+        {
+          "idx": 4,
+          "tokens": 127642,
+          "token_sha256": "5bfc1c803c36370261ea0cb9a45893bdf7e1f59e3c80ee6411268150a74685a1",
+          "answer": "4316377",
+          "generated": " How vexingly quick daft zebras jump.",
+          "generated_ids": [
+            2650,
+            84265,
+            11559,
+            4062,
+            3067,
+            728,
+            14017,
+            71861,
+            7940,
+            13
+          ],
+          "exact": false,
+          "last_digit": false,
+          "prefill_s": 5.77517333984375,
+          "wall_s": 6.026475409999989,
+          "forwards": 10,
+          "peak_gb": 48.072415232,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.3056640625,
+            "slots": 4096
+          }
+        },
+        {
+          "idx": 5,
+          "tokens": 127435,
+          "token_sha256": "a607daf842c1d27ed57b299edd375b9c2cee0e484ef451cb474a5960303d6590",
+          "answer": "9270071",
+          "generated": " How vexingly quick daft zebras jump.",
+          "generated_ids": [
+            2650,
+            84265,
+            11559,
+            4062,
+            3067,
+            728,
+            14017,
+            71861,
+            7940,
+            13
+          ],
+          "exact": false,
+          "last_digit": false,
+          "prefill_s": 5.818349609375,
+          "wall_s": 6.072224057999989,
+          "forwards": 10,
+          "peak_gb": 48.020583424,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.25390625,
+            "slots": 4096
+          }
+        }
+      ]
+    }
+  ]
+}

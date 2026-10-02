@@ -1,0 +1,388 @@
+{
+  "arm": "vs",
+  "attn": {
+    "sink": 64,
+    "window": 4096,
+    "vertical": 2048
+  },
+  "dense_layers": [],
+  "gpu": "NVIDIA H100 80GB HBM3",
+  "torch": "2.13.0+cu130",
+  "max_new": 10,
+  "cache": true,
+  "warm": "all",
+  "runs": [
+    {
+      "bytes": 261000,
+      "depth": 0.5,
+      "n": 6,
+      "exact": 6,
+      "last_digit": 6,
+      "mean_prefill_s": 2.7083322753906245,
+      "mean_tokens": 65087.666666666664,
+      "peak_gb": 32.434059264,
+      "examples": [
+        {
+          "idx": 0,
+          "tokens": 65034,
+          "token_sha256": "60e19a00d428f9e6d3695ec21fb6a5863770feeb6a1e8a62e636eb0d5cb6cce2",
+          "answer": "8311742",
+          "generated": " 8311742. This is a code that",
+          "generated_ids": [
+            220,
+            25009,
+            11771,
+            17,
+            13,
+            1115,
+            374,
+            264,
+            2082,
+            430
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 2.70860791015625,
+          "wall_s": 2.895231537000001,
+          "forwards": 10,
+          "peak_gb": 32.386983936,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.5517578125,
+            "slots": 2048
+          }
+        },
+        {
+          "idx": 1,
+          "tokens": 65193,
+          "token_sha256": "c4e83dfbc9ca3eadf182bcab6d7bdbdd8b0a7e6c7e916caebd40d6f123f78013",
+          "answer": "1560400",
+          "generated": " 1560400.\n\n**Final Answer**\nThe",
+          "generated_ids": [
+            220,
+            10132,
+            12505,
+            15,
+            382,
+            334,
+            19918,
+            22559,
+            1035,
+            791
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 2.715834228515625,
+          "wall_s": 2.9021249959999977,
+          "forwards": 10,
+          "peak_gb": 32.426797056,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.5498046875,
+            "slots": 2048
+          }
+        },
+        {
+          "idx": 2,
+          "tokens": 65186,
+          "token_sha256": "dfdb5be53febb1cbdef1014094e304bbb2a6690d0c246c90e8e1297cf4b11511",
+          "answer": "7400577",
+          "generated": " 7400577.\n\n**Final Answer**\nThe",
+          "generated_ids": [
+            220,
+            21112,
+            26866,
+            22,
+            382,
+            334,
+            19918,
+            22559,
+            1035,
+            791
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 2.711995361328125,
+          "wall_s": 2.889917897999993,
+          "forwards": 10,
+          "peak_gb": 32.425043968,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.583984375,
+            "slots": 2048
+          }
+        },
+        {
+          "idx": 3,
+          "tokens": 64962,
+          "token_sha256": "166d03ccef039791fa3e779feb2f0c263391662df4eaff36d79d04f26425a028",
+          "answer": "1717772",
+          "generated": " 1717772.  box with five dozen",
+          "generated_ids": [
+            220,
+            11123,
+            15831,
+            17,
+            13,
+            220,
+            3830,
+            449,
+            4330,
+            21030
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 2.695392333984375,
+          "wall_s": 2.8745489650000025,
+          "forwards": 10,
+          "peak_gb": 32.368955392,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.5458984375,
+            "slots": 2048
+          }
+        },
+        {
+          "idx": 4,
+          "tokens": 65222,
+          "token_sha256": "9b25c8c2cd12aafe26a6364099125c73a104066329540be855ff64b0f5073c58",
+          "answer": "7665992",
+          "generated": " 7665992.\n\n**Final Answer**\nThe",
+          "generated_ids": [
+            220,
+            25358,
+            21944,
+            17,
+            382,
+            334,
+            19918,
+            22559,
+            1035,
+            791
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 2.708151611328125,
+          "wall_s": 2.8874285339999943,
+          "forwards": 10,
+          "peak_gb": 32.434059264,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.5185546875,
+            "slots": 2048
+          }
+        },
+        {
+          "idx": 5,
+          "tokens": 64929,
+          "token_sha256": "06bdccd2c653dea10c7cf96d720dfb1815cec9aaf7337df035ecb5861e424def",
+          "answer": "8434792",
+          "generated": " 8434792. maze the judge.\n\nOkay",
+          "generated_ids": [
+            220,
+            23996,
+            21848,
+            17,
+            13,
+            36196,
+            279,
+            11913,
+            382,
+            33413
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 2.71001220703125,
+          "wall_s": 2.8929408759999973,
+          "forwards": 10,
+          "peak_gb": 32.360691712,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.517578125,
+            "slots": 2048
+          }
+        }
+      ]
+    },
+    {
+      "bytes": 512000,
+      "depth": 0.5,
+      "n": 6,
+      "exact": 2,
+      "last_digit": 2,
+      "mean_prefill_s": 5.31281396484375,
+      "mean_tokens": 127544.83333333333,
+      "peak_gb": 48.087062528,
+      "examples": [
+        {
+          "idx": 0,
+          "tokens": 127633,
+          "token_sha256": "6109c5f302a15768792beaa90101088306ce65e7ad955979b95eab35bab1093d",
+          "answer": "7606921",
+          "generated": " How vexingly quick daft zebras jump.",
+          "generated_ids": [
+            2650,
+            84265,
+            11559,
+            4062,
+            3067,
+            728,
+            14017,
+            71861,
+            7940,
+            13
+          ],
+          "exact": false,
+          "last_digit": false,
+          "prefill_s": 5.32315283203125,
+          "wall_s": 5.5748127279999835,
+          "forwards": 10,
+          "peak_gb": 48.061773824,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.1767578125,
+            "slots": 2048
+          }
+        },
+        {
+          "idx": 1,
+          "tokens": 127734,
+          "token_sha256": "8b311f2838967ab75437bb456aeb2c3e0bf4ba29f28bfcabcd7559851e33b7a5",
+          "answer": "8327462",
+          "generated": " How vexingly quick daft zebras jump.",
+          "generated_ids": [
+            2650,
+            84265,
+            11559,
+            4062,
+            3067,
+            728,
+            14017,
+            71861,
+            7940,
+            13
+          ],
+          "exact": false,
+          "last_digit": false,
+          "prefill_s": 5.30560400390625,
+          "wall_s": 5.557548042999997,
+          "forwards": 10,
+          "peak_gb": 48.087062528,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.1962890625,
+            "slots": 2048
+          }
+        },
+        {
+          "idx": 2,
+          "tokens": 127606,
+          "token_sha256": "fa641b562f0a7fd7647d4b02ecec642d345521160ccc7de97c94d98180e816cf",
+          "answer": "2137837",
+          "generated": " 2137837.\n\nWait, bad nymph,",
+          "generated_ids": [
+            220,
+            11702,
+            26008,
+            22,
+            382,
+            14524,
+            11,
+            3958,
+            99401,
+            11
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 5.30124072265625,
+          "wall_s": 5.552247166000001,
+          "forwards": 10,
+          "peak_gb": 48.055011328,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.283203125,
+            "slots": 2048
+          }
+        },
+        {
+          "idx": 3,
+          "tokens": 127219,
+          "token_sha256": "b54ba95895462694645a8f046a2b44e26b1481a79451e3c2f59e9fd83b5e966a",
+          "answer": "2627353",
+          "generated": " How vexingly quick daft zebras jump.",
+          "generated_ids": [
+            2650,
+            84265,
+            11559,
+            4062,
+            3067,
+            728,
+            14017,
+            71861,
+            7940,
+            13
+          ],
+          "exact": false,
+          "last_digit": false,
+          "prefill_s": 5.3311748046875,
+          "wall_s": 5.58749528300001,
+          "forwards": 10,
+          "peak_gb": 47.958107136,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.259765625,
+            "slots": 2048
+          }
+        },
+        {
+          "idx": 4,
+          "tokens": 127642,
+          "token_sha256": "5bfc1c803c36370261ea0cb9a45893bdf7e1f59e3c80ee6411268150a74685a1",
+          "answer": "4316377",
+          "generated": " 4316377. How vexingly quick da",
+          "generated_ids": [
+            220,
+            19852,
+            21788,
+            22,
+            13,
+            2650,
+            84265,
+            11559,
+            4062,
+            3067
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 5.29628564453125,
+          "wall_s": 5.547633079999997,
+          "forwards": 10,
+          "peak_gb": 48.064026624,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.2607421875,
+            "slots": 2048
+          }
+        },
+        {
+          "idx": 5,
+          "tokens": 127435,
+          "token_sha256": "a607daf842c1d27ed57b299edd375b9c2cee0e484ef451cb474a5960303d6590",
+          "answer": "9270071",
+          "generated": " How vexingly quick daft zebras jump.",
+          "generated_ids": [
+            2650,
+            84265,
+            11559,
+            4062,
+            3067,
+            728,
+            14017,
+            71861,
+            7940,
+            13
+          ],
+          "exact": false,
+          "last_digit": false,
+          "prefill_s": 5.31942578125,
+          "wall_s": 5.571395281000008,
+          "forwards": 10,
+          "peak_gb": 48.012194816,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.2568359375,
+            "slots": 2048
+          }
+        }
+      ]
+    }
+  ]
+}

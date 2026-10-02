@@ -1,0 +1,895 @@
+{
+  "arm": "vs",
+  "attn": {
+    "sink": 64,
+    "window": 16384,
+    "vertical": 512,
+    "exact_tail": 256
+  },
+  "dense_layers": [],
+  "gpu": "NVIDIA H100 80GB HBM3",
+  "torch": "2.13.0+cu130",
+  "max_new": 10,
+  "cache": true,
+  "warm": "all",
+  "runs": [
+    {
+      "bytes": 32000,
+      "depth": 0.5,
+      "n": 6,
+      "exact": 6,
+      "last_digit": 6,
+      "mean_prefill_s": 0.27110052490234376,
+      "mean_tokens": 7965.0,
+      "peak_gb": 18.09227264,
+      "examples": [
+        {
+          "idx": 0,
+          "tokens": 7967,
+          "token_sha256": "5c73b2c94af8baaf7a3e99786260c9488e65a7e559e62945818d0a46fa5e941b",
+          "answer": "4364591",
+          "generated": " 4364591. ive dozen liquor jugs",
+          "generated_ids": [
+            220,
+            21299,
+            22094,
+            16,
+            13,
+            99677,
+            21030,
+            45304,
+            503,
+            13602
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 0.27178707885742187,
+          "wall_s": 0.40048326899999864,
+          "forwards": 10,
+          "peak_gb": 18.089018368,
+          "routes": null
+        },
+        {
+          "idx": 1,
+          "tokens": 7980,
+          "token_sha256": "5e4501f9d5e75d4d0a19ad904cf378ead5c549b63dcbcf665647cc25f22b1603",
+          "answer": "1357301",
+          "generated": " 1357301.\n\nAlright, so I've",
+          "generated_ids": [
+            220,
+            8878,
+            20785,
+            16,
+            382,
+            72586,
+            11,
+            779,
+            358,
+            3077
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 0.2714569702148438,
+          "wall_s": 0.3967455560000026,
+          "forwards": 10,
+          "peak_gb": 18.09227264,
+          "routes": null
+        },
+        {
+          "idx": 2,
+          "tokens": 7956,
+          "token_sha256": "c6c65450c95d9bc23190fd696aa5fd2b4c8a8ea88482444162e46381c08e2159",
+          "answer": "7218387",
+          "generated": " 7218387.\n\n**Final Answer**\nThe",
+          "generated_ids": [
+            220,
+            20873,
+            24250,
+            22,
+            382,
+            334,
+            19918,
+            22559,
+            1035,
+            791
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 0.27125830078125,
+          "wall_s": 0.3985731949999973,
+          "forwards": 10,
+          "peak_gb": 18.086263808,
+          "routes": null
+        },
+        {
+          "idx": 3,
+          "tokens": 7950,
+          "token_sha256": "77d93787702af03fb4400d19eb4208e930e1a76a0e1e881830f0ea60ccb5a540",
+          "answer": "1598671",
+          "generated": " 1598671.\n\nOkay, so I'm",
+          "generated_ids": [
+            220,
+            11068,
+            26013,
+            16,
+            382,
+            33413,
+            11,
+            779,
+            358,
+            2846
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 0.2705123596191406,
+          "wall_s": 0.39861889300000186,
+          "forwards": 10,
+          "peak_gb": 18.0847616,
+          "routes": null
+        },
+        {
+          "idx": 4,
+          "tokens": 7978,
+          "token_sha256": "0d7777df68ffa1ddf2fc379d2ed87f51ba08e9df90803db602ddeb78d9f56c66",
+          "answer": "2858203",
+          "generated": " 2858203. w vexingly quick da",
+          "generated_ids": [
+            220,
+            15935,
+            18248,
+            18,
+            13,
+            289,
+            84265,
+            11559,
+            4062,
+            3067
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 0.2710625,
+          "wall_s": 0.3933567840000016,
+          "forwards": 10,
+          "peak_gb": 18.091771904,
+          "routes": null
+        },
+        {
+          "idx": 5,
+          "tokens": 7959,
+          "token_sha256": "32f2ba21e8be862ae640a6003d554703ca744e99c2b92565ddd05a980d8740fa",
+          "answer": "8199989",
+          "generated": " 8199989. uickly. \n\n",
+          "generated_ids": [
+            220,
+            18831,
+            19416,
+            24,
+            13,
+            577,
+            875,
+            398,
+            13,
+            4815
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 0.2705259399414062,
+          "wall_s": 0.4067406929999997,
+          "forwards": 10,
+          "peak_gb": 18.087015424,
+          "routes": null
+        }
+      ]
+    },
+    {
+      "bytes": 64000,
+      "depth": 0.5,
+      "n": 6,
+      "exact": 5,
+      "last_digit": 5,
+      "mean_prefill_s": 0.6332174072265625,
+      "mean_tokens": 15962.666666666666,
+      "peak_gb": 20.112750592,
+      "examples": [
+        {
+          "idx": 0,
+          "tokens": 15943,
+          "token_sha256": "c8293710f4c27b1018b840ca2119ca1e508adb5c398dd65f4a93fe9c1cbc6ba5",
+          "answer": "3135293",
+          "generated": " 3135293.\n\n**Final Answer**\nThe",
+          "generated_ids": [
+            220,
+            15231,
+            21618,
+            18,
+            382,
+            334,
+            19918,
+            22559,
+            1035,
+            791
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 0.6318445434570312,
+          "wall_s": 0.7655754900000034,
+          "forwards": 10,
+          "peak_gb": 20.086209536,
+          "routes": null
+        },
+        {
+          "idx": 1,
+          "tokens": 15914,
+          "token_sha256": "fbbf304572325ed8c993f1f7adf2fb597878fa8855958891f0ea794ce7cdbbf3",
+          "answer": "1602175",
+          "generated": " xt prize. Jackdaws love my big sph",
+          "generated_ids": [
+            63490,
+            22643,
+            13,
+            7762,
+            67,
+            8805,
+            3021,
+            856,
+            2466,
+            42822
+          ],
+          "exact": false,
+          "last_digit": false,
+          "prefill_s": 0.6221643676757812,
+          "wall_s": 0.7619024159999981,
+          "forwards": 10,
+          "peak_gb": 20.078946304,
+          "routes": null
+        },
+        {
+          "idx": 2,
+          "tokens": 15936,
+          "token_sha256": "7e5c6d8e23f0cc4441dc290219e784b55fa0c1a45836ee0cb9b25d7e71bd24b0",
+          "answer": "4738900",
+          "generated": " 4738900.\n\nOkay, so I'm",
+          "generated_ids": [
+            220,
+            21505,
+            21381,
+            15,
+            382,
+            33413,
+            11,
+            779,
+            358,
+            2846
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 0.6348599243164063,
+          "wall_s": 0.7682673819999977,
+          "forwards": 10,
+          "peak_gb": 20.0844544,
+          "routes": null
+        },
+        {
+          "idx": 3,
+          "tokens": 16016,
+          "token_sha256": "66b638ad3047d85beea5a58638730d4c54705cfda49aa9a6f7461a8532c5d6fa",
+          "answer": "3479645",
+          "generated": " 3479645.\n\n**Final Answer**\nThe",
+          "generated_ids": [
+            220,
+            17678,
+            26281,
+            20,
+            382,
+            334,
+            19918,
+            22559,
+            1035,
+            791
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 0.6398614501953125,
+          "wall_s": 0.7958499719999992,
+          "forwards": 10,
+          "peak_gb": 20.104487936,
+          "routes": null
+        },
+        {
+          "idx": 4,
+          "tokens": 15918,
+          "token_sha256": "98f233124c15fbcdc34657715379bec75976abd073c8e160b1eb57a27191e187",
+          "answer": "5860700",
+          "generated": " 5860700.\n\n**Final Answer**\nThe",
+          "generated_ids": [
+            220,
+            22345,
+            17819,
+            15,
+            382,
+            334,
+            19918,
+            22559,
+            1035,
+            791
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 0.6320933837890625,
+          "wall_s": 0.7693487479999987,
+          "forwards": 10,
+          "peak_gb": 20.079947776,
+          "routes": null
+        },
+        {
+          "idx": 5,
+          "tokens": 16049,
+          "token_sha256": "c033b9c3402ac3643d873f1b4abe6dfcef101ba7196b5250c33addf55718ee3d",
+          "answer": "2784594",
+          "generated": " 2784594.\n\n**Final Answer**\nThe",
+          "generated_ids": [
+            220,
+            16949,
+            22094,
+            19,
+            382,
+            334,
+            19918,
+            22559,
+            1035,
+            791
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 0.6384807739257813,
+          "wall_s": 0.7699164289999985,
+          "forwards": 10,
+          "peak_gb": 20.112750592,
+          "routes": null
+        }
+      ]
+    },
+    {
+      "bytes": 130000,
+      "depth": 0.5,
+      "n": 6,
+      "exact": 6,
+      "last_digit": 6,
+      "mean_prefill_s": 2.1337983805338543,
+      "mean_tokens": 32449.333333333332,
+      "peak_gb": 26.27715328,
+      "examples": [
+        {
+          "idx": 0,
+          "tokens": 32334,
+          "token_sha256": "b37ac7076c68bccfebedb161d19f682d9db5dd6ad8b164061dda00309889e531",
+          "answer": "4571230",
+          "generated": " 4571230.",
+          "generated_ids": [
+            220,
+            21675,
+            4513,
+            15,
+            13,
+            128001
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 2.13256640625,
+          "wall_s": 2.210686865999989,
+          "forwards": 6,
+          "peak_gb": 26.212443136,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.0,
+            "slots": 512
+          }
+        },
+        {
+          "idx": 1,
+          "tokens": 32460,
+          "token_sha256": "3cae859ea819c4283078098b1b67048f122c55db41288acd99957c849c012701",
+          "answer": "5688162",
+          "generated": " 5688162.\n\n**Final Answer**\nThe",
+          "generated_ids": [
+            220,
+            22049,
+            23713,
+            17,
+            382,
+            334,
+            19918,
+            22559,
+            1035,
+            791
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 2.125011962890625,
+          "wall_s": 2.261525183999993,
+          "forwards": 10,
+          "peak_gb": 26.251831808,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.0,
+            "slots": 512
+          }
+        },
+        {
+          "idx": 2,
+          "tokens": 32412,
+          "token_sha256": "fb033a5dc62476a2fdf6e1929c333bb6a7cae95ed016568d8f2e33013be01f4d",
+          "answer": "9741915",
+          "generated": " 9741915. \n\nThe special magic ruby",
+          "generated_ids": [
+            220,
+            26007,
+            7529,
+            20,
+            13,
+            4815,
+            791,
+            3361,
+            11204,
+            46307
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 2.136230224609375,
+          "wall_s": 2.272373895000001,
+          "forwards": 10,
+          "peak_gb": 26.236826112,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.0,
+            "slots": 512
+          }
+        },
+        {
+          "idx": 3,
+          "tokens": 32541,
+          "token_sha256": "33194e7a1da4947769824b99fbc67f6889d8b78cc134ef3f600c8099dba4fb33",
+          "answer": "7727711",
+          "generated": " 7727711. \n\nThe special magic ruby",
+          "generated_ids": [
+            220,
+            23624,
+            24876,
+            16,
+            13,
+            4815,
+            791,
+            3361,
+            11204,
+            46307
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 2.1337138671875,
+          "wall_s": 2.2785069760000027,
+          "forwards": 10,
+          "peak_gb": 26.27715328,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.0,
+            "slots": 512
+          }
+        },
+        {
+          "idx": 4,
+          "tokens": 32447,
+          "token_sha256": "51ff16506257d943f86ea2014c275c81c9de8f1431df91e7c015dd46c837d2cb",
+          "answer": "2327928",
+          "generated": " 2327928. ex dwarf. Waltz",
+          "generated_ids": [
+            220,
+            12338,
+            24763,
+            23,
+            13,
+            506,
+            50561,
+            13,
+            36367,
+            89
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 2.14609033203125,
+          "wall_s": 2.2967630619999966,
+          "forwards": 10,
+          "peak_gb": 26.24776704,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.0,
+            "slots": 512
+          }
+        },
+        {
+          "idx": 5,
+          "tokens": 32502,
+          "token_sha256": "6cacc2d6ebd892218644b15d0de1de90ec96681881d1d10d06e6c3f716faa4d8",
+          "answer": "3750511",
+          "generated": " 3750511.\n\nOkay, so I'm",
+          "generated_ids": [
+            220,
+            12935,
+            23545,
+            16,
+            382,
+            33413,
+            11,
+            779,
+            358,
+            2846
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 2.129177490234375,
+          "wall_s": 2.273559173999999,
+          "forwards": 10,
+          "peak_gb": 26.26496,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.0,
+            "slots": 512
+          }
+        }
+      ]
+    },
+    {
+      "bytes": 261000,
+      "depth": 0.5,
+      "n": 6,
+      "exact": 6,
+      "last_digit": 6,
+      "mean_prefill_s": 4.351126139322917,
+      "mean_tokens": 65087.666666666664,
+      "peak_gb": 36.493495296,
+      "examples": [
+        {
+          "idx": 0,
+          "tokens": 65034,
+          "token_sha256": "60e19a00d428f9e6d3695ec21fb6a5863770feeb6a1e8a62e636eb0d5cb6cce2",
+          "answer": "8311742",
+          "generated": " 8311742.",
+          "generated_ids": [
+            220,
+            25009,
+            11771,
+            17,
+            13,
+            128001
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 4.34541357421875,
+          "wall_s": 4.44583123999999,
+          "forwards": 6,
+          "peak_gb": 36.434724864,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.556640625,
+            "slots": 512
+          }
+        },
+        {
+          "idx": 1,
+          "tokens": 65193,
+          "token_sha256": "c4e83dfbc9ca3eadf182bcab6d7bdbdd8b0a7e6c7e916caebd40d6f123f78013",
+          "answer": "1560400",
+          "generated": " 1560400.\n\n**Final Answer**\nThe",
+          "generated_ids": [
+            220,
+            10132,
+            12505,
+            15,
+            382,
+            334,
+            19918,
+            22559,
+            1035,
+            791
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 4.3658681640625,
+          "wall_s": 4.542804091000022,
+          "forwards": 10,
+          "peak_gb": 36.484429312,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.5478515625,
+            "slots": 512
+          }
+        },
+        {
+          "idx": 2,
+          "tokens": 65186,
+          "token_sha256": "dfdb5be53febb1cbdef1014094e304bbb2a6690d0c246c90e8e1297cf4b11511",
+          "answer": "7400577",
+          "generated": " 7400577.",
+          "generated_ids": [
+            220,
+            21112,
+            26866,
+            22,
+            13,
+            128001
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 4.35367333984375,
+          "wall_s": 4.454163287,
+          "forwards": 6,
+          "peak_gb": 36.482240512,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.595703125,
+            "slots": 512
+          }
+        },
+        {
+          "idx": 3,
+          "tokens": 64962,
+          "token_sha256": "166d03ccef039791fa3e779feb2f0c263391662df4eaff36d79d04f26425a028",
+          "answer": "1717772",
+          "generated": " 1717772. 1717772.",
+          "generated_ids": [
+            220,
+            11123,
+            15831,
+            17,
+            13,
+            220,
+            11123,
+            15831,
+            17,
+            13
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 4.343146484375,
+          "wall_s": 4.520588520000018,
+          "forwards": 10,
+          "peak_gb": 36.412217344,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.53125,
+            "slots": 512
+          }
+        },
+        {
+          "idx": 4,
+          "tokens": 65222,
+          "token_sha256": "9b25c8c2cd12aafe26a6364099125c73a104066329540be855ff64b0f5073c58",
+          "answer": "7665992",
+          "generated": " 7665992. x jumps over the lazy",
+          "generated_ids": [
+            220,
+            25358,
+            21944,
+            17,
+            13,
+            865,
+            35308,
+            927,
+            279,
+            16053
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 4.354451171875,
+          "wall_s": 4.531885217999985,
+          "forwards": 10,
+          "peak_gb": 36.493495296,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.517578125,
+            "slots": 512
+          }
+        },
+        {
+          "idx": 5,
+          "tokens": 64929,
+          "token_sha256": "06bdccd2c653dea10c7cf96d720dfb1815cec9aaf7337df035ecb5861e424def",
+          "answer": "8434792",
+          "generated": " 8434792. maze the judge.\n\n**",
+          "generated_ids": [
+            220,
+            23996,
+            21848,
+            17,
+            13,
+            36196,
+            279,
+            11913,
+            382,
+            334
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 4.3442041015625,
+          "wall_s": 4.520614556999988,
+          "forwards": 10,
+          "peak_gb": 36.401901056,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.541015625,
+            "slots": 512
+          }
+        }
+      ]
+    },
+    {
+      "bytes": 512000,
+      "depth": 0.5,
+      "n": 6,
+      "exact": 6,
+      "last_digit": 6,
+      "mean_prefill_s": 8.501815429687502,
+      "mean_tokens": 127544.83333333333,
+      "peak_gb": 56.035245056,
+      "examples": [
+        {
+          "idx": 0,
+          "tokens": 127633,
+          "token_sha256": "6109c5f302a15768792beaa90101088306ce65e7ad955979b95eab35bab1093d",
+          "answer": "7606921",
+          "generated": " 7606921.\n\nThe special magic golden-w",
+          "generated_ids": [
+            220,
+            19104,
+            25073,
+            16,
+            382,
+            791,
+            3361,
+            11204,
+            21411,
+            2695
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 8.5276181640625,
+          "wall_s": 8.778022384999986,
+          "forwards": 10,
+          "peak_gb": 56.0036736,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.2900390625,
+            "slots": 512
+          }
+        },
+        {
+          "idx": 1,
+          "tokens": 127734,
+          "token_sha256": "8b311f2838967ab75437bb456aeb2c3e0bf4ba29f28bfcabcd7559851e33b7a5",
+          "answer": "8327462",
+          "generated": " 8327462.\n\nWait, bad nymph,",
+          "generated_ids": [
+            220,
+            23879,
+            25594,
+            17,
+            382,
+            14524,
+            11,
+            3958,
+            99401,
+            11
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 8.505283203125,
+          "wall_s": 8.756709813999976,
+          "forwards": 10,
+          "peak_gb": 56.035245056,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.259765625,
+            "slots": 512
+          }
+        },
+        {
+          "idx": 2,
+          "tokens": 127606,
+          "token_sha256": "fa641b562f0a7fd7647d4b02ecec642d345521160ccc7de97c94d98180e816cf",
+          "answer": "2137837",
+          "generated": " 2137837.\n\nThe special magic jade-f",
+          "generated_ids": [
+            220,
+            11702,
+            26008,
+            22,
+            382,
+            791,
+            3361,
+            11204,
+            86115,
+            2269
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 8.4962158203125,
+          "wall_s": 8.745193220999965,
+          "forwards": 10,
+          "peak_gb": 55.995231232,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.27734375,
+            "slots": 512
+          }
+        },
+        {
+          "idx": 3,
+          "tokens": 127219,
+          "token_sha256": "b54ba95895462694645a8f046a2b44e26b1481a79451e3c2f59e9fd83b5e966a",
+          "answer": "2627353",
+          "generated": " 2627353.",
+          "generated_ids": [
+            220,
+            14274,
+            24939,
+            18,
+            13,
+            128001
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 8.4750595703125,
+          "wall_s": 8.614810766000005,
+          "forwards": 6,
+          "peak_gb": 55.8742528,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.2744140625,
+            "slots": 512
+          }
+        },
+        {
+          "idx": 4,
+          "tokens": 127642,
+          "token_sha256": "5bfc1c803c36370261ea0cb9a45893bdf7e1f59e3c80ee6411268150a74685a1",
+          "answer": "4316377",
+          "generated": " 4316377. The answer is: ",
+          "generated_ids": [
+            220,
+            19852,
+            21788,
+            22,
+            13,
+            578,
+            4320,
+            374,
+            25,
+            220
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 8.5094375,
+          "wall_s": 8.757968441999992,
+          "forwards": 10,
+          "peak_gb": 56.006486016,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.26953125,
+            "slots": 512
+          }
+        },
+        {
+          "idx": 5,
+          "tokens": 127435,
+          "token_sha256": "a607daf842c1d27ed57b299edd375b9c2cee0e484ef451cb474a5960303d6590",
+          "answer": "9270071",
+          "generated": " 9270071. So, for the quick",
+          "generated_ids": [
+            220,
+            26437,
+            11194,
+            16,
+            13,
+            2100,
+            11,
+            369,
+            279,
+            4062
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 8.4972783203125,
+          "wall_s": 8.74526270399997,
+          "forwards": 10,
+          "peak_gb": 55.941777408,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.28515625,
+            "slots": 512
+          }
+        }
+      ]
+    }
+  ]
+}

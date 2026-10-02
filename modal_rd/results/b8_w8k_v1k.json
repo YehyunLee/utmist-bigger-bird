@@ -1,0 +1,572 @@
+{
+  "arm": "vs",
+  "attn": {
+    "sink": 64,
+    "window": 8192,
+    "vertical": 1024,
+    "exact_tail": 256
+  },
+  "dense_layers": [],
+  "gpu": "NVIDIA H100 80GB HBM3",
+  "torch": "2.13.0+cu130",
+  "max_new": 10,
+  "cache": true,
+  "warm": "first",
+  "runs": [
+    {
+      "bytes": 512000,
+      "depth": 0.1,
+      "n": 6,
+      "exact": 5,
+      "last_digit": 5,
+      "mean_prefill_s": 7.777249593098958,
+      "mean_tokens": 127545.0,
+      "peak_gb": 56.038280704,
+      "examples": [
+        {
+          "idx": 0,
+          "tokens": 127630,
+          "token_sha256": "4f1815d04a12a0669dbbe1aa1141df17912c248ddd745947b5964ffd1de65828",
+          "answer": "7606921",
+          "generated": " 7606921.\n\nBut wait, the special",
+          "generated_ids": [
+            220,
+            19104,
+            25073,
+            16,
+            382,
+            4071,
+            3868,
+            11,
+            279,
+            3361
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 6.9592822265625,
+          "wall_s": 7.20796043,
+          "forwards": 10,
+          "peak_gb": 56.004832256,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.32421875,
+            "slots": 1024
+          }
+        },
+        {
+          "idx": 1,
+          "tokens": 127737,
+          "token_sha256": "27095658d8a767878bf06a3f0be981a6b23978fe6b1002bead32662a6daa86e2",
+          "answer": "8327462",
+          "generated": " How vexingly quick daft zebras jump.",
+          "generated_ids": [
+            2650,
+            84265,
+            11559,
+            4062,
+            3067,
+            728,
+            14017,
+            71861,
+            7940,
+            13
+          ],
+          "exact": false,
+          "last_digit": false,
+          "prefill_s": 7.9898818359375,
+          "wall_s": 8.238968612999997,
+          "forwards": 10,
+          "peak_gb": 56.038280704,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.2919921875,
+            "slots": 1024
+          }
+        },
+        {
+          "idx": 2,
+          "tokens": 127604,
+          "token_sha256": "a5f769caf74069e92d8252f72ce37575980690f6e67f3d2ce55abdea0f50928e",
+          "answer": "2137837",
+          "generated": " 2137837.\n\nThe grass is green.",
+          "generated_ids": [
+            220,
+            11702,
+            26008,
+            22,
+            382,
+            791,
+            16763,
+            374,
+            6307,
+            13
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 7.8931279296875,
+          "wall_s": 8.143561118999997,
+          "forwards": 10,
+          "peak_gb": 55.996703232,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.3603515625,
+            "slots": 1024
+          }
+        },
+        {
+          "idx": 3,
+          "tokens": 127221,
+          "token_sha256": "67138d9666fa45eccbd7bd3fb8c4a4e5ff8f68e761b6d38093c00f7ae5f872d8",
+          "answer": "2627353",
+          "generated": " 2627353. Aze the judge.",
+          "generated_ids": [
+            220,
+            14274,
+            24939,
+            18,
+            13,
+            362,
+            3059,
+            279,
+            11913,
+            13
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 7.90288916015625,
+          "wall_s": 8.153173992000006,
+          "forwards": 10,
+          "peak_gb": 55.876975104,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.4013671875,
+            "slots": 1024
+          }
+        },
+        {
+          "idx": 4,
+          "tokens": 127643,
+          "token_sha256": "a01da81406f749afc02b515254d3906bd3bdcc8e2b59f627293c5423b141c094",
+          "answer": "4316377",
+          "generated": " 4316377. How vexingly quick da",
+          "generated_ids": [
+            220,
+            19852,
+            21788,
+            22,
+            13,
+            2650,
+            84265,
+            11559,
+            4062,
+            3067
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 7.94859033203125,
+          "wall_s": 8.198157126999988,
+          "forwards": 10,
+          "peak_gb": 56.008896512,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.314453125,
+            "slots": 1024
+          }
+        },
+        {
+          "idx": 5,
+          "tokens": 127435,
+          "token_sha256": "f4359366184d611ed38da0c196a72a413fd36f79a9eae006373f2a739e6c15a6",
+          "answer": "9270071",
+          "generated": " 9270071. How vexingly quick da",
+          "generated_ids": [
+            220,
+            26437,
+            11194,
+            16,
+            13,
+            2650,
+            84265,
+            11559,
+            4062,
+            3067
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 7.96972607421875,
+          "wall_s": 8.220013907999999,
+          "forwards": 10,
+          "peak_gb": 55.94387456,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.4189453125,
+            "slots": 1024
+          }
+        }
+      ]
+    },
+    {
+      "bytes": 512000,
+      "depth": 0.25,
+      "n": 6,
+      "exact": 3,
+      "last_digit": 3,
+      "mean_prefill_s": 7.813825032552084,
+      "mean_tokens": 127544.83333333333,
+      "peak_gb": 56.037342208,
+      "examples": [
+        {
+          "idx": 0,
+          "tokens": 127634,
+          "token_sha256": "0497aae7dabef46956949c04731db18a5814f4dbd4ee0df168b030d76fea48ab",
+          "answer": "7606921",
+          "generated": " 7606921. The grass is green.",
+          "generated_ids": [
+            220,
+            19104,
+            25073,
+            16,
+            13,
+            578,
+            16763,
+            374,
+            6307,
+            13
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 6.94991552734375,
+          "wall_s": 7.200922941999977,
+          "forwards": 10,
+          "peak_gb": 56.00608256,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.3984375,
+            "slots": 1024
+          }
+        },
+        {
+          "idx": 1,
+          "tokens": 127734,
+          "token_sha256": "3a1943cd4140b684add29e647cc582567a0a3178289feb8a1937cd0e9a697609",
+          "answer": "8327462",
+          "generated": " How vexingly quick daft zebras jump.",
+          "generated_ids": [
+            2650,
+            84265,
+            11559,
+            4062,
+            3067,
+            728,
+            14017,
+            71861,
+            7940,
+            13
+          ],
+          "exact": false,
+          "last_digit": false,
+          "prefill_s": 8.6867763671875,
+          "wall_s": 8.938373896999991,
+          "forwards": 10,
+          "peak_gb": 56.037342208,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.365234375,
+            "slots": 1024
+          }
+        },
+        {
+          "idx": 2,
+          "tokens": 127604,
+          "token_sha256": "17dfbc4e31e8dd92757765ba1be6e1b51a057314b7e267d21cf0fdf28c7f344b",
+          "answer": "2137837",
+          "generated": " 2137837.\n\nWait, bad nymph,",
+          "generated_ids": [
+            220,
+            11702,
+            26008,
+            22,
+            382,
+            14524,
+            11,
+            3958,
+            99401,
+            11
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 6.95570654296875,
+          "wall_s": 7.207464103999996,
+          "forwards": 10,
+          "peak_gb": 55.996703232,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.3701171875,
+            "slots": 1024
+          }
+        },
+        {
+          "idx": 3,
+          "tokens": 127216,
+          "token_sha256": "41a9c89ad95f782b4ea6b7f7276283edd66310f3d8531cf19742c14f1d98819f",
+          "answer": "2627353",
+          "generated": " 2627353. The grass is green.",
+          "generated_ids": [
+            220,
+            14274,
+            24939,
+            18,
+            13,
+            578,
+            16763,
+            374,
+            6307,
+            13
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 7.988787109375,
+          "wall_s": 8.239789897000009,
+          "forwards": 10,
+          "peak_gb": 55.875411456,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.455078125,
+            "slots": 1024
+          }
+        },
+        {
+          "idx": 4,
+          "tokens": 127644,
+          "token_sha256": "9b5f65b913aadb8359eb88601f5af3b3337578227e0aa33eca8675ad579b49e4",
+          "answer": "4316377",
+          "generated": " How vexingly quick daft zebras jump.",
+          "generated_ids": [
+            2650,
+            84265,
+            11559,
+            4062,
+            3067,
+            728,
+            14017,
+            71861,
+            7940,
+            13
+          ],
+          "exact": false,
+          "last_digit": false,
+          "prefill_s": 8.105591796875,
+          "wall_s": 8.355994941000006,
+          "forwards": 10,
+          "peak_gb": 56.00920832,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.439453125,
+            "slots": 1024
+          }
+        },
+        {
+          "idx": 5,
+          "tokens": 127437,
+          "token_sha256": "cd98dee6eac3941f633ea0bf0a5efe6aeb0cecf67211816e262cf8f72ac84313",
+          "answer": "9270071",
+          "generated": " How vexingly quick daft zebras jump.",
+          "generated_ids": [
+            2650,
+            84265,
+            11559,
+            4062,
+            3067,
+            728,
+            14017,
+            71861,
+            7940,
+            13
+          ],
+          "exact": false,
+          "last_digit": false,
+          "prefill_s": 8.1961728515625,
+          "wall_s": 8.446337624999984,
+          "forwards": 10,
+          "peak_gb": 55.944499712,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.5234375,
+            "slots": 1024
+          }
+        }
+      ]
+    },
+    {
+      "bytes": 512000,
+      "depth": 0.5,
+      "n": 6,
+      "exact": 6,
+      "last_digit": 6,
+      "mean_prefill_s": 7.546309000651042,
+      "mean_tokens": 127544.83333333333,
+      "peak_gb": 56.037342208,
+      "examples": [
+        {
+          "idx": 0,
+          "tokens": 127633,
+          "token_sha256": "6109c5f302a15768792beaa90101088306ce65e7ad955979b95eab35bab1093d",
+          "answer": "7606921",
+          "generated": " 7606921.\n\n**",
+          "generated_ids": [
+            220,
+            19104,
+            25073,
+            16,
+            382,
+            334,
+            128001
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 6.988349609375,
+          "wall_s": 7.156851171000028,
+          "forwards": 7,
+          "peak_gb": 56.005770752,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.2880859375,
+            "slots": 1024
+          }
+        },
+        {
+          "idx": 1,
+          "tokens": 127734,
+          "token_sha256": "8b311f2838967ab75437bb456aeb2c3e0bf4ba29f28bfcabcd7559851e33b7a5",
+          "answer": "8327462",
+          "generated": " 8327462. How vexingly quick da",
+          "generated_ids": [
+            220,
+            23879,
+            25594,
+            17,
+            13,
+            2650,
+            84265,
+            11559,
+            4062,
+            3067
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 6.97979833984375,
+          "wall_s": 7.2319736379999995,
+          "forwards": 10,
+          "peak_gb": 56.037342208,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.2373046875,
+            "slots": 1024
+          }
+        },
+        {
+          "idx": 2,
+          "tokens": 127606,
+          "token_sha256": "fa641b562f0a7fd7647d4b02ecec642d345521160ccc7de97c94d98180e816cf",
+          "answer": "2137837",
+          "generated": " 2137837. All questions asked by five",
+          "generated_ids": [
+            220,
+            11702,
+            26008,
+            22,
+            13,
+            2052,
+            4860,
+            4691,
+            555,
+            4330
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 7.97780419921875,
+          "wall_s": 8.228896213999974,
+          "forwards": 10,
+          "peak_gb": 55.997328384,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.2919921875,
+            "slots": 1024
+          }
+        },
+        {
+          "idx": 3,
+          "tokens": 127219,
+          "token_sha256": "b54ba95895462694645a8f046a2b44e26b1481a79451e3c2f59e9fd83b5e966a",
+          "answer": "2627353",
+          "generated": " 2627353. So, the answer is",
+          "generated_ids": [
+            220,
+            14274,
+            24939,
+            18,
+            13,
+            2100,
+            11,
+            279,
+            4320,
+            374
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 8.00191357421875,
+          "wall_s": 8.252932798000018,
+          "forwards": 10,
+          "peak_gb": 55.876349952,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.283203125,
+            "slots": 1024
+          }
+        },
+        {
+          "idx": 4,
+          "tokens": 127642,
+          "token_sha256": "5bfc1c803c36370261ea0cb9a45893bdf7e1f59e3c80ee6411268150a74685a1",
+          "answer": "4316377",
+          "generated": " 4316377. So, the answer is",
+          "generated_ids": [
+            220,
+            19852,
+            21788,
+            22,
+            13,
+            2100,
+            11,
+            279,
+            4320,
+            374
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 8.3283779296875,
+          "wall_s": 8.579195149999975,
+          "forwards": 10,
+          "peak_gb": 56.008583168,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.28515625,
+            "slots": 1024
+          }
+        },
+        {
+          "idx": 5,
+          "tokens": 127435,
+          "token_sha256": "a607daf842c1d27ed57b299edd375b9c2cee0e484ef451cb474a5960303d6590",
+          "answer": "9270071",
+          "generated": " 9270071. So, the special magic",
+          "generated_ids": [
+            220,
+            26437,
+            11194,
+            16,
+            13,
+            2100,
+            11,
+            279,
+            3361,
+            11204
+          ],
+          "exact": true,
+          "last_digit": true,
+          "prefill_s": 7.0016103515625,
+          "wall_s": 7.25242199600001,
+          "forwards": 10,
+          "peak_gb": 55.94387456,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.298828125,
+            "slots": 1024
+          }
+        }
+      ]
+    }
+  ]
+}
