@@ -1,0 +1,134 @@
+[
+  {
+    "answer": "8311742",
+    "idx": 0,
+    "label": 2,
+    "question_tokens": [
+      65021,
+      65030
+    ],
+    "source_sha256": "fcea06d81104c0423dfd6d6874283e3d290b1ca3fd2fc9c7703e693dc551389d",
+    "spans": {
+      "needle": [
+        32429,
+        32442
+      ],
+      "number": [
+        32438,
+        32441
+      ]
+    },
+    "token_sha256": "60e19a00d428f9e6d3695ec21fb6a5863770feeb6a1e8a62e636eb0d5cb6cce2",
+    "tokens": 65034
+  },
+  {
+    "answer": "1560400",
+    "idx": 1,
+    "label": 0,
+    "question_tokens": [
+      65180,
+      65189
+    ],
+    "source_sha256": "bd14609fcc84db4790a57c8c46219ce1528406b77563c4d71875290b3a2994a8",
+    "spans": {
+      "needle": [
+        32534,
+        32547
+      ],
+      "number": [
+        32543,
+        32546
+      ]
+    },
+    "token_sha256": "c4e83dfbc9ca3eadf182bcab6d7bdbdd8b0a7e6c7e916caebd40d6f123f78013",
+    "tokens": 65193
+  },
+  {
+    "answer": "7400577",
+    "idx": 2,
+    "label": 7,
+    "question_tokens": [
+      65172,
+      65182
+    ],
+    "source_sha256": "acb7faf8ae64362f0eb52428f053f697beae0b370e041192e54fcecef1632059",
+    "spans": {
+      "needle": [
+        32545,
+        32559
+      ],
+      "number": [
+        32555,
+        32558
+      ]
+    },
+    "token_sha256": "dfdb5be53febb1cbdef1014094e304bbb2a6690d0c246c90e8e1297cf4b11511",
+    "tokens": 65186
+  },
+  {
+    "answer": "1717772",
+    "idx": 3,
+    "label": 2,
+    "question_tokens": [
+      64948,
+      64958
+    ],
+    "source_sha256": "212547e4535198e6d6bfc15f571470517a59102c0072d2a71fa6d29734e563a1",
+    "spans": {
+      "needle": [
+        32443,
+        32457
+      ],
+      "number": [
+        32453,
+        32456
+      ]
+    },
+    "token_sha256": "166d03ccef039791fa3e779feb2f0c263391662df4eaff36d79d04f26425a028",
+    "tokens": 64962
+  },
+  {
+    "answer": "7665992",
+    "idx": 4,
+    "label": 2,
+    "question_tokens": [
+      65209,
+      65218
+    ],
+    "source_sha256": "85e5457ce905a4e4f30626ba24e1cbfee6e7f22b576b4c32b1bf0af7063e7d13",
+    "spans": {
+      "needle": [
+        32340,
+        32353
+      ],
+      "number": [
+        32349,
+        32352
+      ]
+    },
+    "token_sha256": "9b25c8c2cd12aafe26a6364099125c73a104066329540be855ff64b0f5073c58",
+    "tokens": 65222
+  },
+  {
+    "answer": "8434792",
+    "idx": 5,
+    "label": 2,
+    "question_tokens": [
+      64916,
+      64925
+    ],
+    "source_sha256": "d481ce01113a8aa9cd5cbaa1f254d4edb6d6aae4bff33f7b4a62dddc3b7d3400",
+    "spans": {
+      "needle": [
+        32431,
+        32444
+      ],
+      "number": [
+        32440,
+        32443
+      ]
+    },
+    "token_sha256": "06bdccd2c653dea10c7cf96d720dfb1815cec9aaf7337df035ecb5861e424def",
+    "tokens": 64929
+  }
+]
