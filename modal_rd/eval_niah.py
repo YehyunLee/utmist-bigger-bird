@@ -110,6 +110,8 @@ def main():
     p.add_argument("--max-new", type=int, default=10)
     p.add_argument("--warm", default="all", choices=["all", "first", "none"])
     p.add_argument("--task", default="niah", help="RULER NIAH variant, e.g. niah_multikey_1, niah_multivalue")
+    p.add_argument("--question-first", action="store_true", help="move the question to the start of the prompt")
+    p.add_argument("--question-offset", type=int, default=0, help="with --question-first: characters of filler before the question")
     p.add_argument("--tag", required=True)
     a = p.parse_args()
     attn, dense_layers = json.loads(a.attn), parse_layers(a.dense_layers)
@@ -117,11 +119,12 @@ def main():
     model = build(a.arm, attn, dense_layers)
     RESULTS.mkdir(parents=True, exist_ok=True)
     out_path = RESULTS / f"{a.tag}.json"
-    report = {"arm": a.arm, "task": a.task, "attn": attn, "dense_layers": dense_layers, "gpu": torch.cuda.get_device_name(0),
+    report = {"arm": a.arm, "task": a.task, "question_first": a.question_first, "question_offset": a.question_offset, "attn": attn, "dense_layers": dense_layers, "gpu": torch.cuda.get_device_name(0),
               "torch": torch.__version__, "max_new": a.max_new, "cache": True, "warm": a.warm, "runs": []}
     for nbytes in map(int, a.bytes.split(",")):
         for depth in map(float, a.depths.split(",")):
-            rows, skipped = prepare_task(tokenizer, a.task, nbytes, a.n, depth=depth, start=a.start)
+            rows, skipped = prepare_task(tokenizer, a.task, nbytes, a.n, depth=depth, start=a.start,
+                                         question_first=a.question_first, question_offset=a.question_offset)
             warm = rows if a.warm == "all" else rows[:1] if a.warm == "first" else []
             for row in warm:
                 w = run_one(model, tokenizer, row, a.arm, a.max_new)

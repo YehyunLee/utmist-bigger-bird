@@ -88,6 +88,23 @@
 | 64 | 4/6 |
 | 256 | 6/6 |
 
+## Question placement @~127K, depth 0.5, first 6 prompts (batch 14)
+
+Same prompts with the question moved out of the final tokens; every prompt still ends with " The answer is:".
+"Heads routing the number" = mean fraction of heads (all layers) whose 512 routed columns cover the full 7-digit number
+(chance ~0.4%).
+
+| question position | Dense FlashAttention | Bigger Bird v3 final | prefill (dense / final) | heads routing the number |
+|---|---:|---:|---:|---:|
+| end (b6/b9 scale) | 6/6 | 6/6 | ~16.1 s / ~8.5 s | 0.26-0.29 |
+| very start, inside the 64 sink tokens (`--question-first`) | 6/6 | 5/6 | 16.06 s / 8.57 s | 0.21-0.24 |
+| ~500 tokens in, outside the sink (`--question-offset 2000`) | 6/6 | 6/6 | 16.15 s / 8.47 s | 0.18-0.20 |
+
+The one miss (prompt 3, question at the very start) began with the right digits: " 262, 262" vs 2627353.
+Routing is driven by the final prompt tokens, not by where the question sits: those tokens attend to the question
+(exact tail + routed columns) and their queries still pick the needle well above chance. 6 prompts per row; treat as a
+screen, not a confirmation.
+
 ## All arms @~127K, first 6 prompts (tuning set)
 
 | run | arm | exact | prefill s |

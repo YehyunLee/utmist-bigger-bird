@@ -1,0 +1,202 @@
+{
+  "arm": "dense",
+  "task": "niah",
+  "question_first": true,
+  "question_offset": 2000,
+  "attn": {},
+  "dense_layers": [],
+  "gpu": "NVIDIA H100 80GB HBM3",
+  "torch": "2.13.0+cu130",
+  "max_new": 10,
+  "cache": true,
+  "warm": "all",
+  "runs": [
+    {
+      "task": "niah",
+      "bytes": 512000,
+      "depth": 0.5,
+      "n": 6,
+      "skipped_ambiguous": 0,
+      "exact": 6,
+      "partial": 1.0,
+      "last_digit": 6,
+      "mean_prefill_s": 16.152777669270833,
+      "mean_tokens": 127544.83333333333,
+      "peak_gb": 48.07867392,
+      "examples": [
+        {
+          "idx": 0,
+          "tokens": 127633,
+          "token_sha256": "1b45a886bc74d13eabff06a563bd67ec26a145727c6f8f3612f72b9bdd6cdc8c",
+          "answer": "7606921",
+          "answers": [
+            "7606921"
+          ],
+          "generated": " 7606921.\n\nThe special magic golden-w",
+          "generated_ids": [
+            220,
+            19104,
+            25073,
+            16,
+            382,
+            791,
+            3361,
+            11204,
+            21411,
+            2695
+          ],
+          "exact": true,
+          "partial": 1.0,
+          "last_digit": true,
+          "prefill_s": 16.1692021484375,
+          "wall_s": 16.424266550000027,
+          "forwards": 10,
+          "peak_gb": 48.053385216,
+          "routes": null
+        },
+        {
+          "idx": 1,
+          "tokens": 127734,
+          "token_sha256": "bd7cdcaf0961e51b3a7595ada5a8b4191e93750aae1a9c668355ab35c6cc22b0",
+          "answer": "8327462",
+          "answers": [
+            "8327462"
+          ],
+          "generated": " 8327462.\n\nThe special magic onyx",
+          "generated_ids": [
+            220,
+            23879,
+            25594,
+            17,
+            382,
+            791,
+            3361,
+            11204,
+            389,
+            52926
+          ],
+          "exact": true,
+          "partial": 1.0,
+          "last_digit": true,
+          "prefill_s": 16.198740234375,
+          "wall_s": 16.456328241999984,
+          "forwards": 10,
+          "peak_gb": 48.07867392,
+          "routes": null
+        },
+        {
+          "idx": 2,
+          "tokens": 127606,
+          "token_sha256": "69035215d51644cacdae8559700103a85b858349623f5020dc8190d7fb9bfee7",
+          "answer": "2137837",
+          "answers": [
+            "2137837"
+          ],
+          "generated": " 2137837.",
+          "generated_ids": [
+            220,
+            11702,
+            26008,
+            22,
+            13,
+            128001
+          ],
+          "exact": true,
+          "partial": 1.0,
+          "last_digit": true,
+          "prefill_s": 16.1449052734375,
+          "wall_s": 16.286145871000002,
+          "forwards": 6,
+          "peak_gb": 48.04662272,
+          "routes": null
+        },
+        {
+          "idx": 3,
+          "tokens": 127219,
+          "token_sha256": "b1f7cc6d2a98581a898d4e319010d6d1282f51f31c02b760818f631e64f4a846",
+          "answer": "2627353",
+          "answers": [
+            "2627353"
+          ],
+          "generated": " 2627353.\n\nThe special magic pearl-h",
+          "generated_ids": [
+            220,
+            14274,
+            24939,
+            18,
+            382,
+            791,
+            3361,
+            11204,
+            70723,
+            2902
+          ],
+          "exact": true,
+          "partial": 1.0,
+          "last_digit": true,
+          "prefill_s": 16.088349609375,
+          "wall_s": 16.34474136,
+          "forwards": 10,
+          "peak_gb": 47.949718528,
+          "routes": null
+        },
+        {
+          "idx": 4,
+          "tokens": 127642,
+          "token_sha256": "11e0f7f04ea3db00e467a25aa780cc403359138e92710fb506105b9528ce878b",
+          "answer": "4316377",
+          "answers": [
+            "4316377"
+          ],
+          "generated": " 4316377.",
+          "generated_ids": [
+            220,
+            19852,
+            21788,
+            22,
+            13,
+            128001
+          ],
+          "exact": true,
+          "partial": 1.0,
+          "last_digit": true,
+          "prefill_s": 16.177955078125,
+          "wall_s": 16.321787959999995,
+          "forwards": 6,
+          "peak_gb": 48.055638016,
+          "routes": null
+        },
+        {
+          "idx": 5,
+          "tokens": 127435,
+          "token_sha256": "6e8fd905a5bfb90c92eba702ba46a665ad079cfb6320baf4bc5fe4d577c5654f",
+          "answer": "9270071",
+          "answers": [
+            "9270071"
+          ],
+          "generated": " 9270071, tz, bad nymph,",
+          "generated_ids": [
+            220,
+            26437,
+            11194,
+            16,
+            11,
+            43628,
+            11,
+            3958,
+            99401,
+            11
+          ],
+          "exact": true,
+          "partial": 1.0,
+          "last_digit": true,
+          "prefill_s": 16.137513671875,
+          "wall_s": 16.388967198000046,
+          "forwards": 10,
+          "peak_gb": 48.003806208,
+          "routes": null
+        }
+      ]
+    }
+  ]
+}

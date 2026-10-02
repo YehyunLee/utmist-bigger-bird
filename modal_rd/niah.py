@@ -39,12 +39,29 @@ def load_tokenizer(model_path=MODEL_PATH):
     return tokenizer
 
 
-def prepare(tokenizer, seq_bytes, count, depth=0.5, seed=42, start=0, verify=True):
+def move_question_first(text, offset=0):
+    """Move the trailing question near the start; the prompt still ends with ' The answer is:'.
+
+    offset > 0 inserts it at the first sentence boundary after `offset` characters, so it
+    falls outside the always-visible sink tokens.
+    """
+    cue = re.search(r" ?What (?:is|are)[^?]*\? The answer is:$", text)
+    assert cue, "question not at the end"
+    question = cue[0].strip()[:-len(" The answer is:")].strip()
+    body = text[:cue.start()].rstrip()
+    cut = body.index(". ", offset) + 2 if offset else 0
+    return body[:cut] + question + ("\n" if not offset else " ") + body[cut:] + " The answer is:"
+
+
+def prepare(tokenizer, seq_bytes, count, depth=0.5, seed=42, start=0, verify=True, question_first=False,
+            question_offset=0):
     data = build_ruler_dataset(task="niah", seq_len=seq_bytes, needle_depth=depth,
                                train_samples=10, eval_samples=max(128, start + count), seed=seed)["validation"]
     rows = []
     for idx in range(start, start + count):
         text = _ids_to_text(data[idx]["input_ids"]).rstrip() + " The answer is:"
+        if question_first:
+            text = move_question_first(text, question_offset)
         question = re.search(r"What is the special magic ([\w-]+)\?", text)
         needle = re.search(r"The special magic " + re.escape(question[1]) + r" is: (\d+)\.", text)
         assert needle and int(needle[1][-1]) == int(data[idx]["labels"]), (seq_bytes, idx)
@@ -59,11 +76,12 @@ def prepare(tokenizer, seq_bytes, count, depth=0.5, seed=42, start=0, verify=Tru
                      "tokens": len(ids), "token_sha256": hashlib.sha256(json.dumps(ids).encode()).hexdigest(),
                      "source_sha256": hashlib.sha256(text.encode()).hexdigest(),
                      "spans": spans, "question_tokens": [min(q), max(q) + 1], "depth": depth, "seed": seed})
-    _verify(rows, seq_bytes, depth, seed, verify)
+    _verify(rows, seq_bytes, depth, seed, verify and not question_first)
     return rows
 
 
-def prepare_task(tokenizer, task, seq_bytes, count, depth=0.5, seed=42, start=0):
+def prepare_task(tokenizer, task, seq_bytes, count, depth=0.5, seed=42, start=0, question_first=False,
+                 question_offset=0):
     """Any RULER NIAH variant. Gold answers = every value stated for the queried key(s).
 
     Prompts whose queried key also appears with a different value elsewhere (possible
@@ -71,7 +89,10 @@ def prepare_task(tokenizer, task, seq_bytes, count, depth=0.5, seed=42, start=0)
     returned alongside the rows.
     """
     if task in ("niah", "niah_single_1"):
-        return prepare(tokenizer, seq_bytes, count, depth=depth, seed=seed, start=start), 0
+        return prepare(tokenizer, seq_bytes, count, depth=depth, seed=seed, start=start,
+                       question_first=question_first, question_offset=question_offset), 0
+    if question_first:
+        raise ValueError("question_first is only implemented for the single-needle niah task")
     data = build_ruler_dataset(task=task, seq_len=seq_bytes, needle_depth=depth,
                                train_samples=1, eval_samples=2 * (start + count) + 4, seed=seed)["validation"]
     rows, skipped, idx = [], 0, start

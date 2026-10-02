@@ -1,0 +1,220 @@
+{
+  "arm": "vs",
+  "task": "niah",
+  "question_first": true,
+  "attn": {
+    "sink": 64,
+    "window": 16384,
+    "vertical": 512,
+    "exact_tail": 256
+  },
+  "dense_layers": [],
+  "gpu": "NVIDIA H100 80GB HBM3",
+  "torch": "2.13.0+cu130",
+  "max_new": 10,
+  "cache": true,
+  "warm": "all",
+  "runs": [
+    {
+      "task": "niah",
+      "bytes": 512000,
+      "depth": 0.5,
+      "n": 6,
+      "skipped_ambiguous": 0,
+      "exact": 5,
+      "partial": 0.8333333333333334,
+      "last_digit": 5,
+      "mean_prefill_s": 8.572246744791666,
+      "mean_tokens": 127544.83333333333,
+      "peak_gb": 56.035245056,
+      "examples": [
+        {
+          "idx": 0,
+          "tokens": 127633,
+          "token_sha256": "768c252a95670de3a86744e3c249d07fb9ffbcd8ef6e0c60a7cddb23620668df",
+          "answer": "7606921",
+          "answers": [
+            "7606921"
+          ],
+          "generated": " 7606921.\n\n**",
+          "generated_ids": [
+            220,
+            19104,
+            25073,
+            16,
+            382,
+            334,
+            128001
+          ],
+          "exact": true,
+          "partial": 1.0,
+          "last_digit": true,
+          "prefill_s": 8.57369921875,
+          "wall_s": 8.747204745999994,
+          "forwards": 7,
+          "peak_gb": 56.0036736,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.2294921875,
+            "slots": 512
+          }
+        },
+        {
+          "idx": 1,
+          "tokens": 127734,
+          "token_sha256": "c70d9bb6b7a5a40fb7d00e832b6d1d9d4fb2f350cde3a5df8ebd8b1388aeac63",
+          "answer": "8327462",
+          "answers": [
+            "8327462"
+          ],
+          "generated": " 8327462.\n\n**",
+          "generated_ids": [
+            220,
+            23879,
+            25594,
+            17,
+            382,
+            334,
+            128001
+          ],
+          "exact": true,
+          "partial": 1.0,
+          "last_digit": true,
+          "prefill_s": 8.583861328125,
+          "wall_s": 8.756841199999997,
+          "forwards": 7,
+          "peak_gb": 56.035245056,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.232421875,
+            "slots": 512
+          }
+        },
+        {
+          "idx": 2,
+          "tokens": 127606,
+          "token_sha256": "581434fa843a1000284495ea3bd248dd8189364689c8b41bcfa5b42748bf98fc",
+          "answer": "2137837",
+          "answers": [
+            "2137837"
+          ],
+          "generated": " 2137837.\n\n**",
+          "generated_ids": [
+            220,
+            11702,
+            26008,
+            22,
+            382,
+            334,
+            128001
+          ],
+          "exact": true,
+          "partial": 1.0,
+          "last_digit": true,
+          "prefill_s": 8.5650087890625,
+          "wall_s": 8.737753320999985,
+          "forwards": 7,
+          "peak_gb": 55.995231232,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.2080078125,
+            "slots": 512
+          }
+        },
+        {
+          "idx": 3,
+          "tokens": 127219,
+          "token_sha256": "3b6ce70ca14a93997321c56e68a82eaca1516397e81dabaab77ea9269e512ab0",
+          "answer": "2627353",
+          "answers": [
+            "2627353"
+          ],
+          "generated": " 262, 262, 262, ",
+          "generated_ids": [
+            220,
+            14274,
+            11,
+            220,
+            14274,
+            11,
+            220,
+            14274,
+            11,
+            220
+          ],
+          "exact": false,
+          "partial": 0.0,
+          "last_digit": false,
+          "prefill_s": 8.5608779296875,
+          "wall_s": 8.817380737999997,
+          "forwards": 10,
+          "peak_gb": 55.8742528,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.2275390625,
+            "slots": 512
+          }
+        },
+        {
+          "idx": 4,
+          "tokens": 127642,
+          "token_sha256": "e16a22dd180c802f38420d32b80056b35980bed6a33084b1a454dc118c8b35ec",
+          "answer": "4316377",
+          "answers": [
+            "4316377"
+          ],
+          "generated": " 4316377.\n\n**",
+          "generated_ids": [
+            220,
+            19852,
+            21788,
+            22,
+            382,
+            334,
+            128001
+          ],
+          "exact": true,
+          "partial": 1.0,
+          "last_digit": true,
+          "prefill_s": 8.565935546875,
+          "wall_s": 8.738813125999997,
+          "forwards": 7,
+          "peak_gb": 56.006486016,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.236328125,
+            "slots": 512
+          }
+        },
+        {
+          "idx": 5,
+          "tokens": 127435,
+          "token_sha256": "c385258ad978271a8265e7eab9f46063c5c5bdc7cb0253532da94b7d5b0bc5a4",
+          "answer": "9270071",
+          "answers": [
+            "9270071"
+          ],
+          "generated": " 9270071, tz, bad nymph,",
+          "generated_ids": [
+            220,
+            26437,
+            11194,
+            16,
+            11,
+            43628,
+            11,
+            3958,
+            99401,
+            11
+          ],
+          "exact": true,
+          "partial": 1.0,
+          "last_digit": true,
+          "prefill_s": 8.58409765625,
+          "wall_s": 8.841123210000006,
+          "forwards": 10,
+          "peak_gb": 55.941777408,
+          "routes": {
+            "mean_head_fraction_full_number_routed": 0.2314453125,
+            "slots": 512
+          }
+        }
+      ]
+    }
+  ]
+}
