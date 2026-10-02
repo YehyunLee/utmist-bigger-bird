@@ -4,9 +4,10 @@
 <meta charset="utf-8">
 <title>Bigger Bird</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root { --fg:#111418; --muted:#6b7280; --accent:#1f4fd8; --good:#1a7f37; --bad:#cf222e; }
+  :root { --fg:#111418; --muted:#6b7280; --accent:#1f4fd8; --good:#1a7f37; --bad:#cf222e;
+          --g:#a8d5a2; --b:#a9c4f5; --o:#f7c48f; --p:#b9a6dc; --r:#e06666; --y:#fde49c; }
   * { box-sizing: border-box; }
   html, body { margin:0; height:100%; background:#eceef1; color:var(--fg);
                font-family: Inter, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; }
@@ -15,56 +16,142 @@
            flex-direction:column; justify-content:center; align-items:center; text-align:center; }
   .slide.active { display:flex; }
   .say { font-size:3.3vw; font-weight:700; line-height:1.25; letter-spacing:-.015em; margin:0; max-width:90%; }
+  .sub { font-size:1.6vw; color:var(--muted); margin:.9em 0 0; max-width:85%; line-height:1.4; }
+  .slide img { max-width:100%; max-height:62vh; object-fit:contain; }
   .k-img .say { font-size:2.4vw; margin-top:.6em; }
+  .k-photo img { border-radius:12px; max-height:64vh; }
+  .k-section .say { font-size:4.4vw; font-weight:800; color:var(--accent); }
+  .num { font-size:9vw; font-weight:800; color:var(--accent); line-height:1; letter-spacing:-.03em; }
+  .corner { position:absolute; top:4%; right:4%; height:7%; max-height:none !important; }
+  .footer { position:absolute; bottom:2.5%; right:4%; font-size:.9vw; color:var(--muted); }
+
+  /* Title */
   .k-hero .row { display:flex; align-items:center; gap:3.5vw; position:absolute; top:30%; left:50%; transform:translateX(-50%); }
   .k-hero .row img { max-height:23vh; }
-  .k-hero .big { font-size:5.5vw; font-weight:800; letter-spacing:-.02em; line-height:1.1; text-align:left; }
+  .k-hero .big { font-size:5.5vw; font-weight:800; letter-spacing:-.02em; line-height:1.1; text-align:left; white-space:nowrap; }
   .k-hero .small { font-size:2.1vw; font-weight:500; color:var(--muted); margin-top:.5em; text-align:left; }
   .k-hero .say { position:absolute; top:68%; left:8%; right:8%; margin:0; }
-  .k-section .say { font-size:4.4vw; font-weight:800; color:var(--accent); }
-  .sub { font-size:1.6vw; color:var(--muted); margin:.9em 0 0; max-width:85%; line-height:1.4; }
-  .num { font-size:9vw; font-weight:800; color:var(--accent); line-height:1; letter-spacing:-.03em; }
-  .slide img { max-width:100%; max-height:62vh; object-fit:contain; }
-  .k-photo img { border-radius:12px; max-height:64vh; }
-  .good { color:var(--good); } .bad { color:var(--bad); } .accent { color:var(--accent); }
+
+  /* Stage: visual stays fixed in the middle, the sentence changes at the bottom */
+  .stage .vis { position:absolute; top:7%; bottom:27%; left:6%; right:6%;
+                display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .stage .vis > img { max-height:100%; max-width:100%; }
+  .stage .cap { position:absolute; top:76%; left:7%; right:7%; display:flex; flex-direction:column; align-items:center; }
+  .stage .cap .say { font-size:2.6vw; max-width:100%; }
+  .stage .cap .sub { font-size:1.4vw; margin-top:.5em; }
+
+  /* Tokens */
+  .toks { display:flex; gap:.6vw; flex-wrap:wrap; justify-content:center; }
+  .tok { font-size:2.4vw; font-weight:600; padding:.35em .6em; border-radius:.4em; border:2px solid #d8dde3; background:#fff; }
+  .tok.back { background:#e8efff; border-color:var(--b); }
+  .tok.cur { background:var(--accent); border-color:var(--accent); color:#fff; }
+  .toknote { font-size:1.4vw; color:var(--muted); margin-top:1.2em; }
+
+  /* Attention formula */
+  .formula { font-family: "Times New Roman", Georgia, serif; font-size:3.2vw; margin-bottom:.9em; }
+  .formula .qc { color:#b8860b; font-style:italic; } .formula .kc { color:#0f8f8f; font-style:italic; }
+  .vecs { display:flex; gap:3vw; }
+  .vec { border:3px solid; border-radius:10px; padding:.5em .9em; font-family:"Times New Roman", Georgia, serif;
+         font-style:italic; font-size:2.3vw; letter-spacing:.25em; }
+  .vec.vq { border-color:#e0b400; color:#b8860b; } .vec.vk { border-color:#2bb3b3; color:#0f8f8f; }
+  .vec sub { font-size:.6em; letter-spacing:0; }
+
+  /* Growth animation */
+  .quadcv { height:100%; max-height:44vh; aspect-ratio: 660 / 480; }
+  .quadlab { font-size:1.9vw; font-weight:600; color:var(--muted); margin-top:.3em; }
+  .quadlab b { color:var(--accent); font-weight:800; }
+
+  /* Model chips */
+  .chips { display:flex; flex-wrap:wrap; gap:1vw; justify-content:center; max-width:80%; }
+  .chip { font-size:2vw; font-weight:700; padding:.45em .9em; border-radius:999px; background:#f2f4f7; }
+  .chip.hl { background:var(--accent); color:#fff; }
+
+  /* Big Bird grids */
+  .bbrow { display:flex; align-items:center; gap:1.6vw; }
+  .bbp { display:flex; flex-direction:column; align-items:center; transition:opacity .2s; }
+  .bbp.off, .op.off { opacity:.12; }
+  .grid { display:grid; grid-template-columns:repeat(10, 1fr); gap:2px; width:15vw; }
+  .grid i { aspect-ratio:1; border:1.5px solid #c9ced6; border-radius:2px; background:#fff; }
+  .grid i.g { background:var(--g); border-color:#86c07f; } .grid i.b { background:var(--b); border-color:#7fa6ee; }
+  .grid i.o { background:var(--o); border-color:#eba25c; }
+  .bbp b { font-family: ui-monospace, Menlo, monospace; font-weight:500; font-size:1.3vw; margin-top:.7em; }
+  .op { font-size:3vw; font-weight:800; color:#7fa6ee; }
+
+  /* Window strips */
+  .strip { display:flex; gap:3px; }
+  .strip i { width:2.4vw; aspect-ratio:1; border:1.5px solid #c9ced6; border-radius:2px; background:#fff; }
+  .strip i.y { background:var(--y); border-color:#efc95a; } .strip i.p { background:var(--p); border-color:#9a83c8; }
+  .strip i.r { background:var(--r); border-color:#c94a4a; } .strip i.g { background:var(--g); border-color:#86c07f; }
+  .strip i.b { background:var(--b); border-color:#7fa6ee; } .strip i.q { background:#3a3f4a; border-color:#3a3f4a; }
+  .strip i.cur { outline:3px solid var(--r); outline-offset:1px; }
+  .wrow { display:flex; flex-direction:column; align-items:center; margin:.9em 0; transition:opacity .2s; }
+  .wrow.off { opacity:.3; }
+  .wrow b { font-family: ui-monospace, Menlo, monospace; font-weight:500; font-size:1.3vw; margin-top:.5em; }
+  .legend { display:flex; gap:2vw; margin-top:1.6em; }
+  .legend span { font-size:1.35vw; display:flex; align-items:center; gap:.5em; transition:opacity .2s; }
+  .legend span.off { opacity:.15; }
+  .legend i { width:1.4vw; height:1.4vw; border-radius:3px; display:inline-block; }
+
+  /* Prompt boxes */
   .prompt { font-family: ui-monospace, Menlo, monospace; font-size:1.35vw; line-height:1.6; text-align:left;
             background:#f7f8fa; border:1px solid #d8dde3; border-radius:12px; padding:1em 1.3em; max-width:92%;
             white-space:pre-wrap; }
   .needle { background:#fff3b0; font-weight:700; } .q { background:#dbe7ff; font-weight:700; }
   .dim { color:var(--muted); }
-  .timeline { display:flex; width:100%; margin-bottom:1.6em; }
-  .k-timeline .timeline { position:absolute; top:14%; left:8%; right:8%; width:auto; }
+
+  /* Timeline */
+  .timeline { display:flex; position:absolute; top:14%; left:8%; right:8%; }
   .tl { flex:1; border-top:5px solid var(--accent); padding:.7em .6em 0 0; text-align:left; }
   .tl b { display:block; font-size:1.35vw; } .tl span { font-size:1.15vw; color:var(--muted); line-height:1.35; display:block; }
   .tl.off { border-top-color:#dfe3ea; } .tl.off b, .tl.off span { opacity:.3; }
   .tl.on b { color:var(--accent); }
+
+  /* Reading list */
   .readlist { column-count:2; column-gap:4vw; text-align:left; width:94%; }
-  .readlist div { break-inside:avoid; font-size:1.45vw; font-weight:600; padding:.4em 0;
-                  border-bottom:1px solid #eef0f3; }
+  .readlist div { break-inside:avoid; font-size:1.45vw; font-weight:600; padding:.4em 0; border-bottom:1px solid #eef0f3; }
   .readlist span { display:block; font-size:1.05vw; font-weight:400; color:var(--muted); margin-top:.15em; }
+
+  /* People / partners */
   .ptitle { font-size:3.4vw; font-weight:800; color:var(--accent); margin:0 0 1em; letter-spacing:-.015em; }
   .pgrid { display:flex; gap:3vw; align-items:stretch; justify-content:center; width:100%; }
   .pgrid .p { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; }
   .pgrid .pimg { height:17vh; display:flex; align-items:center; justify-content:center; }
   .pgrid .plogo { max-height:17vh; max-width:100%; }
-  .pgrid .face { width:17vh; height:17vh; border-radius:50%; object-fit:cover; max-height:none; }
-  .pgrid .initial { width:17vh; height:17vh; border-radius:50%; background:#e8edfb; color:var(--accent);
-                    font-size:8vh; font-weight:800; display:flex; align-items:center; justify-content:center; }
+  .face { width:17vh; height:17vh; border-radius:50%; object-fit:cover; object-position:center 30%; max-height:none !important; }
+  .initial { width:17vh; height:17vh; border-radius:50%; background:#e8edfb; color:var(--accent);
+             font-size:8vh; font-weight:800; display:flex; align-items:center; justify-content:center; }
   .pgrid .pname { font-size:1.7vw; font-weight:800; margin:.7em 0 0; }
+  .pgrid .prole { font-size:1.2vw; font-weight:700; color:var(--accent); margin:.25em 0 0; text-transform:uppercase; letter-spacing:.06em; }
   .pgrid .pcap { font-size:1.2vw; color:var(--muted); margin:.4em 0 0; line-height:1.35; }
-  .quadcv { width:60vh; height:44vh; }
-  .quadlab { font-size:2vw; font-weight:600; color:var(--muted); margin-top:.5em; }
-  .quadlab b { color:var(--accent); font-weight:800; }
-  .corner { position:absolute; top:4%; right:4%; height:7%; max-height:none !important; }
-  .footer { position:absolute; bottom:2.5%; right:4%; font-size:.9vw; color:var(--muted); }
+  .pgrid ul { list-style:none; padding:0; margin:.6em 0 0; }
+  .pgrid li { font-size:1.15vw; color:var(--muted); line-height:1.4; margin:.3em 0; }
+
+  /* Bento: everything in one view */
+  .bento { position:absolute; inset:5% 3.5%; display:grid; grid-template-columns:repeat(5, 1fr);
+           grid-template-rows:repeat(3, 1fr); gap:1vw; }
+  .tile { background:#f5f5f7; border-radius:1.4vw; padding:1vw; display:flex; flex-direction:column;
+          justify-content:center; align-items:center; text-align:center; overflow:hidden; }
+  .tile .tn { font-size:3.4vw; font-weight:800; letter-spacing:-.03em; line-height:1; }
+  .tile .tt { font-size:1.1vw; font-weight:600; margin-top:.55em; line-height:1.3; }
+  .tile .ts { font-size:.95vw; color:var(--muted); margin-top:.3em; }
+  .tile.blue { background:var(--accent); color:#fff; } .tile.blue .ts { color:#d6e0ff; }
+  .tile.dark { background:#111418; color:#fff; } .tile.dark .ts { color:#9aa3b2; }
+  .tile.center { grid-column:2 / 5; grid-row:1 / 3; background:#fff; border:1px solid #e6e8ec; }
+  .tile.center img { max-height:22vh; }
+  .tile.center .cn { font-size:4.6vw; font-weight:800; letter-spacing:-.02em; margin-top:.2em; }
+  .tile.center .cs { font-size:1.6vw; color:var(--muted); margin-top:.2em; }
+  .tile.chart { grid-column:2 / 4; padding:.6vw; background:#fff; border:1px solid #e6e8ec; }
+  .tile.chart img { max-height:100%; max-width:100%; }
 </style>
 </head>
 <body>
 <div id="deck"></div>
 <div class="footer"><span id="num"></span></div>
 <script>
-// Each entry is one slide. kind: section | img | photo | num | (default text).
-// say = the one sentence on screen; sub = optional small line under it.
+// Each entry is one slide.
+//   kind: hero | section | num | photo | img | timeline | readlist | team | partners | bento | (default: one sentence)
+//   vis:  a visual that stays fixed in the middle while `say` changes at the bottom (see VIS below)
+//   say = the one sentence on screen; sub = optional small line under it.
 const F = "../figures/", A = "assets/";
 const S = [
   {kind: "hero", corner: true},
@@ -72,27 +159,31 @@ const S = [
   {img: A + "utmist_logo.png", kind: "img", say: "A UTMIST research project"},
 
   {kind: "section", say: "The problem"},
-  {say: "AI language models read text as small pieces called tokens."},
-  {say: "To understand each token, the model looks back at every token before it."},
-  {say: "This looking-back step is called attention."},
-  {kind: "quad", say: "Watch what happens as the document grows."},
-  {say: "Double the document, and attention does four times the work."},
-  {kind: "num", num: "8 billion", say: "comparisons for one 128,000-token document", sub: "each token compares itself with every token before it, and this repeats in all 1,024 attention heads of the model"},
+  {vis: "tokens", step: 0, say: "AI language models read text as small pieces called tokens."},
+  {vis: "tokens", step: 1, say: "To understand each token, the model looks back at every token before it."},
+  {vis: "attn", say: "This looking-back step is called attention.", sub: "every token's query (Q) is compared with every earlier token's key (K)"},
+  {vis: "quad", say: "Watch what happens as the document grows."},
+  {vis: "quad", say: "Double the document, and attention does four times the work."},
+  {kind: "num", num: "8 billion", say: "comparisons for one 128,000-token document", sub: "per attention head — and the model has 1,024 of them"},
   {say: "That's why long documents are slow and expensive."},
 
   {kind: "section", say: "The idea"},
   {say: "What if each token only looked at what matters?"},
-  {say: "That's called sparse attention."},
-  {say: "Older methods, like Big Bird, look at fixed spots."},
-  {say: "Bigger Bird chooses where to look based on what the text says."},
+  {vis: "models", say: "That's the idea behind sparse attention.", sub: "only a few tokens matter for understanding any one token"},
+  {vis: "models", hl: true, say: "Many faster-attention designs exist. We started from Big Bird."},
+  {vis: "bb", step: 1, say: "Big Bird mixes three fixed patterns. First: a few global tokens everyone sees."},
+  {vis: "bb", step: 2, say: "Second: the nearby text."},
+  {vis: "bb", step: 3, say: "Third: a few random spots."},
+  {vis: "bb", step: 4, say: "Together: the same fixed shape, whatever the text says."},
+  {vis: "win", step: 1, say: "Big Bird's window takes everything nearby."},
+  {vis: "win", step: 2, say: "Bigger Bird picks the spots based on what the text says."},
 
   {kind: "section", say: "How we test it"},
   {say: "Skipping text is easy. Still understanding it is the hard part."},
-  {say: "So we hide one fact inside a huge document."},
-  {kind: "prompt", say: "Then we ask for it."},
-  {say: "If our shortcut skips that fact, the model can't answer."},
-  {say: "It only counts if the whole 7-digit number is right."},
-  {say: "We compare against the normal model, on the exact same documents."},
+  {vis: "prompt", say: "So we hide one fact inside a huge document, then ask for it."},
+  {vis: "prompt", say: "If our shortcut skips that fact, the model can't answer."},
+  {vis: "prompt", say: "It only counts if the whole 7-digit number is right."},
+  {vis: "prompt", say: "We compare against the normal model, on the exact same documents."},
 
   {kind: "section", say: "The road here"},
   {say: "For months, every shortcut we tried failed on long documents."},
@@ -100,37 +191,37 @@ const S = [
   {say: "They broke at 128,000 tokens.", sub: "about 400 pages: the most this model can read"},
   {say: "Even when we handed the model the answer, it still failed."},
   {say: "So finding the fact wasn't the real problem."},
-
-  {kind: "img", img: F + "recall_layers.png", say: "We measured how blurry each layer's view of the document gets."},
-  {say: "Small blur in the middle of the document adds up over 32 layers."},
+  {vis: "img", img: F + "recall_layers.png", say: "We measured how blurry each layer's view of the document gets."},
+  {vis: "img", img: F + "recall_layers.png", say: "Small blur in the middle of the document adds up over 32 layers."},
 
   {kind: "section", say: "Our fix"},
-  {say: "Each token now looks at four things."},
-  {say: "One: the very beginning of the document."},
-  {say: "Two: the nearby text, in full detail."},
-  {say: "Three: a few hundred spots the question cares about."},
-  {say: "Four: the question itself reads everything."},
-  {kind: "img", img: F + "ablations.png", say: "Surprise: looking at fewer spots worked better than more."},
-  {say: "No retraining. Same model, same weights."},
+  {vis: "fix", step: 0, say: "Each token now looks at four things."},
+  {vis: "fix", step: 1, say: "One: the very beginning of the document."},
+  {vis: "fix", step: 2, say: "Two: the nearby text, in full detail."},
+  {vis: "fix", step: 3, say: "Three: a few hundred spots the question cares about."},
+  {vis: "fix", step: 4, say: "Four: the question itself reads everything."},
+  {vis: "img", img: F + "ablations.png", say: "Surprise: looking at fewer spots worked better than more."},
+  {vis: "img", img: F + "ablations.png", say: "No retraining. Same model, same weights."},
 
   {kind: "section", say: "Results"},
   {kind: "num", num: "30 / 30", say: "correct on 128,000-token documents"},
   {kind: "num", num: "28 / 30", say: "for the normal model", sub: "same documents; that 2-question gap is too small to count as a win"},
   {kind: "num", num: "1.9×", say: "faster to read the document"},
-  {kind: "img", img: F + "scaling.png", say: "The longer the document, the bigger the speed gap."},
-  {say: "Normal model: double the length, about three times the time."},
-  {say: "Bigger Bird: double the length, two times the time."},
-  {kind: "img", img: F + "loglog.png", say: "That's linear growth, not quadratic."},
-  {kind: "img", img: F + "depth.png", say: "It works wherever the fact is hidden."},
+  {vis: "img", img: F + "scaling.png", say: "The longer the document, the bigger the speed gap."},
+  {vis: "img", img: F + "scaling.png", say: "Normal model: double the length, about three times the time."},
+  {vis: "img", img: F + "scaling.png", say: "Bigger Bird: double the length, two times the time."},
+  {vis: "img", img: F + "loglog.png", say: "That's linear growth, not quadratic.", sub: "measured slope 1.01 for Bigger Bird vs 1.65 for the normal model"},
+  {vis: "img", img: F + "depth.png", say: "It works wherever the fact is hidden."},
 
   {kind: "section", say: "Harder tests"},
   {say: "What if there are lookalike facts, or many answers?"},
-  {kind: "img", img: F + "tasks.png", say: "Up to 65,000 tokens, Bigger Bird matches or beats the normal model."},
-  {kind: "prompt2", say: "Asked for all four numbers, Bigger Bird found all four. The normal model stopped at one."},
+  {vis: "img", img: F + "tasks.png", say: "Up to 65,000 tokens, Bigger Bird matches or beats the normal model."},
+  {vis: "img", img: F + "tasks.png", say: "At 128,000 tokens, most of these stump both models.", sub: "12 prompts per test, so small differences aren't significant yet"},
+  {vis: "prompt2", say: "Asked for all four numbers, Bigger Bird found all four. The normal model stopped at one."},
 
   {kind: "section", say: "Looking ahead"},
-  {kind: "img", img: F + "attn_bench.png", say: "At a million tokens, our attention is 18 times faster."},
-  {say: "That's speed only. This model can't read that far yet."},
+  {vis: "img", img: F + "attn_bench.png", say: "At a million tokens, our attention is 18 times faster."},
+  {vis: "img", img: F + "attn_bench.png", say: "That's speed only. This model can't read that far yet."},
 
   {kind: "section", say: "What it can't do yet"},
   {say: "On essay-like text at 128,000 tokens, it's behind.", sub: "11 out of 24 correct, vs 17 for the normal model"},
@@ -145,6 +236,7 @@ const S = [
   {kind: "section", say: "How we got here"},
   {kind: "photo", img: A + "devcon_proposal.png", say: "February 2026: we pitched an idea at UTMIST DevCon."},
   {kind: "photo", img: A + "devcon_team.jpg", say: "This is the team."},
+  {kind: "team", say: "Leads"},
   {kind: "timeline", say: "Ten months, from hiring to results."},
   {kind: "timeline", tl: 0, say: "January to February: we hired the team.", sub: "first round of hiring"},
   {kind: "timeline", tl: 1, say: "February 7: our first public talk, at UTMIST DevCon."},
@@ -159,6 +251,7 @@ const S = [
   {kind: "timeline", tl: 8, say: "September to October: faster GPUs on Modal, and our best results yet."},
   {kind: "partners", say: "Thank you to our compute partners"},
 
+  {kind: "bento"},
   {kind: "hero", say: "Thank you", corner: true},
 ];
 
@@ -173,6 +266,15 @@ const PROMPT2 = `… <span class="needle">The special magic violet-thistle is: 3
 
 Bigger Bird:  3201885, 7474932, 1236801, 3579629
 Normal model: 3201885.`;
+
+const TEAM = [
+  {img: "thomas.jpg", initial: "T", name: "Thomas Lee", role: "Project Manager",
+   pts: ["Started on the team as a developer", "Product AI Engineer shipping rugged GPUs for NASA and the biggest US defense companies", "Managed 4 winning projects · Hack the North solo winner"]},
+  {img: "derek.jpg", initial: "D", name: "Derek Chen", role: "Co-Lead",
+   pts: ["3rd-year Engineering Physics", "Founder of Bigger Bird"]},
+  {img: "han.jpg", initial: "H", name: "Han Fang", role: "Co-Lead",
+   pts: ["3rd-year EngSci, ECE major", "Joined as co-lead"]},
+];
 
 const PARTNERS = [
   {img: "utmist_logo.png", cap: "Support and community from day one."},
@@ -204,42 +306,105 @@ const TIMELINE = [
   ["Jul", "Prof. Guerzhoy's support"], ["Jul–Sep", "Digital Research Alliance of Canada"],
   ["Late Jul", "Switch to a chat-style model (R1-Llama-8B)"], ["Sep–Oct", "Modal GPUs, best results"]];
 
+const BENTO = [
+  {cls: "blue", n: "30/30", t: "correct at 128K tokens", s: "normal model: 28/30"},
+  {cls: "center"},
+  {n: "1.9×", t: "faster to read 128K tokens"},
+  {n: "1.01", t: "growth slope: linear", s: "normal model: 1.65"},
+  {cls: "dark", n: "17.8×", t: "faster attention at 1M tokens"},
+  {n: "32/32", t: "layers sparse"},
+  {cls: "chart", img: F + "scaling.png"},
+  {n: "11/12", t: "multi-key test at 65K", s: "normal model: 9/12"},
+  {cls: "blue", n: "0", t: "retraining", s: "same model, same weights"},
+];
+
+// ---- Stage visuals ----
+const face = (p, cls) => `<img class="${cls}" src="${A}${p.img}" alt="${p.name || ""}"` +
+  (p.initial ? ` onerror="this.outerHTML='<div class=&quot;initial&quot;>${p.initial}</div>'"` : "") + `>`;
+const cells = (n, f) => Array.from({length: n}, (_, j) => `<i class="${f(j)}"></i>`).join("");
+const RAND = new Set(["0,4", "1,7", "2,2", "3,5", "4,0", "4,6", "4,8", "5,3", "6,5", "7,1", "7,7", "8,4", "9,2", "9,6"]);
+const bbCell = (kind) => (j) => {
+  const r = Math.floor(j / 10), c = j % 10;
+  const g = r < 2 || c < 2, b = Math.abs(r - c) <= 1, o = RAND.has(r + "," + c);
+  if (kind === "g") return g ? "g" : "";
+  if (kind === "b") return b ? "b" : "";
+  if (kind === "o") return o ? "o" : "";
+  return g ? "g" : b ? "b" : o ? "o" : "";
+};
+const TOKS = ["The", "grass", "is", "green", ".", "The", "sky", "is", "blue", "."];
+const FIX_SPOTS = new Set([7, 12, 15]);
+
+const VIS = {
+  img: s => `<img src="${s.img}" alt="">`,
+  tokens: s => `<div class="toks">${TOKS.map((t, j) =>
+      `<span class="tok${s.step && j === TOKS.length - 2 ? " cur" : s.step && j < TOKS.length - 2 ? " back" : ""}">${t}</span>`).join("")}</div>` +
+    `<div class="toknote">${s.step ? "“blue” looks back at every token before it" : "a word, part of a word, or punctuation"}</div>`,
+  attn: () => `<div class="formula">Attention(<span class="qc">Q</span>, <span class="kc">K</span>, <i>V</i>) = softmax(<span class="qc">Q</span><span class="kc">K</span><sup>T</sup> / √<i>d</i>) <i>V</i></div>
+    <div class="vecs"><div class="vec vq">Q<sub>1</sub> Q<sub>2</sub> Q<sub>3</sub> … Q<sub>n</sub></div>
+    <div class="vec vk">K<sub>1</sub> K<sub>2</sub> K<sub>3</sub> … K<sub>n</sub></div></div>`,
+  quad: () => `<canvas class="quadcv" width="660" height="480"></canvas><div class="quadlab"></div>`,
+  models: s => `<div class="chips">${["BigBird", "Longformer", "Linformer", "Reformer", "Performer", "Mamba"].map(m =>
+      `<span class="chip${s.hl && m === "BigBird" ? " hl" : ""}">${m}</span>`).join("")}</div>`,
+  bb: s => `<div class="bbrow">` + [["g", "Globals"], ["b", "Locals"], ["o", "Randoms"], ["all", "Big Bird"]].map(([k, lab], j) =>
+      (j ? `<span class="op${s.step > j ? "" : " off"}">${j === 3 ? "=" : "+"}</span>` : "") +
+      `<div class="bbp${s.step > j ? "" : " off"}"><div class="grid">${cells(100, bbCell(k))}</div><b>${lab}</b></div>`).join("") + `</div>`,
+  win: s => `<div class="wrow${s.step === 1 ? "" : " off"}"><div class="strip">${cells(25, j => j === 12 ? "r" : j >= 6 && j <= 18 ? "y" : "")}</div><b>Big Bird window · everything nearby</b></div>
+    <div class="wrow${s.step === 2 ? "" : " off"}"><div class="strip">${cells(25, j => j === 12 ? "r" : [2, 5, 9, 10, 15, 19, 23].includes(j) ? "p" : "")}</div><b>Bigger Bird window · chosen by content</b></div>`,
+  fix: s => {
+    const f = j => j === 25 ? "r cur" : s.step >= 1 && j < 3 ? "g" : s.step >= 2 && j >= 19 && j < 25 ? "b"
+      : s.step >= 3 && FIX_SPOTS.has(j) ? "p" : s.step >= 4 && j >= 27 ? "q" : "";
+    const L = [["var(--g)", "beginning"], ["var(--b)", "nearby text"], ["var(--p)", "spots the question cares about"], ["#3a3f4a", "the question reads everything"]];
+    return `<div class="strip">${cells(30, f)}</div>
+      <div class="legend"><span><i style="background:var(--r)"></i>current token</span>${L.map(([c, t], j) =>
+        `<span class="${s.step > j ? "" : "off"}"><i style="background:${c}"></i>${t}</span>`).join("")}</div>`;
+  },
+  prompt: () => `<div class="prompt">${PROMPT}</div>`,
+  prompt2: () => `<div class="prompt">${PROMPT2}</div>`,
+};
+
 const deck = document.getElementById("deck");
 S.forEach(s => {
   const el = document.createElement("section");
-  el.className = "slide " + (s.kind === "photo" ? "k-img k-photo" : s.kind ? "k-" + s.kind : "");
+  const kind = s.vis ? "stage" : s.kind === "photo" ? "k-img k-photo" : s.kind ? "k-" + s.kind : "";
+  el.className = "slide " + kind;
   let html = "";
   if (s.corner) html += `<img class="corner" src="${A}utmist_logo.png" alt="UTMIST">`;
-  if (s.kind === "timeline")
-    html += `<div class="timeline">${TIMELINE.map(([d, t], j) =>
-      `<div class="tl${s.tl === undefined ? "" : j === s.tl ? " on" : " off"}"><b>${d}</b><span>${t}</span></div>`).join("")}</div>`;
-  if (s.kind === "hero")
-    html += `<div class="row"><img src="${A}bigger_bird_logo.png" alt="Bigger Bird"><div><div class="big">Bigger Bird</div><div class="small">Content-Aware Sparse Transformer Attention</div></div></div>`;
-  if (s.kind === "readlist")
-    html += (s.say ? `<p class="say" style="margin:0 0 .9em">${s.say}</p>` : "") +
-            `<div class="readlist">` + READLIST.map(([t, tag]) => `<div>${t}<span>${tag}</span></div>`).join("") + `</div>`;
-  if (s.kind === "partners")
-    html += (s.say ? `<p class="ptitle">${s.say}</p>` : "") + `<div class="pgrid">` + PARTNERS.map(p => {
-      let v = p.text
-        ? `<div class="pimg"><div class="wordmark">${p.text}</div></div>`
-        : `<div class="pimg"><img class="${p.round || p.initial ? "face" : "plogo"}" src="${A}${p.img}" alt="${p.name || ""}"` +
-          (p.initial ? ` onerror="this.outerHTML='<div class=&quot;pimg&quot;><div class=&quot;initial&quot;>${p.initial}</div></div>'"` : "") + `></div>`;
-      return `<div class="p">${v}${p.name ? `<p class="pname">${p.name}</p>` : ""}<p class="pcap">${p.cap}</p></div>`;
-    }).join("") + `</div>`;
-  else if (s.img) html += `<img src="${s.img}" alt="">`;
-  if (s.kind === "quad") html += `<canvas class="quadcv" width="660" height="480"></canvas><div class="quadlab"></div>`;
-  if (s.kind === "num") html += `<div class="num">${s.num}</div>`;
-  if (s.kind === "prompt") html += `<div class="prompt">${PROMPT}</div>`;
-  if (s.kind === "prompt2") html += `<div class="prompt">${PROMPT2}</div>`;
-  if (s.say && !["partners", "readlist"].includes(s.kind)) html += `<p class="say"${s.kind && s.kind.startsWith("prompt") ? ' style="font-size:2.4vw;margin-top:.7em"' : ""}>${s.say}</p>`;
-  if (s.sub) html += `<p class="sub">${s.sub}</p>`;
+  if (s.vis) {
+    html += `<div class="vis">${VIS[s.vis](s)}</div><div class="cap"><p class="say">${s.say}</p>${s.sub ? `<p class="sub">${s.sub}</p>` : ""}</div>`;
+  } else if (s.kind === "bento") {
+    html += `<div class="bento">` + BENTO.map(b => b.cls === "center"
+      ? `<div class="tile center"><img src="${A}bigger_bird_logo.png" alt=""><div class="cn">Bigger Bird</div><div class="cs">Content-aware sparse attention for long documents</div></div>`
+      : b.cls === "chart" ? `<div class="tile chart"><img src="${b.img}" alt=""></div>`
+      : `<div class="tile ${b.cls || ""}"><div class="tn">${b.n}</div><div class="tt">${b.t}</div>${b.s ? `<div class="ts">${b.s}</div>` : ""}</div>`).join("") + `</div>`;
+  } else {
+    if (s.kind === "timeline")
+      html += `<div class="timeline">${TIMELINE.map(([d, t], j) =>
+        `<div class="tl${s.tl === undefined ? "" : j === s.tl ? " on" : " off"}"><b>${d}</b><span>${t}</span></div>`).join("")}</div>`;
+    if (s.kind === "hero")
+      html += `<div class="row"><img src="${A}bigger_bird_logo.png" alt="Bigger Bird"><div><div class="big">Bigger Bird</div><div class="small">Content-Aware Sparse Transformer Attention</div></div></div>`;
+    if (s.kind === "readlist")
+      html += `<p class="say" style="margin:0 0 .9em">${s.say}</p><div class="readlist">` +
+              READLIST.map(([t, tag]) => `<div>${t}<span>${tag}</span></div>`).join("") + `</div>`;
+    if (s.kind === "team")
+      html += `<p class="ptitle">${s.say}</p><div class="pgrid">` + TEAM.map(p =>
+        `<div class="p"><div class="pimg">${face(p, "face")}</div><p class="pname">${p.name}</p><p class="prole">${p.role}</p>` +
+        `<ul>${p.pts.map(t => `<li>${t}</li>`).join("")}</ul></div>`).join("") + `</div>`;
+    if (s.kind === "partners")
+      html += `<p class="ptitle">${s.say}</p><div class="pgrid">` + PARTNERS.map(p =>
+        `<div class="p"><div class="pimg">${face(p, p.round || p.initial ? "face" : "plogo")}</div>` +
+        `${p.name ? `<p class="pname">${p.name}</p>` : ""}<p class="pcap">${p.cap}</p></div>`).join("") + `</div>`;
+    if (s.img && !["partners", "team"].includes(s.kind)) html += `<img src="${s.img}" alt="">`;
+    if (s.kind === "num") html += `<div class="num">${s.num}</div>`;
+    if (s.say && !["readlist", "team", "partners"].includes(s.kind)) html += `<p class="say">${s.say}</p>`;
+    if (s.sub) html += `<p class="sub">${s.sub}</p>`;
+  }
   el.innerHTML = html;
   deck.appendChild(el);
 });
 
-// Animated slide: n tokens double each cycle; the triangle of comparisons fills in.
-document.querySelectorAll(".k-quad").forEach(el => {
-  const cv = el.querySelector("canvas"), lab = el.querySelector(".quadlab"), ctx = cv.getContext("2d");
+// Growth animation: n tokens double each cycle; the triangle of comparisons fills in.
+document.querySelectorAll(".quadcv").forEach(cv => {
+  const lab = cv.parentElement.querySelector(".quadlab"), ctx = cv.getContext("2d");
   const seq = [8, 16, 32, 64, 128];
   function draw() {
     const t = performance.now() / 2400;
