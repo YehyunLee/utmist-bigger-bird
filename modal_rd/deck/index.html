@@ -52,11 +52,6 @@
                     font-size:8vh; font-weight:800; display:flex; align-items:center; justify-content:center; }
   .pgrid .pname { font-size:1.7vw; font-weight:800; margin:.7em 0 0; }
   .pgrid .pcap { font-size:1.2vw; color:var(--muted); margin:.4em 0 0; line-height:1.35; }
-  .ov { text-align:left; width:78%; }
-  .ov .oi { display:flex; gap:1.2em; align-items:baseline; padding:.45em 0; border-bottom:1px solid #eef0f3; }
-  .ov .n { color:var(--accent); font-weight:800; font-size:1.6vw; min-width:2.6em; }
-  .ov .t { font-size:2.2vw; font-weight:700; }
-  .ov .d { font-size:1.3vw; color:var(--muted); margin-left:auto; padding-left:1em; }
   .quadcv { width:60vh; height:44vh; }
   .quadlab { font-size:2vw; font-weight:600; color:var(--muted); margin-top:.5em; }
   .quadlab b { color:var(--accent); font-weight:800; }
@@ -75,8 +70,6 @@ const S = [
   {kind: "hero", corner: true},
   {kind: "hero", say: "An LLM that can scale efficiently to longer context windows.", corner: true},
   {img: A + "utmist_logo.png", kind: "img", say: "A UTMIST research project"},
-  {kind: "agenda", say: "Overview"},
-  {say: "Today, here's what we found."},
 
   {kind: "section", say: "The problem"},
   {say: "AI language models read text as small pieces called tokens."},
@@ -188,15 +181,6 @@ const PARTNERS = [
   {img: "prof_guerzhoy.png", round: true, name: "Prof. Michael Guerzhoy", cap: "Supervision and access to research compute."},
 ];
 
-const AGENDA = [
-  ["The problem", "why long documents are expensive"],
-  ["The idea", "look only at what matters"],
-  ["How we test it", "one fact hidden in a huge document"],
-  ["Results", "and what it can't do yet"],
-  ["What's next", ""],
-  ["How we got here", "the team, the timeline, our compute partners"],
-];
-
 const READLIST = [
   ["BigBird", "the paper we build on · arxiv.org"],
   ["Longformer", "arxiv.org"],
@@ -231,10 +215,6 @@ S.forEach(s => {
       `<div class="tl${s.tl === undefined ? "" : j === s.tl ? " on" : " off"}"><b>${d}</b><span>${t}</span></div>`).join("")}</div>`;
   if (s.kind === "hero")
     html += `<div class="row"><img src="${A}bigger_bird_logo.png" alt="Bigger Bird"><div><div class="big">Bigger Bird</div><div class="small">Content-Aware Sparse Transformer Attention</div></div></div>`;
-  if (s.kind === "agenda")
-    html += (s.say ? `<p class="say" style="margin:0 0 .7em">${s.say}</p>` : "") +
-            `<div class="ov">` + AGENDA.map(([t, d], j) =>
-              `<div class="oi"><span class="n">0${j + 1}</span><span class="t">${t}</span>${d ? `<span class="d">${d}</span>` : ""}</div>`).join("") + `</div>`;
   if (s.kind === "readlist")
     html += (s.say ? `<p class="say" style="margin:0 0 .9em">${s.say}</p>` : "") +
             `<div class="readlist">` + READLIST.map(([t, tag]) => `<div>${t}<span>${tag}</span></div>`).join("") + `</div>`;
@@ -251,7 +231,7 @@ S.forEach(s => {
   if (s.kind === "num") html += `<div class="num">${s.num}</div>`;
   if (s.kind === "prompt") html += `<div class="prompt">${PROMPT}</div>`;
   if (s.kind === "prompt2") html += `<div class="prompt">${PROMPT2}</div>`;
-  if (s.say && !["partners", "readlist", "agenda"].includes(s.kind)) html += `<p class="say"${s.kind && s.kind.startsWith("prompt") ? ' style="font-size:2.4vw;margin-top:.7em"' : ""}>${s.say}</p>`;
+  if (s.say && !["partners", "readlist"].includes(s.kind)) html += `<p class="say"${s.kind && s.kind.startsWith("prompt") ? ' style="font-size:2.4vw;margin-top:.7em"' : ""}>${s.say}</p>`;
   if (s.sub) html += `<p class="sub">${s.sub}</p>`;
   el.innerHTML = html;
   deck.appendChild(el);
