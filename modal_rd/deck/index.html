@@ -27,6 +27,16 @@
             white-space:pre-wrap; }
   .needle { background:#fff3b0; font-weight:700; } .q { background:#dbe7ff; font-weight:700; }
   .dim { color:var(--muted); }
+  .timeline { display:flex; width:100%; margin-bottom:1.6em; }
+  .tl { flex:1; border-top:5px solid var(--accent); padding:.7em .6em 0 0; text-align:left; }
+  .tl b { display:block; font-size:1.35vw; } .tl span { font-size:1.15vw; color:var(--muted); line-height:1.35; display:block; }
+  .partner .face { width:22vh; height:22vh; border-radius:50%; object-fit:cover; max-height:none; }
+  .partner .logo { max-height:22vh; }
+  .partner .initial { width:22vh; height:22vh; border-radius:50%; background:#e8edfb; color:var(--accent);
+                      font-size:10vh; font-weight:800; display:flex; align-items:center; justify-content:center; }
+  .partner .wordmark { font-size:4vw; font-weight:800; color:#c8102e; line-height:1.15; max-width:80%; }
+  .partner .name { font-size:2.6vw; font-weight:800; margin:.5em 0 0; }
+  .partner .say { font-size:2.1vw; font-weight:500; color:var(--muted); margin-top:.3em; }
   .corner { position:absolute; top:4%; right:4%; height:7%; max-height:none !important; }
   .footer { position:absolute; bottom:2.5%; right:4%; font-size:.9vw; color:var(--muted); }
 </style>
@@ -43,6 +53,25 @@ const S = [
   {img: A + "utmist_logo.png", kind: "img", say: "A UTMIST research project"},
   {kind: "photo", img: A + "devcon_proposal.png", say: "February 2026: we pitched an idea at UTMIST DevCon."},
   {kind: "photo", img: A + "devcon_team.jpg", say: "This is the team."},
+
+  {kind: "section", say: "Our journey"},
+  {kind: "timeline", say: "Ten months, from hiring to results."},
+  {say: "January to February: we hired the team.", sub: "first round of hiring"},
+  {say: "February 7: our first public talk, at UTMIST DevCon."},
+  {say: "February to March: we read the research.", sub: "literature review sessions"},
+  {say: "April: our first experiments, on smaller BERT-style models."},
+  {say: "Until July: we trained on Jerry's A100 GPU, with UTMIST's support."},
+  {say: "July: Professor Michael Guerzhoy started supporting us."},
+  {say: "July to September: we ran on Canada's national research computers.", sub: "Digital Research Alliance of Canada"},
+  {say: "Late July: we moved to a modern AI model.", sub: "DeepSeek-R1-Distill-Llama-8B, the kind of model behind chat assistants"},
+  {say: "September to October: faster GPUs on Modal, and our best results yet."},
+
+  {kind: "section", say: "Thank you to our compute partners"},
+  {kind: "partner", img: A + "utmist_logo.png", name: "UTMIST", say: "Support and community from day one."},
+  {kind: "partner", img: A + "jerry.png", initial: "J", name: "Jerry", say: "Lent us his A100 GPU until July."},
+  {kind: "partner", text: "Digital Research Alliance of Canada", name: "", say: "National research computing, July to September."},
+  {kind: "partner", img: A + "prof_guerzhoy.png", round: true, name: "Prof. Michael Guerzhoy", say: "Supervision and access to research compute."},
+
   {say: "Today, here's what we found."},
 
   {kind: "section", say: "The problem"},
@@ -130,13 +159,26 @@ const PROMPT2 = `… <span class="needle">The special magic violet-thistle is: 3
 Bigger Bird:  3201885, 7474932, 1236801, 3579629
 Normal model: 3201885.`;
 
+const TIMELINE = [
+  ["Jan–Feb", "Hiring the team"], ["Feb 7", "DevCon talk"], ["Feb–Mar", "Reading the research"],
+  ["Apr", "First experiments on BERT-style models"], ["Until Jul", "Jerry's A100 GPU, with UTMIST"],
+  ["Jul", "Prof. Guerzhoy's support; switch to a chat-style model (R1-Llama-8B)"],
+  ["Jul–Sep", "Digital Research Alliance of Canada"], ["Sep–Oct", "Modal GPUs, best results"]];
+
 const deck = document.getElementById("deck");
 S.forEach(s => {
   const el = document.createElement("section");
   el.className = "slide " + (s.kind === "photo" ? "img photo" : s.kind || "");
   let html = "";
   if (s.corner) html += `<img class="corner" src="${A}utmist_logo.png" alt="UTMIST">`;
-  if (s.img) html += `<img src="${s.img}" alt="">`;
+  if (s.kind === "timeline")
+    html += `<div class="timeline">${TIMELINE.map(([d, t]) => `<div class="tl"><b>${d}</b><span>${t}</span></div>`).join("")}</div>`;
+  if (s.kind === "partner") {
+    if (s.text) html += `<div class="wordmark">${s.text}</div>`;
+    else html += `<img class="${s.round || s.initial ? "face" : "logo"}" src="${s.img}" alt="${s.name}"` +
+                 (s.initial ? ` onerror="this.outerHTML='<div class=&quot;initial&quot;>${s.initial}</div>'"` : "") + `>`;
+    if (s.name) html += `<p class="name">${s.name}</p>`;
+  } else if (s.img) html += `<img src="${s.img}" alt="">`;
   if (s.kind === "num") html += `<div class="num">${s.num}</div>`;
   if (s.kind === "prompt") html += `<div class="prompt">${PROMPT}</div>`;
   if (s.kind === "prompt2") html += `<div class="prompt">${PROMPT2}</div>`;
