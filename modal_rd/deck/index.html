@@ -42,7 +42,7 @@
   <div class="kpis">
     <div class="kpi"><div class="big">1.9×</div><p>faster prefill than dense FlashAttention at ~127K tokens (2.65× with a 4K window)</p></div>
     <div class="kpi"><div class="big">30/30</div><p>exact retrieval @~127K at depths 0.5 and 0.1 (dense: 28/30, 28/30)</p></div>
-    <div class="kpi"><div class="big">O(n)</div><p>attention work per layer with fixed budgets; every layer sparse</p></div>
+    <div class="kpi"><div class="big">17.8×</div><p>faster attention at 1M tokens; measured scaling exponent 1.01 vs dense 1.65</p></div>
   </div>
   <p class="muted">Synthetic RULER-style needle-in-a-haystack, same prompts as earlier CCDB rounds. Details and limits at the end.</p>
 </section>
@@ -129,6 +129,45 @@
 </section>
 
 <section class="slide">
+  <h2>Subquadratic in practice: fitted scaling exponent</h2>
+  <div class="row">
+    <div class="col" style="flex:1.3"><img src="../figures/loglog.png" alt="log-log scaling"></div>
+    <div class="col">
+      <ul>
+        <li>Fit of full-model prefill time against prompt tokens, 32K to 127K, log-log:</li>
+        <li>Dense FlashAttention: <b>slope 1.65</b>, heading toward quadratic as attention dominates.</li>
+        <li>Bigger Bird v3: <span class="good">slope 1.01</span>, i.e. linear.</li>
+        <li>Below ~32K the MLPs dominate and the sparse path is no faster.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h2>Attention alone, past the model's context limit</h2>
+  <div class="row">
+    <div class="col" style="flex:1.3"><img src="../figures/attn_bench.png" alt="attention benchmark"></div>
+    <div class="col">
+      <ul>
+        <li>One attention layer with Llama-8B shapes on synthetic tensors, including routing and the exact tail.</li>
+        <li><b>1M tokens: 18.4 s → 1.04 s (17.8×)</b>. 512K: 8.7×. 256K: 4.2×.</li>
+        <li>Each doubling of context: dense costs ~4× more, Bigger Bird ~2× more.</li>
+        <li class="muted">Speed only. The model's position limit is 128K, so quality past 128K is untested.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h2>Beyond one needle: harder RULER variants (untuned)</h2>
+  <img src="../figures/tasks.png" alt="harder tasks" style="max-height:44vh">
+  <ul>
+    <li>At ~32K and ~65K the final config <span class="good">matches or beats dense on every variant</span>: multi-key 11/12 vs 9/12 and multi-value 6/12 vs 3/12 exact at 65K.</li>
+    <li>At ~127K these tasks are hard even for dense (multi-key 4/12, multi-value 0/12). On the essay haystack, sparse <span class="bad">trails dense: 11/24 vs 17/24</span>.</li>
+  </ul>
+</section>
+
+<section class="slide">
   <h2>Robustness: needle depth @~127K</h2>
   <div class="row">
     <div class="col" style="flex:1.4"><img src="../figures/depth.png" alt="depth"></div>
@@ -165,6 +204,7 @@
   <h2>Limits (please read before quoting numbers)</h2>
   <ul>
     <li><b>Task:</b> repository synthetic NIAH (RULER-style), one model, one seed; not the official RULER suite or general long-context QA.</li>
+    <li><b>Natural-text haystack at 127K:</b> sparse trails dense (11/24 vs 17/24 exact). Sweeping budgets, window, tail and routing queries did not close the gap.</li>
     <li><b>Routing is not prefix-invariant:</b> routes come from the final prompt queries. Attention edges are causal, but earlier positions' routes depend on later text, so this is a full-prompt prefill method, not streaming attention.</li>
     <li><b>Tuned</b> on 6 prompts (depths 0.1/0.25/0.5 @127K); 30-prompt confirmation is within-task.</li>
     <li><b>Subquadratic = prefill attention work</b> with fixed budgets. MLPs dominate below ~32K; the KV cache still stores every token (memory unchanged); decode is exact O(n) per token.</li>
@@ -175,7 +215,8 @@
 <section class="slide">
   <h2>Next steps</h2>
   <ul>
-    <li><b>Harder tasks:</b> multi-key / multi-value NIAH, variable tracking, LongBench-v2 subset.</li>
+    <li><b>Close the 127K natural-text gap</b> (essay haystack 11/24 vs dense 17/24), e.g. per-chunk routing or light sparse-aware fine-tuning.</li>
+    <li><b>Real-text evals:</b> LongBench-v2 subset, variable tracking; quality past 128K with a longer-context model.</li>
     <li><b>Speed:</b> route the 16K window through a native sliding-window FlashAttention kernel; fuse the exact tail; budgets that grow with sqrt(n).</li>
     <li><b>Causal variant:</b> per-chunk routing from visible prefix queries, for prefix invariance and cache equivalence.</li>
     <li><b>Understand the routed-budget sweet spot:</b> why do too many shared question-routed columns degrade mid-prompt tokens?</li>
