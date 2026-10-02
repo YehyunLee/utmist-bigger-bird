@@ -31,6 +31,7 @@
   .timeline { display:flex; width:100%; margin-bottom:1.6em; }
   .tl { flex:1; border-top:5px solid var(--accent); padding:.7em .6em 0 0; text-align:left; }
   .tl b { display:block; font-size:1.35vw; } .tl span { font-size:1.15vw; color:var(--muted); line-height:1.35; display:block; }
+  .ptitle { font-size:3.4vw; font-weight:800; color:var(--accent); margin:0 0 1em; letter-spacing:-.015em; }
   .pgrid { display:flex; gap:3vw; align-items:stretch; justify-content:center; width:100%; }
   .pgrid .p { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; }
   .pgrid .pimg { height:17vh; display:flex; align-items:center; justify-content:center; }
@@ -70,8 +71,7 @@ const S = [
   {say: "Late July: we moved to a modern AI model.", sub: "DeepSeek-R1-Distill-Llama-8B, the kind of model behind chat assistants"},
   {say: "September to October: faster GPUs on Modal, and our best results yet."},
 
-  {kind: "section", say: "Thank you to our compute partners"},
-  {kind: "partners"},
+  {kind: "partners", say: "Thank you to our compute partners"},
 
   {say: "Today, here's what we found."},
 
@@ -182,7 +182,7 @@ S.forEach(s => {
   if (s.kind === "timeline")
     html += `<div class="timeline">${TIMELINE.map(([d, t]) => `<div class="tl"><b>${d}</b><span>${t}</span></div>`).join("")}</div>`;
   if (s.kind === "partners")
-    html += `<div class="pgrid">` + PARTNERS.map(p => {
+    html += (s.say ? `<p class="ptitle">${s.say}</p>` : "") + `<div class="pgrid">` + PARTNERS.map(p => {
       let v = p.text
         ? `<div class="pimg"><div class="wordmark">${p.text}</div></div>`
         : `<div class="pimg"><img class="${p.round || p.initial ? "face" : "plogo"}" src="${A}${p.img}" alt="${p.name || ""}"` +
@@ -193,7 +193,7 @@ S.forEach(s => {
   if (s.kind === "num") html += `<div class="num">${s.num}</div>`;
   if (s.kind === "prompt") html += `<div class="prompt">${PROMPT}</div>`;
   if (s.kind === "prompt2") html += `<div class="prompt">${PROMPT2}</div>`;
-  if (s.say) html += `<p class="say"${s.kind && s.kind.startsWith("prompt") ? ' style="font-size:2.4vw;margin-top:.7em"' : ""}>${s.say}</p>`;
+  if (s.say && s.kind !== "partners") html += `<p class="say"${s.kind && s.kind.startsWith("prompt") ? ' style="font-size:2.4vw;margin-top:.7em"' : ""}>${s.say}</p>`;
   if (s.sub) html += `<p class="sub">${s.sub}</p>`;
   el.innerHTML = html;
   deck.appendChild(el);
