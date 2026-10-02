@@ -229,7 +229,7 @@ const S = [
   {vis: "bb", step: 3, say: "Third: a few random spots."},
   {vis: "bb", step: 4, say: "Together: the same fixed shape, whatever the text says."},
   {vis: "win", step: 1, say: "Big Bird's window takes everything nearby."},
-  {vis: "win", step: 2, say: "Bigger Bird lets the question choose where to look."},
+  {vis: "win", step: 2, say: "Bigger Bird chooses where to look, based on what it needs to answer."},
 
   {kind: "section", say: "How we test it"},
   {say: "Anyone can skip text. The question is whether the model still gets the right answer."},
@@ -267,12 +267,17 @@ const S = [
   {vis: "fix", step: 0, say: "Each token now looks at four things."},
   {vis: "fix", step: 1, say: "One: the very beginning of the document."},
   {vis: "fix", step: 2, say: "Two: the nearby text, in full detail."},
-  {vis: "fix", step: 3, say: "Three: a few hundred spots the question finds relevant."},
-  {vis: "fix", step: 4, say: "Four: the question itself reads the whole document."},
+  {vis: "fix", step: 3, say: "Three: a few hundred spots that matter for the answer."},
+  {vis: "fix", step: 4, say: "Four: right before answering, the model reads the whole document."},
+  {say: "Does the question have to be at the end?", sub: "every test so far put it there"},
+  {kind: "num", num: "6 / 6", say: "with the question moved near the start", sub: "5 of 6 when it is the very first line · same 6 documents, still about 2× faster · a quick check, not a full test yet"},
+  {say: "Why? Every answer is written starting from the end.", sub: "so the end is where the model needs the clearest view"},
+  {say: "The end reads everything, including the question, wherever it is."},
+  {say: "So it knows what to look for, and picks the spots that hold the answer."},
   {vis: "img", img: F + "ablations.png", say: "Two dials decided everything. Left: how many spots each head keeps."},
   {vis: "img", img: F + "ablations.png", say: "Too few, and the fact gets skipped: 0 of 6 at 64 spots."},
   {vis: "img", img: F + "ablations.png", say: "But more is not better. Thousands of spots dilute the signal.", sub: "best at a few hundred; only 3 of 6 with 4,000"},
-  {vis: "img", img: F + "ablations.png", say: "Right: how much of the end reads everything.", sub: "none → 2 of 6 · a little → 4 of 6 · 256 tokens → 6 of 6"},
+  {vis: "img", img: F + "ablations.png", say: "Right: how much of the text right before the answer reads everything.", sub: "none → 2 of 6 · a little → 4 of 6 · 256 tokens → 6 of 6"},
   {vis: "img", img: F + "ablations.png", say: "No retraining. Same model, same weights."},
 
   {kind: "section", say: "Results"},
@@ -307,7 +312,6 @@ const S = [
   {vis: "ex", ex: 4, say: "On essay-like text at 128,000 tokens, it's behind.", sub: "11 out of 24 correct, vs 17 for the normal model"},
   {say: "These are test puzzles, not real-world questions yet."},
   {say: "It saves computing time, not memory."},
-  {say: "It needs the question at the end of the prompt.", sub: "the reading list is built from the question, so it can't be prepared in advance"},
 
   {kind: "section", say: "Next"},
   {say: "Test on real-world questions."},
@@ -478,12 +482,12 @@ const VIS = {
     const f = j => last ? (j === 29 ? "r cur" : END(j) ? "q" : "all")
       : j === 25 ? "r cur" : s.step >= 1 && j < 3 ? "g" : s.step >= 2 && j >= 19 && j < 25 ? "b"
       : s.step >= 3 && FIX_SPOTS.has(j) ? "p" : s.step >= 3 && END(j) ? "e" : "";
-    const L = [["var(--g)", "beginning"], ["var(--b)", "nearby text"], ["var(--p)", "spots the question finds relevant"]];
+    const L = [["var(--g)", "beginning"], ["var(--b)", "nearby text"], ["var(--p)", "spots that matter for the answer"]];
     const legend = last
-      ? `<span><i style="background:var(--r)"></i>a token in the question</span><span><i style="background:#e3e6ec"></i>it can see everything before it</span>`
+      ? `<span><i style="background:var(--r)"></i>a token right before the answer</span><span><i style="background:#e3e6ec"></i>it can see everything before it</span>`
       : `<span><i style="background:var(--r)"></i>current token</span>${L.map(([c, t], j) =>
           `<span class="${s.step > j ? "" : "off"}"><i style="background:${c}"></i>${t}</span>`).join("")}` +
-        `<span class="${s.step >= 3 ? "" : "off"}"><i style="background:#fff;border:2.5px solid #3a3f4a"></i>the question</span>`;
+        `<span class="${s.step >= 3 ? "" : "off"}"><i style="background:#fff;border:2.5px solid #3a3f4a"></i>right before the answer</span>`;
     return `<div class="strip">${cells(30, f)}</div><div class="legend">${legend}</div>`;
   },
   route: s => {
