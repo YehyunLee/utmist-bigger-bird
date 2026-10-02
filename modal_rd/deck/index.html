@@ -272,7 +272,7 @@ const S = [
   {vis: "route", step: 1, say: "How are the spots picked? The end takes one quick look over the whole document.", sub: "every earlier spot gets a score: how much attention the end gives it"},
   {vis: "route", step: 2, say: "Each attention head keeps its top 512 spots.", sub: "32 heads in each of 32 layers, each with its own list"},
   {vis: "route", step: 3, say: "Every token can then use those spots.", sub: "the quick look touches each spot once, so it stays cheap"},
-  {kind: "num", num: "1 in 4", say: "heads put the hidden number on their list", sub: "picking at random would do that about 1 in 250 times"},
+  {kind: "num", num: "1 in 4", say: "heads put the hidden number on their list", sub: "a random pick lands on any one spot only about 1 in 250 times"},
   {say: "Does the question have to be at the end?", sub: "every test so far put it there"},
   {kind: "num", num: "6 / 6", say: "with the question moved near the start", sub: "5 of 6 when it is the very first line · same 6 documents, still about 2× faster · a quick check, not a full test yet"},
   {say: "Why? Every answer is written starting from the end.", sub: "so the end is where the model needs the clearest view"},
