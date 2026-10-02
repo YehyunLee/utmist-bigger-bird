@@ -92,6 +92,37 @@
   .legend span.off { opacity:.15; }
   .legend i { width:1.4vw; height:1.4vw; border-radius:3px; display:inline-block; }
 
+  .strip i.e { border-color:#3a3f4a; border-width:2.5px; } .strip i.all { background:#e3e6ec; border-color:#cfd3da; }
+
+  /* Struggle wall */
+  .wall { display:grid; grid-template-columns:repeat(5, 1fr); gap:.7vw; width:100%; }
+  .wt { border:2px solid #e1e4ea; border-radius:.8vw; padding:.55em .5em; text-align:left; background:#fff; transition:opacity .25s, background .25s, border-color .25s; }
+  .wt b { display:block; font-size:.95vw; color:var(--muted); font-weight:700; }
+  .wt span { display:block; font-size:1.15vw; font-weight:600; line-height:1.25; margin-top:.15em; }
+  .wt.dim { opacity:.3; }
+  .wt.hi { background:#eef3ff; border-color:var(--accent); } .wt.hi b { color:var(--accent); }
+  .wt.last { background:var(--accent); border-color:var(--accent); color:#fff; } .wt.last b { color:#cfdcff; }
+
+  /* Stats */
+  .stats { display:flex; gap:3.5vw; justify-content:center; }
+  .stat { text-align:center; transition:opacity .25s; }
+  .stat.off { opacity:.12; }
+  .stat .sn { font-size:7vw; font-weight:800; color:var(--accent); line-height:1; letter-spacing:-.03em; }
+  .stat .sl { font-size:1.4vw; color:var(--muted); font-weight:600; margin-top:.4em; max-width:14vw; }
+
+  /* Scoreboard */
+  .board { border-collapse:collapse; font-size:1.55vw; }
+  .board th { font-size:1.1vw; color:var(--muted); font-weight:600; text-align:left; padding:.4em 1.2em; }
+  .board td { padding:.55em 1.2em; border-top:1px solid #eef0f3; text-align:left; font-weight:600; }
+  .board td.n { text-align:center; font-weight:800; }
+  .board .bad { color:var(--bad); } .board .good { color:var(--good); }
+  .board small { font-weight:500; color:var(--muted); font-size:.75em; }
+  .board tr.off { opacity:.12; }
+
+  /* Test examples */
+  .exbox .prompt { font-size:1.25vw; max-width:100%; }
+  .extag { font-size:1.2vw; font-weight:700; color:var(--accent); margin-bottom:.7em; text-transform:uppercase; letter-spacing:.07em; }
+
   /* Prompt boxes */
   .prompt { font-family: ui-monospace, Menlo, monospace; font-size:1.35vw; line-height:1.6; text-align:left;
             background:#f7f8fa; border:1px solid #d8dde3; border-radius:12px; padding:1em 1.3em; max-width:92%;
@@ -184,11 +215,24 @@ const S = [
   {vis: "prompt", say: "If our shortcut skips that fact, the model can't answer."},
   {vis: "prompt", say: "It only counts if the whole 7-digit number is right."},
   {vis: "prompt", say: "We compare against the normal model, on the exact same documents."},
+  {say: "We also time how long each model takes to read the document.", sub: "same GPU, same settings, one H100"},
+  {say: "The normal model uses FlashAttention, the fast standard version."},
+  {say: "We run 30 different documents at 128,000 tokens."},
+  {say: "Six were used to tune our method. The other 24 were never touched."},
 
   {kind: "section", say: "The road here"},
-  {say: "For months, every shortcut we tried failed on long documents."},
+  {vis: "wall", step: 0, say: "We tried 19 different designs."},
+  {vis: "wall", step: 1, say: "The first fifteen ran on small models, on small tests."},
+  {vis: "wall", step: 2, say: "Then we moved to a modern model and a much harder test."},
+  {vis: "stats", step: 1, say: "19 designs."},
+  {vis: "stats", step: 2, say: "8 full rounds of tests on Canada's research computers."},
+  {vis: "stats", step: 3, say: "86 recorded runs on Modal."},
+  {vis: "stats", step: 4, say: "And about 290 saved versions of the code along the way."},
+  {say: "For months, every fully sparse version failed on long documents."},
   {say: "They worked at 65,000 tokens.", sub: "about a 200-page book"},
   {say: "They broke at 128,000 tokens.", sub: "about 400 pages: the most this model can read"},
+  {vis: "board", step: 1, say: "Every fully sparse version scored 0 or 1 out of 6 at 128,000 tokens."},
+  {vis: "board", step: 2, say: "Keeping the first 16 layers normal fixed it, but that is still quadratic."},
   {say: "Even when we handed the model the answer, it still failed."},
   {say: "So finding the fact wasn't the real problem."},
   {vis: "img", img: F + "recall_layers.png", say: "We measured how blurry each layer's view of the document gets."},
@@ -198,8 +242,8 @@ const S = [
   {vis: "fix", step: 0, say: "Each token now looks at four things."},
   {vis: "fix", step: 1, say: "One: the very beginning of the document."},
   {vis: "fix", step: 2, say: "Two: the nearby text, in full detail."},
-  {vis: "fix", step: 3, say: "Three: a few hundred spots the question cares about."},
-  {vis: "fix", step: 4, say: "Four: the question itself reads everything."},
+  {vis: "fix", step: 3, say: "Three: a few hundred spots that the end of the document points to."},
+  {vis: "fix", step: 4, say: "Four: the very end of the document reads everything."},
   {vis: "img", img: F + "ablations.png", say: "Surprise: looking at fewer spots worked better than more."},
   {vis: "img", img: F + "ablations.png", say: "No retraining. Same model, same weights."},
 
@@ -214,7 +258,15 @@ const S = [
   {vis: "img", img: F + "depth.png", say: "It works wherever the fact is hidden."},
 
   {kind: "section", say: "Harder tests"},
-  {say: "What if there are lookalike facts, or many answers?"},
+  {say: "The first test hides one easy fact. Real documents aren't that tidy."},
+  {vis: "tests", say: "So we run six kinds of test."},
+  {vis: "ex", ex: 0, say: "Lookalike facts: four similar facts are hidden. We ask about just one."},
+  {vis: "ex", ex: 1, say: "Many answers: one key hides four numbers. We ask for all four."},
+  {vis: "ex", ex: 2, say: "Many questions: we ask four things at once."},
+  {vis: "ex", ex: 3, say: "Long random IDs: the fact is a long code instead of a short number."},
+  {vis: "ex", ex: 4, say: "Real text: the filler is an essay instead of repeated sentences."},
+  {say: "When there are several answers, it only counts if every one is right.", sub: "we also track the share of answers found"},
+  {say: "Each test uses 12 new documents, none used for tuning."},
   {vis: "img", img: F + "tasks.png", say: "Up to 65,000 tokens, Bigger Bird matches or beats the normal model."},
   {vis: "img", img: F + "tasks.png", say: "At 128,000 tokens, most of these stump both models.", sub: "12 prompts per test, so small differences aren't significant yet"},
   {vis: "prompt2", say: "Asked for all four numbers, Bigger Bird found all four. The normal model stopped at one."},
@@ -266,6 +318,47 @@ const PROMPT2 = `… <span class="needle">The special magic violet-thistle is: 3
 
 Bigger Bird:  3201885, 7474932, 1236801, 3579629
 Normal model: 3201885.`;
+
+const WALL = [
+  ["", "DeepSeek-style top-K"], ["", "Sliding window + linear"], ["", "Dynamic global tokens"], ["", "Permuted block-sparse"], ["", "Bigger Bird, first version"],
+  ["", "DeepSeek + blocks"], ["", "Sparsity that varies by layer"], ["", "Drop unimportant tokens"], ["", "Attention speculation"], ["", "Grouped queries + sparse"],
+  ["", "Native sparse attention"], ["", "S2-HHST"], ["", "Dynamic context window"], ["", "Token drop + top-K"], ["", "Bigger Bird on BigBird"],
+  ["", "NSA free-rider"], ["", "Coarse-to-fine"], ["", "Confidence-gated"], ["", "Bigger Bird, fast kernel"],
+];
+const STATS = [["19", "designs"], ["8", "cluster rounds"], ["86", "Modal runs"], ["~290", "code versions"]];
+const BOARD = [
+  ["Normal (dense) attention", "6/6", "6/6", "good"],
+  ["Previous Bigger Bird", "6/6", "0/6", "bad"],
+  ["DeepSeek-style top-K", "—", "0/6", "bad"],
+  ["4× bigger budget", "—", "1/3", "bad"],
+  ["Top-K, first 16 layers normal", "—", "6/6", "good", "still quadratic"],
+];
+const EX = [
+  ["Lookalike facts", `… <span class="needle">The special magic golden-falcon is: 7606921.</span> …
+… <span class="needle">The special magic violet-thistle is: 3201885.</span> …  <span class="dim">(two more)</span>
+<span class="q">What is the special magic golden-falcon?</span>
+
+Answer: 7606921`],
+  ["Many answers", `… <span class="needle">The special magic violet-thistle is: 3201885.</span> …
+… <span class="needle">The special magic violet-thistle is: 7474932.</span> …  <span class="dim">(two more)</span>
+<span class="q">What are all values for the special magic violet-thistle?</span>
+
+Answer: all four numbers`],
+  ["Many questions", `… <span class="needle">The special magic golden-falcon is: 7606921.</span> …
+… <span class="needle">The special magic violet-thistle is: 3201885.</span> …  <span class="dim">(two more)</span>
+<span class="q">What are the special magics for: golden-falcon, violet-thistle, amber-lantern, silver-reef?</span>
+
+Answer: all four numbers`],
+  ["Long random IDs", `… <span class="needle">The special magic 6f1c2a9e-41b7-4d0a-9c3e-b27a5d81e0f4 is: 3d84a1c0-7be2-49f1-a6d5-0c93e7b1f258.</span> …
+<span class="q">What is the special magic 6f1c2a9e-41b7-4d0a-9c3e-b27a5d81e0f4?</span>
+
+Answer: 3d84a1c0-7be2-49f1-a6d5-0c93e7b1f258`],
+  ["Real text", `<span class="dim">The best way to do great work is to find what you genuinely love. Most people drift toward
+whatever is easiest, and only later ask what they would have chosen …</span>
+… <span class="needle">The special magic golden-falcon is: 7606921.</span> …
+<span class="dim">… (tens of thousands of tokens of essays) …</span>
+<span class="q">What is the special magic golden-falcon?</span>`],
+];
 
 const TEAM = [
   {img: "thomas.jpg", initial: "T", name: "Thomas Lee", role: "Project Manager",
@@ -351,13 +444,30 @@ const VIS = {
   win: s => `<div class="wrow${s.step === 1 ? "" : " off"}"><div class="strip">${cells(25, j => j === 12 ? "r" : j >= 6 && j <= 18 ? "y" : "")}</div><b>Big Bird window · everything nearby</b></div>
     <div class="wrow${s.step === 2 ? "" : " off"}"><div class="strip">${cells(25, j => j === 12 ? "r" : [2, 5, 9, 10, 15, 19, 23].includes(j) ? "p" : "")}</div><b>Bigger Bird window · chosen by content</b></div>`,
   fix: s => {
-    const f = j => j === 25 ? "r cur" : s.step >= 1 && j < 3 ? "g" : s.step >= 2 && j >= 19 && j < 25 ? "b"
-      : s.step >= 3 && FIX_SPOTS.has(j) ? "p" : s.step >= 4 && j >= 27 ? "q" : "";
-    const L = [["var(--g)", "beginning"], ["var(--b)", "nearby text"], ["var(--p)", "spots the question cares about"], ["#3a3f4a", "the question reads everything"]];
-    return `<div class="strip">${cells(30, f)}</div>
-      <div class="legend"><span><i style="background:var(--r)"></i>current token</span>${L.map(([c, t], j) =>
-        `<span class="${s.step > j ? "" : "off"}"><i style="background:${c}"></i>${t}</span>`).join("")}</div>`;
+    const END = j => j >= 27, last = s.step >= 4;
+    const f = j => last ? (j === 29 ? "r cur" : END(j) ? "q" : "all")
+      : j === 25 ? "r cur" : s.step >= 1 && j < 3 ? "g" : s.step >= 2 && j >= 19 && j < 25 ? "b"
+      : s.step >= 3 && FIX_SPOTS.has(j) ? "p" : s.step >= 3 && END(j) ? "e" : "";
+    const L = [["var(--g)", "beginning"], ["var(--b)", "nearby text"], ["var(--p)", "spots the end points to"]];
+    const legend = last
+      ? `<span><i style="background:var(--r)"></i>a token at the end</span><span><i style="background:#e3e6ec"></i>it can see everything before it</span>`
+      : `<span><i style="background:var(--r)"></i>current token</span>${L.map(([c, t], j) =>
+          `<span class="${s.step > j ? "" : "off"}"><i style="background:${c}"></i>${t}</span>`).join("")}` +
+        `<span class="${s.step >= 3 ? "" : "off"}"><i style="background:#fff;border:2.5px solid #3a3f4a"></i>the end of the document</span>`;
+    return `<div class="strip">${cells(30, f)}</div><div class="legend">${legend}</div>`;
   },
+  wall: s => `<div class="wall">${WALL.map(([n, t], j) => {
+      const k = j + 1, era2 = k >= 16;
+      const cls = s.step === 0 ? "" : s.step === 1 ? (era2 ? "dim" : "hi") : (era2 ? (k === 19 ? "last" : "hi") : "dim");
+      return `<div class="wt ${cls}"><b>#${k}</b><span>${t}</span></div>`;
+    }).join("")}</div>`,
+  stats: s => `<div class="stats">${STATS.map(([n, l], j) =>
+      `<div class="stat${s.step > j ? "" : " off"}"><div class="sn">${n}</div><div class="sl">${l}</div></div>`).join("")}</div>`,
+  board: s => `<table class="board"><tr><th>Approach</th><th>~65K tokens</th><th>~128K tokens</th></tr>` + BOARD.map(([a, x, y, cls, note], j) =>
+      `<tr class="${j < 4 || s.step >= 2 ? "" : "off"}"><td>${a}${note ? ` <small>${note}</small>` : ""}</td><td class="n">${x}</td><td class="n ${cls}">${y}</td></tr>`).join("") + `</table>`,
+  tests: () => `<div class="chips">${["One hidden fact", "Lookalike facts", "Many answers", "Many questions", "Long random IDs", "Real text"].map((m, j) =>
+      `<span class="chip${j === 0 ? " hl" : ""}">${m}</span>`).join("")}</div>`,
+  ex: s => `<div class="exbox"><div class="extag">${EX[s.ex][0]}</div><div class="prompt">${EX[s.ex][1]}</div></div>`,
   prompt: () => `<div class="prompt">${PROMPT}</div>`,
   prompt2: () => `<div class="prompt">${PROMPT2}</div>`,
 };
