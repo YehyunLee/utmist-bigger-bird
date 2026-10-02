@@ -96,7 +96,7 @@ def _attention(Q, K, V, IDX, MASK, OUT,
 
 def bigger_bird_flash(q, k, v, indices, *, front=64, window=256,
                      token_mask=None, num_heads=32, route_chunk=None,
-                     scale=1.0, block_m=64, block_n=64):
+                     scale=1.0, block_m=64, block_n=64, num_warps=4, num_stages=2):
     """Q/K/V [BH,N,D]; unique route indices [BH,G,K], -1 marks invalid.
 
 Routing groups must align with query tiles. This kernel only enforces
@@ -129,5 +129,5 @@ causal *edges*: the routing policy must separately ensure prefix invariance.
         *(token_mask.stride() if token_mask is not None else (0, 0)),
         n, t, offset, d, num_heads, min(front, n), window, indices.shape[-1],
         route_chunk, token_mask is not None, scale, block_m, block_n,
-        triton.next_power_of_2(d), num_warps=4, num_stages=2)
+        triton.next_power_of_2(d), num_warps=num_warps, num_stages=num_stages)
     return out
