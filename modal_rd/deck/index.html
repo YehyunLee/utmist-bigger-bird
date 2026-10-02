@@ -50,7 +50,7 @@ const S = [
   {say: "To understand each token, the model looks back at every token before it."},
   {say: "This looking-back step is called attention."},
   {say: "Double the document, and attention does four times the work."},
-  {kind: "num", num: "8 billion", say: "comparisons for one 128,000-token document", sub: "and that's repeated in every layer of the model"},
+  {kind: "num", num: "8 billion", say: "comparisons for one 128,000-token document", sub: "each token compares itself with every token before it, and this repeats in all 1,024 attention heads of the model"},
   {say: "That's why long documents are slow and expensive."},
 
   {kind: "section", say: "The idea"},
