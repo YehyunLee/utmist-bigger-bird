@@ -1,0 +1,312 @@
+{
+  "task": "niah",
+  "exp": 19,
+  "seq_len": 32768,
+  "depth": 0.5,
+  "n_examples": 30,
+  "eval_samples": 128,
+  "seed": 42,
+  "dtype": "bfloat16",
+  "max_new_tokens": 10,
+  "use_cache": false,
+  "is_causal": true,
+  "model": "DeepSeek-R1-Distill-Llama-8B",
+  "gpu": "NVIDIA H100 80GB HBM3 MIG 3g.40gb",
+  "attention_config": {
+    "middle_min": 512,
+    "middle_max": 2048,
+    "middle_ratio": 64,
+    "window_min": 1024,
+    "window_max": 8192,
+    "local_min": 128,
+    "local_max": 512,
+    "globals_min": 32,
+    "globals_max": 64,
+    "recent_window": 128,
+    "diversity": 0.05,
+    "low_rank_dim": 128,
+    "routing_mode": "last_query",
+    "route_chunk": 1024,
+    "use_triton": true
+  },
+  "commit": "eb7650a9046946514a4e4185c6a26539fb40e804",
+  "job_id": "61764659",
+  "setup_seconds": 24.01666936185211,
+  "prompt_manifest": "benchmark_artifacts/ruler_matched_exp19_61764659/prompts_32768.json",
+  "tokenizer": "checkpoint BPE (shared and hash-verified)",
+  "dense_backend": null,
+  "phase": "warm",
+  "accuracy": 0.7333333333333333,
+  "examples": [
+    {
+      "idx": 0,
+      "label": 2,
+      "pred": 2,
+      "correct": true,
+      "generated": " 2009792. The grass is green."
+    },
+    {
+      "idx": 1,
+      "label": 6,
+      "pred": -1,
+      "correct": false,
+      "generated": " The grass is green. The sky is blue."
+    },
+    {
+      "idx": 2,
+      "label": 3,
+      "pred": 3,
+      "correct": true,
+      "generated": " 8827893. The five boxing wizards jump"
+    },
+    {
+      "idx": 3,
+      "label": 2,
+      "pred": 2,
+      "correct": true,
+      "generated": " 8084752. The answer is: "
+    },
+    {
+      "idx": 4,
+      "label": 3,
+      "pred": 3,
+      "correct": true,
+      "generated": " 3824583. The five boxing wizards jump"
+    },
+    {
+      "idx": 5,
+      "label": 8,
+      "pred": -1,
+      "correct": false,
+      "generated": " The five boxing wizards jump quickly. The sphinx"
+    },
+    {
+      "idx": 6,
+      "label": 7,
+      "pred": 7,
+      "correct": true,
+      "generated": " 6632447. kly. The five"
+    },
+    {
+      "idx": 7,
+      "label": 0,
+      "pred": 0,
+      "correct": true,
+      "generated": " 9122090. The judge is puzzled."
+    },
+    {
+      "idx": 8,
+      "label": 5,
+      "pred": 5,
+      "correct": true,
+      "generated": " 7634655. The answer is: "
+    },
+    {
+      "idx": 9,
+      "label": 9,
+      "pred": 9,
+      "correct": true,
+      "generated": " 1555249.\n\nThe grass is green."
+    },
+    {
+      "idx": 10,
+      "label": 5,
+      "pred": 5,
+      "correct": true,
+      "generated": " 1029835. The five boxing wizards jump"
+    },
+    {
+      "idx": 11,
+      "label": 6,
+      "pred": 6,
+      "correct": true,
+      "generated": " 9313336. The grass is green."
+    },
+    {
+      "idx": 12,
+      "label": 5,
+      "pred": 5,
+      "correct": true,
+      "generated": " 9366035.  The five boxing wizards"
+    },
+    {
+      "idx": 13,
+      "label": 7,
+      "pred": 7,
+      "correct": true,
+      "generated": " 4690787. The grass is green."
+    },
+    {
+      "idx": 14,
+      "label": 7,
+      "pred": 7,
+      "correct": true,
+      "generated": " 3254287. The grass is green."
+    },
+    {
+      "idx": 15,
+      "label": 5,
+      "pred": -1,
+      "correct": false,
+      "generated": " The sky is blue. The five boxing wizards jump"
+    },
+    {
+      "idx": 16,
+      "label": 7,
+      "pred": 7,
+      "correct": true,
+      "generated": " 7913977. quiz dwarf. The grass"
+    },
+    {
+      "idx": 17,
+      "label": 2,
+      "pred": 2,
+      "correct": true,
+      "generated": " 6590122. The answer is: "
+    },
+    {
+      "idx": 18,
+      "label": 6,
+      "pred": 1,
+      "correct": false,
+      "generated": " 1. The grass is green. The sky"
+    },
+    {
+      "idx": 19,
+      "label": 8,
+      "pred": -1,
+      "correct": false,
+      "generated": " The five boxing wizards jump quickly. The sphinx"
+    },
+    {
+      "idx": 20,
+      "label": 7,
+      "pred": 7,
+      "correct": true,
+      "generated": " 1234567. The grass is green."
+    },
+    {
+      "idx": 21,
+      "label": 8,
+      "pred": 8,
+      "correct": true,
+      "generated": " 12345678. The five boxing wizards jump"
+    },
+    {
+      "idx": 22,
+      "label": 3,
+      "pred": 7,
+      "correct": false,
+      "generated": " 1234567. The grass is green."
+    },
+    {
+      "idx": 23,
+      "label": 3,
+      "pred": 3,
+      "correct": true,
+      "generated": " 7705803. The grass is green."
+    },
+    {
+      "idx": 24,
+      "label": 8,
+      "pred": -1,
+      "correct": false,
+      "generated": " The grass is green. The sky is blue."
+    },
+    {
+      "idx": 25,
+      "label": 2,
+      "pred": 2,
+      "correct": true,
+      "generated": " 9235532. The grass is green."
+    },
+    {
+      "idx": 26,
+      "label": 5,
+      "pred": 9,
+      "correct": false,
+      "generated": " The special magic onyx-thistle is 459"
+    },
+    {
+      "idx": 27,
+      "label": 4,
+      "pred": 4,
+      "correct": true,
+      "generated": " 7105714.\n\n**Final Answer**\n\\"
+    },
+    {
+      "idx": 28,
+      "label": 7,
+      "pred": 7,
+      "correct": true,
+      "generated": " 1064927. The five boxing wizards jump"
+    },
+    {
+      "idx": 29,
+      "label": 5,
+      "pred": 5,
+      "correct": true,
+      "generated": " 6262565. The sky is blue."
+    }
+  ],
+  "time_seconds": 156.33094658143818,
+  "example_seconds": [
+    4.709720341488719,
+    4.751241850666702,
+    4.7084662932902575,
+    4.722632993943989,
+    4.750179851427674,
+    4.6919881189242005,
+    4.728938379324973,
+    4.751385002397001,
+    4.743094110861421,
+    4.746245657093823,
+    4.932294552214444,
+    4.733877640217543,
+    4.6951818047091365,
+    4.741582797840238,
+    4.756331509910524,
+    4.760846161283553,
+    4.733738951385021,
+    4.751304573379457,
+    4.694634908810258,
+    4.751984292641282,
+    4.76294173579663,
+    4.7003609742969275,
+    4.745034169405699,
+    4.701818709261715,
+    4.702008416876197,
+    4.757552192546427,
+    4.711120218038559,
+    4.742755753919482,
+    4.741255208849907,
+    4.691544400528073
+  ],
+  "process_elapsed_seconds": 546.4811408463866,
+  "peak_memory_gb": 17.08558336,
+  "attention_diagnostics": {
+    "bigger_bird": {
+      "layers": 32,
+      "middle": 512,
+      "wide": 1024,
+      "local": 128,
+      "globals": 32,
+      "recent_window": 128,
+      "routing_mode": "last_query",
+      "route_chunk": 8192,
+      "configured_route_chunk": 1024,
+      "prefix_invariant": false,
+      "backend": "triton_sparse_flash",
+      "selection": "content_globals+local_mmr+long_range_mmr",
+      "route_slots": 672,
+      "block_m": 64,
+      "block_n": 64,
+      "query_tokens": 8139,
+      "source_tokens": 8139,
+      "cached_decode": false,
+      "reused_routes": false,
+      "decode_routing": "last_query"
+    }
+  },
+  "timing_note": "Cold includes first-use and compilation; warm repeats all 30 in the same process. Compilation is not isolated."
+}

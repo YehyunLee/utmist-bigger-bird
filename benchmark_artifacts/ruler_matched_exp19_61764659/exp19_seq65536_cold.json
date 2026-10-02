@@ -1,0 +1,312 @@
+{
+  "task": "niah",
+  "exp": 19,
+  "seq_len": 65536,
+  "depth": 0.5,
+  "n_examples": 30,
+  "eval_samples": 128,
+  "seed": 42,
+  "dtype": "bfloat16",
+  "max_new_tokens": 10,
+  "use_cache": false,
+  "is_causal": true,
+  "model": "DeepSeek-R1-Distill-Llama-8B",
+  "gpu": "NVIDIA H100 80GB HBM3 MIG 3g.40gb",
+  "attention_config": {
+    "middle_min": 512,
+    "middle_max": 2048,
+    "middle_ratio": 64,
+    "window_min": 1024,
+    "window_max": 8192,
+    "local_min": 128,
+    "local_max": 512,
+    "globals_min": 32,
+    "globals_max": 64,
+    "recent_window": 128,
+    "diversity": 0.05,
+    "low_rank_dim": 128,
+    "routing_mode": "last_query",
+    "route_chunk": 1024,
+    "use_triton": true
+  },
+  "commit": "eb7650a9046946514a4e4185c6a26539fb40e804",
+  "job_id": "61764659",
+  "setup_seconds": 52.47383475583047,
+  "prompt_manifest": "benchmarks/ruler_matched_exp19_61764659/prompts_65536.json",
+  "tokenizer": "checkpoint BPE (shared and hash-verified)",
+  "dense_backend": null,
+  "phase": "cold",
+  "accuracy": 0.5333333333333333,
+  "examples": [
+    {
+      "idx": 0,
+      "label": 7,
+      "pred": 7,
+      "correct": true,
+      "generated": " 6345717. k. The five boxing"
+    },
+    {
+      "idx": 1,
+      "label": 2,
+      "pred": 2,
+      "correct": true,
+      "generated": " 3769472. The grass is green."
+    },
+    {
+      "idx": 2,
+      "label": 5,
+      "pred": 5,
+      "correct": true,
+      "generated": " 7697545. The grass is green."
+    },
+    {
+      "idx": 3,
+      "label": 4,
+      "pred": 4,
+      "correct": true,
+      "generated": " 2911154. The five boxing wizards jump"
+    },
+    {
+      "idx": 4,
+      "label": 7,
+      "pred": -1,
+      "correct": false,
+      "generated": " The grass is green. The sky is blue."
+    },
+    {
+      "idx": 5,
+      "label": 5,
+      "pred": -1,
+      "correct": false,
+      "generated": " The grass is green. The sky is blue."
+    },
+    {
+      "idx": 6,
+      "label": 9,
+      "pred": 9,
+      "correct": true,
+      "generated": " 6790409. The five boxing wizards jump"
+    },
+    {
+      "idx": 7,
+      "label": 7,
+      "pred": -1,
+      "correct": false,
+      "generated": " A big sphinx of quartz. The grass is"
+    },
+    {
+      "idx": 8,
+      "label": 3,
+      "pred": 5,
+      "correct": false,
+      "generated": " 12345. The grass is green. The"
+    },
+    {
+      "idx": 9,
+      "label": 1,
+      "pred": -1,
+      "correct": false,
+      "generated": " A sphinx of big quartz. The grass is"
+    },
+    {
+      "idx": 10,
+      "label": 4,
+      "pred": 4,
+      "correct": true,
+      "generated": " 5637544. The five boxing wizards jump"
+    },
+    {
+      "idx": 11,
+      "label": 7,
+      "pred": -1,
+      "correct": false,
+      "generated": " The grass is green. The sky is blue."
+    },
+    {
+      "idx": 12,
+      "label": 6,
+      "pred": 5,
+      "correct": false,
+      "generated": " 12345. The grass is green. The"
+    },
+    {
+      "idx": 13,
+      "label": 5,
+      "pred": -1,
+      "correct": false,
+      "generated": " The five boxing wizards jump quickly. The grass is"
+    },
+    {
+      "idx": 14,
+      "label": 8,
+      "pred": 8,
+      "correct": true,
+      "generated": " 1336938. The grass is green."
+    },
+    {
+      "idx": 15,
+      "label": 1,
+      "pred": 1,
+      "correct": true,
+      "generated": " 5558051. 5. The five"
+    },
+    {
+      "idx": 16,
+      "label": 5,
+      "pred": 1,
+      "correct": false,
+      "generated": " 1014201. The five boxing wizards jump"
+    },
+    {
+      "idx": 17,
+      "label": 9,
+      "pred": 9,
+      "correct": true,
+      "generated": " 8683189.  The grass is green"
+    },
+    {
+      "idx": 18,
+      "label": 6,
+      "pred": -1,
+      "correct": false,
+      "generated": " All questions asked by five watched experts amaze the"
+    },
+    {
+      "idx": 19,
+      "label": 3,
+      "pred": -1,
+      "correct": false,
+      "generated": " The grass is green. The sky is blue."
+    },
+    {
+      "idx": 20,
+      "label": 6,
+      "pred": -1,
+      "correct": false,
+      "generated": " The grass is green. The sky is blue."
+    },
+    {
+      "idx": 21,
+      "label": 3,
+      "pred": 3,
+      "correct": true,
+      "generated": " 2373983. 2373983."
+    },
+    {
+      "idx": 22,
+      "label": 5,
+      "pred": 5,
+      "correct": true,
+      "generated": " 9255975.  The grass is green"
+    },
+    {
+      "idx": 23,
+      "label": 8,
+      "pred": -1,
+      "correct": false,
+      "generated": " The grass is green. The sky is blue."
+    },
+    {
+      "idx": 24,
+      "label": 2,
+      "pred": 2,
+      "correct": true,
+      "generated": " 8522652. of liquor jugs."
+    },
+    {
+      "idx": 25,
+      "label": 7,
+      "pred": 7,
+      "correct": true,
+      "generated": " 1749267. The five boxing wizards jump"
+    },
+    {
+      "idx": 26,
+      "label": 6,
+      "pred": -1,
+      "correct": false,
+      "generated": " The grass is green. The sky is blue."
+    },
+    {
+      "idx": 27,
+      "label": 3,
+      "pred": 3,
+      "correct": true,
+      "generated": " 6925883. The grass is green."
+    },
+    {
+      "idx": 28,
+      "label": 4,
+      "pred": 4,
+      "correct": true,
+      "generated": " 5045214. The grass is green."
+    },
+    {
+      "idx": 29,
+      "label": 5,
+      "pred": 5,
+      "correct": true,
+      "generated": " 3798155. The grass is green."
+    }
+  ],
+  "time_seconds": 551.7059650942683,
+  "example_seconds": [
+    29.66065833903849,
+    22.18455629888922,
+    22.228616795502603,
+    22.313346922397614,
+    10.659581727348268,
+    10.549652541987598,
+    10.571168618276715,
+    22.60294795036316,
+    22.25166639406234,
+    22.3365738382563,
+    22.520545130595565,
+    10.663160954602063,
+    14.384031847119331,
+    22.875267737545073,
+    18.636162605136633,
+    21.189633863046765,
+    22.530514449812472,
+    9.248246270231903,
+    22.43640440236777,
+    17.51110713928938,
+    18.483927393332124,
+    13.570465807802975,
+    21.707315589301288,
+    9.252118268050253,
+    22.429923934862018,
+    9.285141771659255,
+    23.09635589644313,
+    9.300196010619402,
+    9.290275258012116,
+    9.624530797824264
+  ],
+  "process_elapsed_seconds": 604.2586670666933,
+  "peak_memory_gb": 18.07190784,
+  "attention_diagnostics": {
+    "bigger_bird": {
+      "layers": 32,
+      "middle": 512,
+      "wide": 1024,
+      "local": 128,
+      "globals": 32,
+      "recent_window": 128,
+      "routing_mode": "last_query",
+      "route_chunk": 16384,
+      "configured_route_chunk": 1024,
+      "prefix_invariant": false,
+      "backend": "triton_sparse_flash",
+      "selection": "content_globals+local_mmr+long_range_mmr",
+      "route_slots": 672,
+      "block_m": 64,
+      "block_n": 64,
+      "query_tokens": 16354,
+      "source_tokens": 16354,
+      "cached_decode": false,
+      "reused_routes": false,
+      "decode_routing": "last_query"
+    }
+  },
+  "timing_note": "Cold includes first-use and compilation; warm repeats all 30 in the same process. Compilation is not isolated."
+}

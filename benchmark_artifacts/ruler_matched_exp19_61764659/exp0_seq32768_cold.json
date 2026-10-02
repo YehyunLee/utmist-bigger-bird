@@ -1,0 +1,273 @@
+{
+  "task": "niah",
+  "exp": 0,
+  "seq_len": 32768,
+  "depth": 0.5,
+  "n_examples": 30,
+  "eval_samples": 128,
+  "seed": 42,
+  "dtype": "bfloat16",
+  "max_new_tokens": 10,
+  "use_cache": false,
+  "is_causal": true,
+  "model": "DeepSeek-R1-Distill-Llama-8B",
+  "gpu": "NVIDIA H100 80GB HBM3 MIG 3g.40gb",
+  "attention_config": {},
+  "commit": "eb7650a9046946514a4e4185c6a26539fb40e804",
+  "job_id": "61764659",
+  "setup_seconds": 25.012826905585825,
+  "prompt_manifest": "benchmarks/ruler_matched_exp19_61764659/prompts_32768.json",
+  "tokenizer": "checkpoint BPE (shared and hash-verified)",
+  "dense_backend": "forced FLASH_ATTENTION",
+  "phase": "cold",
+  "accuracy": 1.0,
+  "examples": [
+    {
+      "idx": 0,
+      "label": 2,
+      "pred": 2,
+      "correct": true,
+      "generated": " 2009792.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 1,
+      "label": 6,
+      "pred": 6,
+      "correct": true,
+      "generated": " 4565286. So, the special magic"
+    },
+    {
+      "idx": 2,
+      "label": 3,
+      "pred": 3,
+      "correct": true,
+      "generated": " 8827893.\n\nAlright, so I've"
+    },
+    {
+      "idx": 3,
+      "label": 2,
+      "pred": 2,
+      "correct": true,
+      "generated": " 8084752.\n\nOkay, so I'm"
+    },
+    {
+      "idx": 4,
+      "label": 3,
+      "pred": 3,
+      "correct": true,
+      "generated": " 3824583.\n\nOkay, so I'm"
+    },
+    {
+      "idx": 5,
+      "label": 8,
+      "pred": 8,
+      "correct": true,
+      "generated": " 3330018. xens jump; do"
+    },
+    {
+      "idx": 6,
+      "label": 7,
+      "pred": 7,
+      "correct": true,
+      "generated": " 6632447. kly. So,"
+    },
+    {
+      "idx": 7,
+      "label": 0,
+      "pred": 0,
+      "correct": true,
+      "generated": " 9122090. e judge. All questions"
+    },
+    {
+      "idx": 8,
+      "label": 5,
+      "pred": 5,
+      "correct": true,
+      "generated": " 7634655.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 9,
+      "label": 9,
+      "pred": 9,
+      "correct": true,
+      "generated": " 1555249.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 10,
+      "label": 5,
+      "pred": 5,
+      "correct": true,
+      "generated": " 1029835.\n\nOkay, so I'm"
+    },
+    {
+      "idx": 11,
+      "label": 6,
+      "pred": 6,
+      "correct": true,
+      "generated": " 9313336.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 12,
+      "label": 5,
+      "pred": 5,
+      "correct": true,
+      "generated": " 9366035.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 13,
+      "label": 7,
+      "pred": 7,
+      "correct": true,
+      "generated": " 4690787.\n\nOkay, so I'm"
+    },
+    {
+      "idx": 14,
+      "label": 7,
+      "pred": 7,
+      "correct": true,
+      "generated": " 3254287.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 15,
+      "label": 5,
+      "pred": 5,
+      "correct": true,
+      "generated": " 1822285.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 16,
+      "label": 7,
+      "pred": 7,
+      "correct": true,
+      "generated": " 7913977. quiz nymph to vex dwarf"
+    },
+    {
+      "idx": 17,
+      "label": 2,
+      "pred": 2,
+      "correct": true,
+      "generated": " 6590122. maze the judge. A"
+    },
+    {
+      "idx": 18,
+      "label": 6,
+      "pred": 6,
+      "correct": true,
+      "generated": " 5968846.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 19,
+      "label": 8,
+      "pred": 8,
+      "correct": true,
+      "generated": " 7705248.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 20,
+      "label": 7,
+      "pred": 7,
+      "correct": true,
+      "generated": " 3618767. So, the special magic"
+    },
+    {
+      "idx": 21,
+      "label": 8,
+      "pred": 8,
+      "correct": true,
+      "generated": " 6138698.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 22,
+      "label": 3,
+      "pred": 3,
+      "correct": true,
+      "generated": " 6087463. So, the special magic"
+    },
+    {
+      "idx": 23,
+      "label": 3,
+      "pred": 3,
+      "correct": true,
+      "generated": " 7705803.\n\nOkay, so I'm"
+    },
+    {
+      "idx": 24,
+      "label": 8,
+      "pred": 8,
+      "correct": true,
+      "generated": " 1174448.\n\nOkay, so I'm"
+    },
+    {
+      "idx": 25,
+      "label": 2,
+      "pred": 2,
+      "correct": true,
+      "generated": " 9235532.  big sphinx of"
+    },
+    {
+      "idx": 26,
+      "label": 5,
+      "pred": 5,
+      "correct": true,
+      "generated": " 4592025. ize. A quick"
+    },
+    {
+      "idx": 27,
+      "label": 4,
+      "pred": 4,
+      "correct": true,
+      "generated": " 7105714.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 28,
+      "label": 7,
+      "pred": 7,
+      "correct": true,
+      "generated": " 1064927. quick jigs vex."
+    },
+    {
+      "idx": 29,
+      "label": 5,
+      "pred": 5,
+      "correct": true,
+      "generated": " 6262565.  jumps over the lazy"
+    }
+  ],
+  "time_seconds": 171.849344342947,
+  "example_seconds": [
+    5.6898113777861,
+    5.346667533740401,
+    5.287861622869968,
+    5.300289581529796,
+    5.338216703385115,
+    5.258839216083288,
+    5.304824207909405,
+    5.352135599590838,
+    5.305484062060714,
+    5.351952899247408,
+    5.350023969076574,
+    5.321637365035713,
+    5.265007144771516,
+    5.345683874562383,
+    5.359481696970761,
+    5.349978963844478,
+    5.309402388520539,
+    5.364193519577384,
+    5.267811534926295,
+    5.353684266097844,
+    5.363513117656112,
+    5.273990852758288,
+    5.348064681515098,
+    5.270071102306247,
+    5.270443256944418,
+    5.351127930916846,
+    5.285007334314287,
+    5.29998879134655,
+    5.344228381291032,
+    5.276077456772327
+  ],
+  "process_elapsed_seconds": 196.86940327007324,
+  "peak_memory_gb": 17.082830848,
+  "attention_diagnostics": {},
+  "timing_note": "Cold includes first-use and compilation; warm repeats all 30 in the same process. Compilation is not isolated."
+}

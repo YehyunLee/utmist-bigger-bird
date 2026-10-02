@@ -1,0 +1,312 @@
+{
+  "task": "niah",
+  "exp": 19,
+  "seq_len": 8192,
+  "depth": 0.5,
+  "n_examples": 30,
+  "eval_samples": 128,
+  "seed": 42,
+  "dtype": "bfloat16",
+  "max_new_tokens": 10,
+  "use_cache": false,
+  "is_causal": true,
+  "model": "DeepSeek-R1-Distill-Llama-8B",
+  "gpu": "NVIDIA H100 80GB HBM3 MIG 3g.40gb",
+  "attention_config": {
+    "middle_min": 512,
+    "middle_max": 2048,
+    "middle_ratio": 64,
+    "window_min": 1024,
+    "window_max": 8192,
+    "local_min": 128,
+    "local_max": 512,
+    "globals_min": 32,
+    "globals_max": 64,
+    "recent_window": 128,
+    "diversity": 0.05,
+    "low_rank_dim": 128,
+    "routing_mode": "last_query",
+    "route_chunk": 1024,
+    "use_triton": true
+  },
+  "commit": "eb7650a9046946514a4e4185c6a26539fb40e804",
+  "job_id": "61764659",
+  "setup_seconds": 15.260792626067996,
+  "prompt_manifest": "benchmarks/ruler_matched_exp19_61764659/prompts_8192.json",
+  "tokenizer": "checkpoint BPE (shared and hash-verified)",
+  "dense_backend": null,
+  "phase": "warm",
+  "accuracy": 1.0,
+  "examples": [
+    {
+      "idx": 0,
+      "label": 2,
+      "pred": 2,
+      "correct": true,
+      "generated": " 4805322.  quill. The"
+    },
+    {
+      "idx": 1,
+      "label": 9,
+      "pred": 9,
+      "correct": true,
+      "generated": " 6521579. The grass is green."
+    },
+    {
+      "idx": 2,
+      "label": 3,
+      "pred": 3,
+      "correct": true,
+      "generated": " 5604803. x of quartz. The"
+    },
+    {
+      "idx": 3,
+      "label": 4,
+      "pred": 4,
+      "correct": true,
+      "generated": " 6812234. The sun is yellow."
+    },
+    {
+      "idx": 4,
+      "label": 6,
+      "pred": 6,
+      "correct": true,
+      "generated": " 5737226.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 5,
+      "label": 7,
+      "pred": 7,
+      "correct": true,
+      "generated": " 7556937. yellow. Here we go"
+    },
+    {
+      "idx": 6,
+      "label": 3,
+      "pred": 3,
+      "correct": true,
+      "generated": " 8922813.\n\nOkay, so I'm"
+    },
+    {
+      "idx": 7,
+      "label": 5,
+      "pred": 5,
+      "correct": true,
+      "generated": " 6464235. d experts amaze the"
+    },
+    {
+      "idx": 8,
+      "label": 6,
+      "pred": 6,
+      "correct": true,
+      "generated": " 4653626.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 9,
+      "label": 3,
+      "pred": 3,
+      "correct": true,
+      "generated": " 6955103. ymph to vex dwarf"
+    },
+    {
+      "idx": 10,
+      "label": 2,
+      "pred": 2,
+      "correct": true,
+      "generated": " 3319922.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 11,
+      "label": 3,
+      "pred": 3,
+      "correct": true,
+      "generated": " 3946313. 3946313."
+    },
+    {
+      "idx": 12,
+      "label": 7,
+      "pred": 7,
+      "correct": true,
+      "generated": " 1234567.\n\nOkay, so I just"
+    },
+    {
+      "idx": 13,
+      "label": 5,
+      "pred": 5,
+      "correct": true,
+      "generated": " 3394545. fox jumps over the lazy"
+    },
+    {
+      "idx": 14,
+      "label": 4,
+      "pred": 4,
+      "correct": true,
+      "generated": " 7675024.\n```\n\nAlright, so"
+    },
+    {
+      "idx": 15,
+      "label": 1,
+      "pred": 1,
+      "correct": true,
+      "generated": " 6169761. The special magic azure-n"
+    },
+    {
+      "idx": 16,
+      "label": 8,
+      "pred": 8,
+      "correct": true,
+      "generated": " 4680648. The five boxing wizards jump"
+    },
+    {
+      "idx": 17,
+      "label": 0,
+      "pred": 0,
+      "correct": true,
+      "generated": " 6263620. ox jumps over the lazy"
+    },
+    {
+      "idx": 18,
+      "label": 4,
+      "pred": 4,
+      "correct": true,
+      "generated": " 7519814. The five boxing wizards jump"
+    },
+    {
+      "idx": 19,
+      "label": 2,
+      "pred": 2,
+      "correct": true,
+      "generated": " 4437212. uack. The five"
+    },
+    {
+      "idx": 20,
+      "label": 0,
+      "pred": 0,
+      "correct": true,
+      "generated": " 7072650. The sun is yellow."
+    },
+    {
+      "idx": 21,
+      "label": 2,
+      "pred": 2,
+      "correct": true,
+      "generated": " 3478832. 3478832."
+    },
+    {
+      "idx": 22,
+      "label": 0,
+      "pred": 0,
+      "correct": true,
+      "generated": " 6744550.  jumps over the lazy"
+    },
+    {
+      "idx": 23,
+      "label": 8,
+      "pred": 8,
+      "correct": true,
+      "generated": " 2559038. x of quartz. The"
+    },
+    {
+      "idx": 24,
+      "label": 7,
+      "pred": 7,
+      "correct": true,
+      "generated": " 9554417. A quick brown fox jumps"
+    },
+    {
+      "idx": 25,
+      "label": 1,
+      "pred": 1,
+      "correct": true,
+      "generated": " 8466281. quickly. The special magic"
+    },
+    {
+      "idx": 26,
+      "label": 0,
+      "pred": 0,
+      "correct": true,
+      "generated": " 7797650.\n\nOkay, so I've"
+    },
+    {
+      "idx": 27,
+      "label": 8,
+      "pred": 8,
+      "correct": true,
+      "generated": " 1473858. 1473858."
+    },
+    {
+      "idx": 28,
+      "label": 9,
+      "pred": 9,
+      "correct": true,
+      "generated": " 3021359. 3021359."
+    },
+    {
+      "idx": 29,
+      "label": 1,
+      "pred": 1,
+      "correct": true,
+      "generated": " 1565181. nexus is: 156"
+    }
+  ],
+  "time_seconds": 43.51887599937618,
+  "example_seconds": [
+    1.319440790452063,
+    1.3555365428328514,
+    1.35442959330976,
+    1.3219813667237759,
+    1.3696991130709648,
+    1.3307277476415038,
+    1.3259480716660619,
+    1.3695587748661637,
+    1.3261718302965164,
+    1.371973223052919,
+    1.3352855062112212,
+    1.3198316162452102,
+    1.3531848331913352,
+    1.370834544301033,
+    1.31783358566463,
+    1.3433791669085622,
+    1.3189267599955201,
+    1.3461653208360076,
+    1.3724281452596188,
+    1.3272375771775842,
+    1.3348205238580704,
+    1.3286831015720963,
+    1.3533122278749943,
+    1.3210846949368715,
+    1.3701178766787052,
+    1.3200998352840543,
+    1.3483090056106448,
+    1.373425585217774,
+    1.3541502403095365,
+    1.3543506879359484
+  ],
+  "process_elapsed_seconds": 255.32522784825414,
+  "peak_memory_gb": 16.349060608,
+  "attention_diagnostics": {
+    "bigger_bird": {
+      "layers": 32,
+      "middle": 512,
+      "wide": 1024,
+      "local": 128,
+      "globals": 32,
+      "recent_window": 128,
+      "routing_mode": "last_query",
+      "route_chunk": 4096,
+      "configured_route_chunk": 1024,
+      "prefix_invariant": false,
+      "backend": "triton_sparse_flash",
+      "selection": "content_globals+local_mmr+long_range_mmr",
+      "route_slots": 672,
+      "block_m": 64,
+      "block_n": 64,
+      "query_tokens": 2068,
+      "source_tokens": 2068,
+      "cached_decode": false,
+      "reused_routes": false,
+      "decode_routing": "last_query"
+    }
+  },
+  "timing_note": "Cold includes first-use and compilation; warm repeats all 30 in the same process. Compilation is not isolated."
+}

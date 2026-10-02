@@ -1,0 +1,273 @@
+{
+  "task": "niah",
+  "exp": 0,
+  "seq_len": 8192,
+  "depth": 0.5,
+  "n_examples": 30,
+  "eval_samples": 128,
+  "seed": 42,
+  "dtype": "bfloat16",
+  "max_new_tokens": 10,
+  "use_cache": false,
+  "is_causal": true,
+  "model": "DeepSeek-R1-Distill-Llama-8B",
+  "gpu": "NVIDIA H100 80GB HBM3 MIG 3g.40gb",
+  "attention_config": {},
+  "commit": "eb7650a9046946514a4e4185c6a26539fb40e804",
+  "job_id": "61764659",
+  "setup_seconds": 27.235330522060394,
+  "prompt_manifest": "benchmarks/ruler_matched_exp19_61764659/prompts_8192.json",
+  "tokenizer": "checkpoint BPE (shared and hash-verified)",
+  "dense_backend": "forced FLASH_ATTENTION",
+  "phase": "warm",
+  "accuracy": 1.0,
+  "examples": [
+    {
+      "idx": 0,
+      "label": 2,
+      "pred": 2,
+      "correct": true,
+      "generated": " 4805322.\n\nOkay, so I'm"
+    },
+    {
+      "idx": 1,
+      "label": 9,
+      "pred": 9,
+      "correct": true,
+      "generated": " 6521579.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 2,
+      "label": 3,
+      "pred": 3,
+      "correct": true,
+      "generated": " 5604803. x of quartz. The"
+    },
+    {
+      "idx": 3,
+      "label": 4,
+      "pred": 4,
+      "correct": true,
+      "generated": " 6812234. is blue. The sun"
+    },
+    {
+      "idx": 4,
+      "label": 6,
+      "pred": 6,
+      "correct": true,
+      "generated": " 5737226.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 5,
+      "label": 7,
+      "pred": 7,
+      "correct": true,
+      "generated": " 7556937.\n\nOkay, so I'm"
+    },
+    {
+      "idx": 6,
+      "label": 3,
+      "pred": 3,
+      "correct": true,
+      "generated": " 8922813.\n\nOkay, so I'm"
+    },
+    {
+      "idx": 7,
+      "label": 5,
+      "pred": 5,
+      "correct": true,
+      "generated": " 6464235.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 8,
+      "label": 6,
+      "pred": 6,
+      "correct": true,
+      "generated": " 4653626.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 9,
+      "label": 3,
+      "pred": 3,
+      "correct": true,
+      "generated": " 6955103. ymph to vex dwarf"
+    },
+    {
+      "idx": 10,
+      "label": 2,
+      "pred": 2,
+      "correct": true,
+      "generated": " 3319922. The five boxing wizards jump"
+    },
+    {
+      "idx": 11,
+      "label": 3,
+      "pred": 3,
+      "correct": true,
+      "generated": " 3946313.  judge. All questions"
+    },
+    {
+      "idx": 12,
+      "label": 7,
+      "pred": 7,
+      "correct": true,
+      "generated": " 5028697.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 13,
+      "label": 5,
+      "pred": 5,
+      "correct": true,
+      "generated": " 3394545.  we go. There"
+    },
+    {
+      "idx": 14,
+      "label": 4,
+      "pred": 4,
+      "correct": true,
+      "generated": " 7675024.\n\nOkay, so I'm"
+    },
+    {
+      "idx": 15,
+      "label": 1,
+      "pred": 1,
+      "correct": true,
+      "generated": " 6169761.\n\nOkay, so I'm"
+    },
+    {
+      "idx": 16,
+      "label": 8,
+      "pred": 8,
+      "correct": true,
+      "generated": " 4680648. So, the special magic"
+    },
+    {
+      "idx": 17,
+      "label": 0,
+      "pred": 0,
+      "correct": true,
+      "generated": " 6263620.\n\nOkay, so I'm"
+    },
+    {
+      "idx": 18,
+      "label": 4,
+      "pred": 4,
+      "correct": true,
+      "generated": " 7519814. The special magic ivory-n"
+    },
+    {
+      "idx": 19,
+      "label": 2,
+      "pred": 2,
+      "correct": true,
+      "generated": " 4437212. uack. The five"
+    },
+    {
+      "idx": 20,
+      "label": 0,
+      "pred": 0,
+      "correct": true,
+      "generated": " 7072650. The sun is yellow."
+    },
+    {
+      "idx": 21,
+      "label": 2,
+      "pred": 2,
+      "correct": true,
+      "generated": " 3478832. 3478832."
+    },
+    {
+      "idx": 22,
+      "label": 0,
+      "pred": 0,
+      "correct": true,
+      "generated": " 6744550.  jumps over the lazy"
+    },
+    {
+      "idx": 23,
+      "label": 8,
+      "pred": 8,
+      "correct": true,
+      "generated": " 2559038. x of quartz. The"
+    },
+    {
+      "idx": 24,
+      "label": 7,
+      "pred": 7,
+      "correct": true,
+      "generated": " 9554417. with five dozen liquor j"
+    },
+    {
+      "idx": 25,
+      "label": 1,
+      "pred": 1,
+      "correct": true,
+      "generated": " 8466281. quickly. Sphinx of black"
+    },
+    {
+      "idx": 26,
+      "label": 0,
+      "pred": 0,
+      "correct": true,
+      "generated": " 7797650.\n\n**Final Answer**\nThe"
+    },
+    {
+      "idx": 27,
+      "label": 8,
+      "pred": 8,
+      "correct": true,
+      "generated": " 1473858.\n\nOkay, so I'm"
+    },
+    {
+      "idx": 28,
+      "label": 9,
+      "pred": 9,
+      "correct": true,
+      "generated": " 3021359.\n\nOkay, so I'm"
+    },
+    {
+      "idx": 29,
+      "label": 1,
+      "pred": 1,
+      "correct": true,
+      "generated": " 1565181.\n\n**Final Answer**\nThe"
+    }
+  ],
+  "time_seconds": 40.2296128263697,
+  "example_seconds": [
+    1.2128955395892262,
+    1.2554634641855955,
+    1.2537504965439439,
+    1.2162240538746119,
+    1.2716336753219366,
+    1.2255420666188002,
+    1.389496342279017,
+    1.2709181094542146,
+    1.220048537477851,
+    1.2726312270388007,
+    1.229265408590436,
+    1.2123692333698273,
+    1.253223859705031,
+    1.2719609020277858,
+    1.212618081830442,
+    1.2353023840114474,
+    1.2126590115949512,
+    1.239445323124528,
+    1.2723740097135305,
+    1.2208886900916696,
+    1.228116045705974,
+    1.2214769450947642,
+    1.2517691813409328,
+    1.216999868862331,
+    1.2697981875389814,
+    1.2134636659175158,
+    1.242167953401804,
+    1.2730542747303843,
+    1.2552606156095862,
+    1.253823347389698
+  ],
+  "process_elapsed_seconds": 114.07225328683853,
+  "peak_memory_gb": 16.346308096,
+  "attention_diagnostics": {},
+  "timing_note": "Cold includes first-use and compilation; warm repeats all 30 in the same process. Compilation is not isolated."
+}
