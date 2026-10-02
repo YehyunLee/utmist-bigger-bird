@@ -57,6 +57,9 @@
   .ov .n { color:var(--accent); font-weight:800; font-size:1.6vw; min-width:2.6em; }
   .ov .t { font-size:2.2vw; font-weight:700; }
   .ov .d { font-size:1.3vw; color:var(--muted); margin-left:auto; padding-left:1em; }
+  .quadcv { width:60vh; height:44vh; }
+  .quadlab { font-size:2vw; font-weight:600; color:var(--muted); margin-top:.5em; }
+  .quadlab b { color:var(--accent); font-weight:800; }
   .corner { position:absolute; top:4%; right:4%; height:7%; max-height:none !important; }
   .footer { position:absolute; bottom:2.5%; right:4%; font-size:.9vw; color:var(--muted); }
 </style>
@@ -79,6 +82,7 @@ const S = [
   {say: "AI language models read text as small pieces called tokens."},
   {say: "To understand each token, the model looks back at every token before it."},
   {say: "This looking-back step is called attention."},
+  {kind: "quad", say: "Watch what happens as the document grows."},
   {say: "Double the document, and attention does four times the work."},
   {kind: "num", num: "8 billion", say: "comparisons for one 128,000-token document", sub: "each token compares itself with every token before it, and this repeats in all 1,024 attention heads of the model"},
   {say: "That's why long documents are slow and expensive."},
@@ -243,6 +247,7 @@ S.forEach(s => {
       return `<div class="p">${v}${p.name ? `<p class="pname">${p.name}</p>` : ""}<p class="pcap">${p.cap}</p></div>`;
     }).join("") + `</div>`;
   else if (s.img) html += `<img src="${s.img}" alt="">`;
+  if (s.kind === "quad") html += `<canvas class="quadcv" width="660" height="480"></canvas><div class="quadlab"></div>`;
   if (s.kind === "num") html += `<div class="num">${s.num}</div>`;
   if (s.kind === "prompt") html += `<div class="prompt">${PROMPT}</div>`;
   if (s.kind === "prompt2") html += `<div class="prompt">${PROMPT2}</div>`;
@@ -250,6 +255,27 @@ S.forEach(s => {
   if (s.sub) html += `<p class="sub">${s.sub}</p>`;
   el.innerHTML = html;
   deck.appendChild(el);
+});
+
+// Animated slide: n tokens double each cycle; the triangle of comparisons fills in.
+document.querySelectorAll(".k-quad").forEach(el => {
+  const cv = el.querySelector("canvas"), lab = el.querySelector(".quadlab"), ctx = cv.getContext("2d");
+  const seq = [8, 16, 32, 64, 128];
+  function draw() {
+    const t = performance.now() / 2400;
+    const n = seq[Math.floor(t) % seq.length];
+    const lim = Math.ceil(Math.min(1, (t % 1) * 2.2) * n * (n + 1) / 2);
+    const size = 430, mx = (660 - size) / 2, my = 18, cs = size / n;
+    ctx.clearRect(0, 0, 660, 480);
+    ctx.fillStyle = "#1f4fd8";
+    let drawn = 0;
+    for (let r = 0; r < n && drawn < lim; r++)
+      for (let c = 0; c <= r && drawn < lim; c++, drawn++)
+        ctx.fillRect(mx + c * cs, my + r * cs, Math.max(1, cs - 0.6), Math.max(1, cs - 0.6));
+    lab.innerHTML = `<b>${n}</b> tokens → <b>${(n * (n + 1) / 2).toLocaleString()}</b> comparisons`;
+    requestAnimationFrame(draw);
+  }
+  draw();
 });
 
 const slides = [...document.querySelectorAll(".slide")];
