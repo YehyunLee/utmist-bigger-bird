@@ -1,0 +1,138 @@
+"""Paired NIAH exact-number eval with KV-cached generation on one H100.
+
+Every arm: same prompts, BF16, greedy, max_new_tokens=10, KV cache on.
+Prefill = first full-context forward (CUDA events). Sparse arms use sparse
+prefill + exact cached decode. `--warm all` runs every prompt once untimed
+first (Triton specialises on sequence length), then times the same prompts.
+
+  python -m modal_rd.eval_niah --arm dense --bytes 512000 --n 6
+  python -m modal_rd.eval_niah --arm vs --attn '{"window":4096,"vertical":2048}' --bytes 512000 --n 6
+"""
+import argparse
+import json
+import re
+import time
+from pathlib import Path
+
+import torch
+from torch.nn.attention import SDPBackend, sdpa_kernel
+from transformers import AutoModelForCausalLM
+
+from modal_rd import attention as rd
+from modal_rd.niah import MODEL_PATH, load_tokenizer, prepare
+
+RESULTS = Path("/vol/results")
+
+
+def parse_layers(spec):
+    out = []
+    for part in filter(None, spec.split(",")):
+        a, _, b = part.partition("-")
+        out += list(range(int(a), int(b or a) + 1))
+    return out
+
+
+def build(arm, attn, dense_layers):
+    model = AutoModelForCausalLM.from_pretrained(MODEL_PATH, dtype=torch.bfloat16, attn_implementation="sdpa",
+                                                 low_cpu_mem_usage=True).cuda().eval()
+    if arm in ("vs", "dense_rd"):
+        rd.install(model, arm, dense_layers=dense_layers, **attn)
+    elif arm == "exp19":
+        from experiments.exp_19_bigger_bird_flash.model_llama import BiggerBirdFlashAttention
+        for layer in model.model.layers:
+            layer.self_attn = BiggerBirdFlashAttention(layer.self_attn, **attn)
+            layer.self_attn.is_causal = True
+            layer.self_attn.eval()
+    elif arm != "dense":
+        raise ValueError(arm)
+    return model
+
+
+def run_one(model, tokenizer, row, arm, max_new):
+    events = []
+    pre = model.register_forward_pre_hook(lambda m, a, kw: events.append([torch.cuda.Event(enable_timing=True), None, kw["input_ids"].shape[1]]) or events[-1][0].record(), with_kwargs=True)
+    def post(m, a, kw, o):
+        events[-1][1] = torch.cuda.Event(enable_timing=True)
+        events[-1][1].record()
+    post_h = model.register_forward_hook(post, with_kwargs=True)
+    try:
+        inputs = tokenizer(row["text"], return_tensors="pt", truncation=False).to("cuda")
+        assert inputs["input_ids"].shape[1] == row["tokens"]
+        torch.cuda.reset_peak_memory_stats()
+        torch.cuda.synchronize()
+        t0 = time.perf_counter()
+        with torch.inference_mode(), sdpa_kernel([SDPBackend.FLASH_ATTENTION, SDPBackend.EFFICIENT_ATTENTION, SDPBackend.MATH]):
+            out = model.generate(**inputs, max_new_tokens=max_new, do_sample=False, use_cache=True,
+                                 pad_token_id=tokenizer.pad_token_id)
+        torch.cuda.synchronize()
+        wall = time.perf_counter() - t0
+    finally:
+        pre.remove()
+        post_h.remove()
+    gen_ids = out[0, row["tokens"]:].tolist()
+    gen = tokenizer.decode(gen_ids, skip_special_tokens=True)
+    first = re.search(r"\d+", gen)
+    routes = None
+    attn0 = model.model.layers[-1].self_attn
+    if getattr(attn0, "last_routes", None) is not None:
+        lo, hi = row["spans"]["number"]
+        hit = []
+        for layer in model.model.layers:
+            r = getattr(layer.self_attn, "last_routes", None)
+            if r is not None:
+                hit.append(((r >= lo) & (r < hi)).sum(-1).ge(hi - lo).float().mean().item())
+        routes = {"mean_head_fraction_full_number_routed": sum(hit) / max(1, len(hit)), "slots": int(attn0.last_routes.shape[-1])}
+    return {"idx": row["idx"], "tokens": row["tokens"], "token_sha256": row["token_sha256"], "answer": row["answer"],
+            "generated": gen, "generated_ids": gen_ids, "exact": bool(first and first[0] == row["answer"]),
+            "last_digit": bool(first and int(first[0][-1]) == row["label"]),
+            "prefill_s": events[0][0].elapsed_time(events[0][1]) / 1000, "wall_s": wall,
+            "forwards": len(events), "peak_gb": torch.cuda.max_memory_allocated() / 1e9, "routes": routes}
+
+
+def main():
+    p = argparse.ArgumentParser()
+    p.add_argument("--arm", default="dense", choices=["dense", "dense_rd", "vs", "exp19"])
+    p.add_argument("--attn", default="{}")
+    p.add_argument("--dense-layers", default="")
+    p.add_argument("--bytes", default="512000")
+    p.add_argument("--n", type=int, default=6)
+    p.add_argument("--start", type=int, default=0)
+    p.add_argument("--depths", default="0.5")
+    p.add_argument("--max-new", type=int, default=10)
+    p.add_argument("--warm", default="all", choices=["all", "first", "none"])
+    p.add_argument("--tag", required=True)
+    a = p.parse_args()
+    attn, dense_layers = json.loads(a.attn), parse_layers(a.dense_layers)
+    tokenizer = load_tokenizer()
+    model = build(a.arm, attn, dense_layers)
+    RESULTS.mkdir(parents=True, exist_ok=True)
+    out_path = RESULTS / f"{a.tag}.json"
+    report = {"arm": a.arm, "attn": attn, "dense_layers": dense_layers, "gpu": torch.cuda.get_device_name(0),
+              "torch": torch.__version__, "max_new": a.max_new, "cache": True, "warm": a.warm, "runs": []}
+    for nbytes in map(int, a.bytes.split(",")):
+        for depth in map(float, a.depths.split(",")):
+            rows = prepare(tokenizer, nbytes, a.n, depth=depth, start=a.start)
+            warm = rows if a.warm == "all" else rows[:1] if a.warm == "first" else []
+            for row in warm:
+                w = run_one(model, tokenizer, row, a.arm, a.max_new)
+                print(f"WARM bytes={nbytes} depth={depth} idx={row['idx']} exact={w['exact']} gen={w['generated']!r}", flush=True)
+            res = []
+            for row in rows:
+                r = run_one(model, tokenizer, row, a.arm, a.max_new)
+                res.append(r)
+                print(f"TIMED bytes={nbytes} depth={depth} idx={row['idx']} tok={r['tokens']} exact={r['exact']} "
+                      f"prefill={r['prefill_s']:.2f}s wall={r['wall_s']:.2f}s gen={r['generated']!r} routes={r['routes']}", flush=True)
+            summary = {"bytes": nbytes, "depth": depth, "n": len(res), "exact": sum(r["exact"] for r in res),
+                       "last_digit": sum(r["last_digit"] for r in res),
+                       "mean_prefill_s": sum(r["prefill_s"] for r in res) / len(res),
+                       "mean_tokens": sum(r["tokens"] for r in res) / len(res),
+                       "peak_gb": max(r["peak_gb"] for r in res), "examples": res}
+            report["runs"].append(summary)
+            out_path.write_text(json.dumps(report, indent=2))
+            print(f"SUMMARY arm={a.arm} bytes={nbytes} depth={depth} exact={summary['exact']}/{len(res)} "
+                  f"last_digit={summary['last_digit']}/{len(res)} prefill={summary['mean_prefill_s']:.2f}s", flush=True)
+    print("DONE", out_path, flush=True)
+
+
+if __name__ == "__main__":
+    main()
