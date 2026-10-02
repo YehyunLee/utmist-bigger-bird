@@ -269,6 +269,10 @@ const S = [
   {vis: "fix", step: 2, say: "Two: the nearby text, in full detail."},
   {vis: "fix", step: 3, say: "Three: a few hundred spots that matter for the answer."},
   {vis: "fix", step: 4, say: "Four: right before answering, the model reads the whole document."},
+  {vis: "route", step: 1, say: "How are the spots picked? The end takes one quick look over the whole document.", sub: "every earlier spot gets a score: how much attention the end gives it"},
+  {vis: "route", step: 2, say: "Each attention head keeps its top 512 spots.", sub: "32 heads in each of 32 layers, each with its own list"},
+  {vis: "route", step: 3, say: "Every token can then use those spots.", sub: "the quick look touches each spot once, so it stays cheap"},
+  {kind: "num", num: "1 in 4", say: "heads put the hidden number on their list", sub: "picking at random would do that about 1 in 250 times"},
   {say: "Does the question have to be at the end?", sub: "every test so far put it there"},
   {kind: "num", num: "6 / 6", say: "with the question moved near the start", sub: "5 of 6 when it is the very first line · same 6 documents, still about 2× faster · a quick check, not a full test yet"},
   {say: "Why? Every answer is written starting from the end.", sub: "so the end is where the model needs the clearest view"},
@@ -499,7 +503,7 @@ const VIS = {
     }).join("") + [0, 1, 2].map(() =>
       `<div class="rtcol"><i class="bar off2" style="height:2vw"></i><i class="cell e"></i></div>`).join("");
     const L = [
-      ["#fff;border:2.5px solid #3a3f4a", "the question (last 64 tokens)", 0],
+      ["#fff;border:2.5px solid #3a3f4a", "right before the answer (last 64 tokens)", 0],
       ["#c9ced6;height:.55vw", "a score per earlier spot", 1],
       ["var(--p)", "top 512, kept", 2],
       ["var(--r)", "any token", 3]];
