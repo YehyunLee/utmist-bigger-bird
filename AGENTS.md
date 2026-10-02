@@ -183,6 +183,18 @@ cat benchmarks/dashboard_build.log
 - GPU: `nvidia_h100_80gb_hbm3_3g.40gb:1`
 - Account: `def-guerzhoy`
 
+## Modal (full H100) R&D harness — `modal_rd/`
+- Workspace profile: activate the appropriate Modal workspace (`modal profile activate ...`). GPU functions need a payment method on file (credits are used first).
+- Volume `bb-vol`: weights at `/vol/models/DeepSeek-R1-Distill-Llama-8B` (`modal run modal_rd/app.py::download`), results at `/vol/results/<tag>.json`.
+- Run any module on an H100: `modal run [--detach] modal_rd/app.py --module modal_rd.eval_niah --args "--arm vs --attn '{...}' --bytes 512000 --n 6 --tag x"`.
+  CPU-only (no GPU billing needed): `BB_GPU=none modal run modal_rd/app.py::run_cpu --module modal_rd.check_prompts`.
+- Verify before long runs: `modal_rd.selfcheck` (kernel vs exact attention, wrapper parity), `modal_rd.kernelcheck` (128K, large budgets).
+- `modal_rd/niah.py` reproduces the CCDB Round 4 prompts token-for-token (checked against `modal_rd/manifests/`).
+- Pull results + rebuild charts/tables: `python modal_rd/report.py` → `modal_rd/RESULTS.md`, `modal_rd/figures/`; deck in `modal_rd/deck/`.
+- Do not write logs inside the repo tree while `modal run` builds (mount changes abort the build); `modal_rd/logs` is excluded from the image.
+- Best all-sparse config (Oct 2026): `{"sink":64,"window":16384,"vertical":512,"exact_tail":256}` — 30/30 @~127K (depth .5 and .1)
+  vs dense 28/30, 1.9x faster prefill. Exact tail and a small routed budget (256-512) are essential; larger budgets hurt.
+
 ## Sparse Attention Experiments
 - exp 0: Dense baseline (SDPA, causal)
 - exp 1: DeepSeek top-k (head-shared top-k selection, TUNED: k=512, low_rank_dim=128) — PROMISING
