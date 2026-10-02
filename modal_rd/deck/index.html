@@ -269,7 +269,7 @@ const S = [
   {vis: "fix", step: 1, say: "One: the very beginning of the document."},
   {vis: "fix", step: 2, say: "Two: the nearby text, in full detail."},
   {vis: "fix", step: 3, say: "Three: a few hundred spots that matter for the answer."},
-  {vis: "fix", step: 4, say: "Four: right before answering, the model reads the whole document."},
+  {vis: "fix", step: 4, say: "Four: right before predicting the next token, the model reads the whole document."},
   {vis: "route", step: 1, say: "How are the spots picked? The end takes one quick look over the whole document.", sub: "every earlier spot gets a score: how much attention the end gives it"},
   {vis: "route", step: 2, say: "Each attention head keeps its top 512 spots.", sub: "32 heads in each of 32 layers, each with its own list"},
   {vis: "route", step: 3, say: "Every token can then use those spots.", sub: "the quick look touches each spot once, so it stays cheap"},
@@ -282,7 +282,7 @@ const S = [
   {vis: "img", img: F + "ablations.png", say: "Two dials decided everything. Left: how many spots each head keeps."},
   {vis: "img", img: F + "ablations.png", say: "Too few, and the fact gets skipped: 0 of 6 at 64 spots."},
   {vis: "img", img: F + "ablations.png", say: "But more is not better. Thousands of spots dilute the signal.", sub: "best at a few hundred; only 3 of 6 with 4,000"},
-  {vis: "img", img: F + "ablations.png", say: "Right: how much of the text right before the answer reads everything.", sub: "none → 2 of 6 · a little → 4 of 6 · 256 tokens → 6 of 6"},
+  {vis: "img", img: F + "ablations.png", say: "Right: how many positions about to predict read everything.", sub: "none → 2 of 6 · a little → 4 of 6 · 256 tokens → 6 of 6"},
   {vis: "img", img: F + "ablations.png", say: "No retraining. Same model, same weights."},
 
   {kind: "section", say: '<span class="secnum">PART 6</span>Results'},
@@ -489,10 +489,10 @@ const VIS = {
       : s.step >= 3 && FIX_SPOTS.has(j) ? "p" : s.step >= 3 && END(j) ? "e" : "";
     const L = [["var(--g)", "beginning"], ["var(--b)", "nearby text"], ["var(--p)", "spots that matter for the answer"]];
     const legend = last
-      ? `<span><i style="background:var(--r)"></i>a token right before the answer</span><span><i style="background:#e3e6ec"></i>it can see everything before it</span>`
+      ? `<span><i style="background:var(--r)"></i>a token about to predict</span><span><i style="background:#e3e6ec"></i>it can see everything before it</span>`
       : `<span><i style="background:var(--r)"></i>current token</span>${L.map(([c, t], j) =>
           `<span class="${s.step > j ? "" : "off"}"><i style="background:${c}"></i>${t}</span>`).join("")}` +
-        `<span class="${s.step >= 3 ? "" : "off"}"><i style="background:#fff;border:2.5px solid #3a3f4a"></i>right before the answer</span>`;
+        `<span class="${s.step >= 3 ? "" : "off"}"><i style="background:#fff;border:2.5px solid #3a3f4a"></i>about to predict</span>`;
     return `<div class="strip">${cells(30, f)}</div><div class="legend">${legend}</div>`;
   },
   route: s => {
@@ -504,7 +504,7 @@ const VIS = {
     }).join("") + [0, 1, 2].map(() =>
       `<div class="rtcol"><i class="bar off2" style="height:2vw"></i><i class="cell e"></i></div>`).join("");
     const L = [
-      ["#fff;border:2.5px solid #3a3f4a", "right before the answer (last 64 tokens)", 0],
+      ["#fff;border:2.5px solid #3a3f4a", "about to predict (last 64 tokens)", 0],
       ["#c9ced6;height:.55vw", "a score per earlier spot", 1],
       ["var(--p)", "top 512, kept", 2],
       ["var(--r)", "any token", 3]];
