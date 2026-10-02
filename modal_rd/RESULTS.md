@@ -13,6 +13,25 @@
 | ~128K | 0.1 | Dense FlashAttention | 28/30 | 23/24 | 28/30 | 16.39 |
 | ~128K | 0.1 | sink64+win16384+vert512+tail256 | 30/30 | 24/24 | 30/30 | 8.56 |
 
+## Harder RULER NIAH variants (12-24 prompts per cell; none used for tuning)
+
+| task | description | context | dense exact | sparse exact | dense recall | sparse recall |
+|---|---|---:|---:|---:|---:|---:|
+| niah_single_2 | single needle, essay haystack | ~32K | 12/12 | 12/12 | 1.00 | 1.00 |
+| niah_single_2 | single needle, essay haystack | ~64K | 12/12 | 12/12 | 1.00 | 1.00 |
+| niah_single_2 | single needle, essay haystack | ~128K | 17/24 | 11/24 | 0.71 | 0.46 |
+| niah_single_3 | single needle, UUID value | ~128K | 0/12 | 0/12 | 0.00 | 0.00 |
+| niah_multikey_1 | 4 keys, retrieve 1 | ~32K | 12/12 | 12/12 | 1.00 | 1.00 |
+| niah_multikey_1 | 4 keys, retrieve 1 | ~64K | 9/12 | 11/12 | 0.75 | 0.92 |
+| niah_multikey_1 | 4 keys, retrieve 1 | ~128K | 4/12 | 1/12 | 0.33 | 0.08 |
+| niah_multikey_3 | UUID keys in a haystack of UUID distractors | ~128K | 0/12 | 0/12 | 0.00 | 0.00 |
+| niah_multivalue | 4 values for one key | ~32K | 4/12 | 5/12 | 0.73 | 0.77 |
+| niah_multivalue | 4 values for one key | ~64K | 3/12 | 6/12 | 0.48 | 0.67 |
+| niah_multivalue | 4 values for one key | ~128K | 0/12 | 0/12 | 0.17 | 0.17 |
+| niah_multiquery | 4 keys queried at once | ~32K | 12/12 | 12/12 | 1.00 | 1.00 |
+| niah_multiquery | 4 keys queried at once | ~64K | 8/12 | 8/12 | 0.92 | 0.92 |
+| niah_multiquery | 4 keys queried at once | ~128K | 0/12 | 0/12 | 0.23 | 0.19 |
+
 ## Context scaling (6 prompts / length, depth 0.5, all prompts warmed, KV cache)
 
 | tokens | dense prefill s / exact | Bigger Bird v3, window 4K prefill s / exact | Bigger Bird v3, window 16K (final) prefill s / exact |
@@ -22,6 +41,25 @@
 | 32449 | 1.70 / 6/6 | 1.52 (1.11x) / 6/6 | 2.13 (0.80x) / 6/6 |
 | 65088 | 5.03 / 6/6 | 3.11 (1.61x) / 6/6 | 4.35 (1.15x) / 6/6 |
 | 127545 | 16.22 / 6/6 | 6.12 (2.65x) / 6/6 | 8.50 (1.91x) / 6/6 |
+
+## Empirical scaling exponent (prefill ~ tokens^k, fitted on 32K-127K)
+
+| arm | k |
+|---|---:|
+| Dense FlashAttention | 1.65 |
+| Bigger Bird v3, window 4K | 1.02 |
+| Bigger Bird v3, window 16K (final) | 1.01 |
+
+## Attention-only cost per layer (synthetic Llama-8B shapes, BF16, H100; not a quality result)
+
+| tokens | dense | sparse | speedup |
+|---:|---:|---:|---:|
+| 32768 | 13 ms | 30 ms | 0.43x |
+| 65536 | 56 ms | 61 ms | 0.92x |
+| 131072 | 234 ms | 125 ms | 1.88x |
+| 262144 | 1049 ms | 251 ms | 4.18x |
+| 524288 | 4422 ms | 508 ms | 8.70x |
+| 1048576 | 18422 ms | 1038 ms | 17.76x |
 
 ## Needle depth @~127K (6 prompts / depth)
 

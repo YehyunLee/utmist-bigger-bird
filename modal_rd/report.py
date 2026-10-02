@@ -80,6 +80,106 @@ def scaling(lines):
         lines.append(f"| {rd['mean_tokens']:.0f} | " + " | ".join(cells) + " |")
 
 
+def loglog(lines):
+    """log-log prefill vs tokens with fitted exponents over >=32K tokens (where attention dominates)."""
+    import numpy as np
+    reps = [(load(t), n, c) for t, n, c in SCALE_ARMS]
+    reps = [x for x in reps if x[0]]
+    if len(reps) < 2:
+        return
+    fig, ax = plt.subplots(figsize=(6.5, 4.2))
+    lines.append("\n## Empirical scaling exponent (prefill ~ tokens^k, fitted on 32K-127K)\n\n| arm | k |\n|---|---:|")
+    for rep, name, c in reps:
+        x = np.array([r["mean_tokens"] for r in rep["runs"]])
+        y = np.array([r["mean_prefill_s"] for r in rep["runs"]])
+        fit = x >= 30000
+        k, b = np.polyfit(np.log(x[fit]), np.log(y[fit]), 1)
+        ax.loglog(x / 1000, y, "o-", color=c, label=f"{name}  (slope {k:.2f})")
+        lines.append(f"| {name} | {k:.2f} |")
+    ax.set(xlabel="prompt tokens (K, log)", ylabel="prefill time (s, log), one H100",
+           title="Prefill scaling: slope 2 = quadratic, 1 = linear")
+    ax.grid(alpha=.3, which="both")
+    ax.legend(fontsize=8)
+    fig.tight_layout()
+    fig.savefig(FIG / "loglog.png", dpi=160)
+
+
+def attn_bench(lines):
+    rep = load("b12_attn_bench_final")
+    if not rep:
+        return
+    rows = rep["rows"]
+    x = [r["tokens"] / 1024 for r in rows]
+    fig, ax = plt.subplots(figsize=(6.5, 4.2))
+    ax.loglog(x, [r["dense_s"] for r in rows], "o-", color="tab:gray", label="Dense FlashAttention (PyTorch SDPA)")
+    ax.loglog(x, [r["sparse_s"] for r in rows], "o-", color="tab:blue", label="Bigger Bird v3 (routing + sparse + exact tail)")
+    for r, xi in zip(rows, x):
+        if r["speedup"] > 1:
+            ax.annotate(f"{r['speedup']:.1f}x", (xi, r["sparse_s"]), textcoords="offset points", xytext=(0, -14),
+                        ha="center", fontsize=8, color="tab:blue")
+    ax.set(xlabel="tokens (K, log)", ylabel="one attention layer, seconds (log)",
+           title="Attention cost per layer, up to 1M tokens (synthetic, H100)")
+    ax.grid(alpha=.3, which="both")
+    ax.legend(fontsize=8)
+    fig.tight_layout()
+    fig.savefig(FIG / "attn_bench.png", dpi=160)
+    lines.append("\n## Attention-only cost per layer (synthetic Llama-8B shapes, BF16, H100; not a quality result)\n\n"
+                 "| tokens | dense | sparse | speedup |\n|---:|---:|---:|---:|")
+    lines += [f"| {r['tokens']} | {r['dense_s'] * 1000:.0f} ms | {r['sparse_s'] * 1000:.0f} ms | {r['speedup']:.2f}x |" for r in rows]
+
+
+TASKS = (("niah_single_2", "single needle, essay haystack"), ("niah_single_3", "single needle, UUID value"),
+         ("niah_multikey_1", "4 keys, retrieve 1"), ("niah_multikey_3", "UUID keys in a haystack of UUID distractors"),
+         ("niah_multivalue", "4 values for one key"), ("niah_multiquery", "4 keys queried at once"))
+
+
+def task_runs(task):
+    """{context_bucket: (dense_run_list, sparse_run_list)} merging every batch that ran this task."""
+    out = {}
+    for prefix in ("b12", "b11", "b13"):
+        d, b = load(f"{prefix}_{task}_dense"), load(f"{prefix}_{task}_final")
+        if prefix == "b13" and task == "niah_single_2":
+            d, b = load("b13_dense"), load("b13_final")
+        if not (d and b):
+            continue
+        for rd, rb in zip(d["runs"], b["runs"]):
+            key = round(rd["mean_tokens"] / 32768) * 32
+            out.setdefault(key, ([], []))
+            out[key][0].append(rd)
+            out[key][1].append(rb)
+    return out
+
+
+def tasks(lines):
+    table = []
+    for task, desc in TASKS:
+        for ctx, (ds, bs) in sorted(task_runs(task).items()):
+            agg = lambda runs: (sum(r["exact"] for r in runs), sum(r["n"] for r in runs),
+                                sum(r["partial"] * r["n"] for r in runs) / sum(r["n"] for r in runs))
+            table.append((task, desc, ctx, agg(ds), agg(bs)))
+    if not table:
+        return
+    lines.append("\n## Harder RULER NIAH variants (12-24 prompts per cell; none used for tuning)\n\n"
+                 "| task | description | context | dense exact | sparse exact | dense recall | sparse recall |\n"
+                 "|---|---|---:|---:|---:|---:|---:|")
+    for task, desc, ctx, (de, dn, dp), (be, bn, bp) in table:
+        lines.append(f"| {task} | {desc} | ~{ctx}K | {de}/{dn} | {be}/{bn} | {dp:.2f} | {bp:.2f} |")
+    show = [r for r in table if r[2] in (32, 64) and r[0] in
+            ("niah_single_2", "niah_multikey_1", "niah_multivalue", "niah_multiquery")]
+    if not show:
+        return
+    fig, ax = plt.subplots(figsize=(10, 3.8))
+    x = range(len(show))
+    ax.bar([i - .2 for i in x], [100 * r[3][2] for r in show], .4, color="tab:gray", label="Dense FlashAttention")
+    ax.bar([i + .2 for i in x], [100 * r[4][2] for r in show], .4, color="tab:blue", label="Bigger Bird v3 (final)")
+    ax.set(xticks=list(x), xticklabels=[f"{r[0].replace('niah_', '')}\n~{r[2]}K" for r in show],
+           ylabel="answer recall (%)", ylim=(0, 105), title="Harder needle tasks, not used for tuning (12 prompts each)")
+    ax.legend(fontsize=8, loc="lower left")
+    ax.grid(axis="y", alpha=.3)
+    fig.tight_layout()
+    fig.savefig(FIG / "tasks.png", dpi=160)
+
+
 CONFIRM = (("b6_confirm_dense", "b6_confirm_best", "b9_confirm_final"), ("b9_confirm_dense_d01", "b9_confirm_final_d01"))
 
 
@@ -202,7 +302,7 @@ def main():
     pull()
     FIG.mkdir(exist_ok=True)
     lines = ["# Bigger Bird v3 Modal R&D results"]
-    for f in (confirmation, scaling, depth, ablations, sweep, recall):
+    for f in (confirmation, tasks, scaling, loglog, attn_bench, depth, ablations, sweep, recall):
         f(lines)
     (HERE / "RESULTS.md").write_text("\n".join(lines) + "\n")
     print("\n".join(lines))
