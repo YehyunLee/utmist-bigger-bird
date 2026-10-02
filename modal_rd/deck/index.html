@@ -15,12 +15,13 @@
            flex-direction:column; justify-content:center; align-items:center; text-align:center; }
   .slide.active { display:flex; }
   .say { font-size:3.3vw; font-weight:700; line-height:1.25; letter-spacing:-.015em; margin:0; max-width:90%; }
-  .slide.img .say { font-size:2.4vw; margin-top:.6em; }
-  .section .say { font-size:4.4vw; font-weight:800; color:var(--accent); }
+  .k-img .say { font-size:2.4vw; margin-top:.6em; }
+  .k-title img { max-height:56vh; } .k-title .say { font-size:5vw; font-weight:800; margin-top:.3em; }
+  .k-section .say { font-size:4.4vw; font-weight:800; color:var(--accent); }
   .sub { font-size:1.6vw; color:var(--muted); margin:.9em 0 0; max-width:85%; line-height:1.4; }
   .num { font-size:9vw; font-weight:800; color:var(--accent); line-height:1; letter-spacing:-.03em; }
   .slide img { max-width:100%; max-height:62vh; object-fit:contain; }
-  .slide.photo img { border-radius:12px; max-height:64vh; }
+  .k-photo img { border-radius:12px; max-height:64vh; }
   .good { color:var(--good); } .bad { color:var(--bad); } .accent { color:var(--accent); }
   .prompt { font-family: ui-monospace, Menlo, monospace; font-size:1.35vw; line-height:1.6; text-align:left;
             background:#f7f8fa; border:1px solid #d8dde3; border-radius:12px; padding:1em 1.3em; max-width:92%;
@@ -30,13 +31,13 @@
   .timeline { display:flex; width:100%; margin-bottom:1.6em; }
   .tl { flex:1; border-top:5px solid var(--accent); padding:.7em .6em 0 0; text-align:left; }
   .tl b { display:block; font-size:1.35vw; } .tl span { font-size:1.15vw; color:var(--muted); line-height:1.35; display:block; }
-  .partner .face { width:22vh; height:22vh; border-radius:50%; object-fit:cover; max-height:none; }
-  .partner .logo { max-height:22vh; }
-  .partner .initial { width:22vh; height:22vh; border-radius:50%; background:#e8edfb; color:var(--accent);
+  .k-partner .face { width:22vh; height:22vh; border-radius:50%; object-fit:cover; max-height:none; }
+  .k-partner .logo { max-height:22vh; }
+  .k-partner .initial { width:22vh; height:22vh; border-radius:50%; background:#e8edfb; color:var(--accent);
                       font-size:10vh; font-weight:800; display:flex; align-items:center; justify-content:center; }
-  .partner .wordmark { font-size:4vw; font-weight:800; color:#c8102e; line-height:1.15; max-width:80%; }
-  .partner .name { font-size:2.6vw; font-weight:800; margin:.5em 0 0; }
-  .partner .say { font-size:2.1vw; font-weight:500; color:var(--muted); margin-top:.3em; }
+  .k-partner .wordmark { font-size:4vw; font-weight:800; color:#c8102e; line-height:1.15; max-width:80%; }
+  .k-partner .name { font-size:2.6vw; font-weight:800; margin:.5em 0 0; }
+  .k-partner .say { font-size:2.1vw; font-weight:500; color:var(--muted); margin-top:.3em; }
   .corner { position:absolute; top:4%; right:4%; height:7%; max-height:none !important; }
   .footer { position:absolute; bottom:2.5%; right:4%; font-size:.9vw; color:var(--muted); }
 </style>
@@ -49,7 +50,7 @@
 // say = the one sentence on screen; sub = optional small line under it.
 const F = "../figures/", A = "assets/";
 const S = [
-  {kind: "img", img: A + "bigger_bird_logo.png", say: "Bigger Bird", corner: true},
+  {kind: "title", img: A + "bigger_bird_logo.png", say: "Bigger Bird", corner: true},
   {img: A + "utmist_logo.png", kind: "img", say: "A UTMIST research project"},
   {kind: "photo", img: A + "devcon_proposal.png", say: "February 2026: we pitched an idea at UTMIST DevCon."},
   {kind: "photo", img: A + "devcon_team.jpg", say: "This is the team."},
@@ -144,7 +145,7 @@ const S = [
   {say: "Close the gap on natural text."},
   {say: "Try models that can read past 128,000 tokens."},
 
-  {kind: "img", img: A + "bigger_bird_logo.png", say: "Thank you", corner: true},
+  {kind: "title", img: A + "bigger_bird_logo.png", say: "Thank you", corner: true},
 ];
 
 const PROMPT = `The grass is green. The sky is blue. The sun is yellow. Here we go. …
@@ -168,7 +169,7 @@ const TIMELINE = [
 const deck = document.getElementById("deck");
 S.forEach(s => {
   const el = document.createElement("section");
-  el.className = "slide " + (s.kind === "photo" ? "img photo" : s.kind || "");
+  el.className = "slide " + (s.kind === "photo" ? "k-img k-photo" : s.kind ? "k-" + s.kind : "");
   let html = "";
   if (s.corner) html += `<img class="corner" src="${A}utmist_logo.png" alt="UTMIST">`;
   if (s.kind === "timeline")
