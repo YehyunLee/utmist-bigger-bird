@@ -148,7 +148,8 @@
 
   /* Test examples */
   .exbox .prompt { font-size:1.25vw; max-width:100%; }
-  .extag { font-size:1.2vw; font-weight:700; color:var(--accent); margin-bottom:.7em; text-transform:uppercase; letter-spacing:.07em; }
+  .extag { font-size:1.2vw; font-weight:700; color:var(--accent); margin-bottom:.25em; text-transform:uppercase; letter-spacing:.07em; }
+  .exrule { font-size:.95vw; color:var(--muted); font-family:ui-monospace,monospace; margin-bottom:1.1em; }
 
   /* Prompt boxes */
   .prompt { font-family: ui-monospace, Menlo, monospace; font-size:1.35vw; line-height:1.6; text-align:left;
@@ -376,26 +377,26 @@ const BOARD = [
   ["Top-K, first 16 layers normal", "—", "6/6", "good", "still quadratic"],
 ];
 const EX = [
-  ["Lookalike facts", `… <span class="needle">The special magic golden-falcon is: 7606921.</span> …
+  ["Lookalike facts", "niah_multikey_1", `… <span class="needle">The special magic golden-falcon is: 7606921.</span> …
 … <span class="needle">The special magic violet-thistle is: 3201885.</span> …  <span class="dim">(two more)</span>
 <span class="q">What is the special magic golden-falcon?</span>
 
 Answer: 7606921`],
-  ["Many answers", `… <span class="needle">The special magic violet-thistle is: 3201885.</span> …
+  ["Many answers", "niah_multivalue", `… <span class="needle">The special magic violet-thistle is: 3201885.</span> …
 … <span class="needle">The special magic violet-thistle is: 7474932.</span> …  <span class="dim">(two more)</span>
 <span class="q">What are all values for the special magic violet-thistle?</span>
 
 Answer: all four numbers`],
-  ["Many questions", `… <span class="needle">The special magic golden-falcon is: 7606921.</span> …
+  ["Many questions", "niah_multiquery", `… <span class="needle">The special magic golden-falcon is: 7606921.</span> …
 … <span class="needle">The special magic violet-thistle is: 3201885.</span> …  <span class="dim">(two more)</span>
 <span class="q">What are the special magics for: golden-falcon, violet-thistle, amber-lantern, silver-reef?</span>
 
 Answer: all four numbers`],
-  ["Long random IDs", `… <span class="needle">The special magic 6f1c2a9e-41b7-4d0a-9c3e-b27a5d81e0f4 is: 3d84a1c0-7be2-49f1-a6d5-0c93e7b1f258.</span> …
+  ["Long random IDs", "niah_multikey_3", `… <span class="needle">The special magic 6f1c2a9e-41b7-4d0a-9c3e-b27a5d81e0f4 is: 3d84a1c0-7be2-49f1-a6d5-0c93e7b1f258.</span> …
 <span class="q">What is the special magic 6f1c2a9e-41b7-4d0a-9c3e-b27a5d81e0f4?</span>
 
 Answer: 3d84a1c0-7be2-49f1-a6d5-0c93e7b1f258`],
-  ["Real text", `<span class="dim">Cities are machines for serendipity. Density creates collisions between people who
+  ["Real text", "niah_single_2", `<span class="dim">Cities are machines for serendipity. Density creates collisions between people who
 would never otherwise meet, and those collisions are the raw material of new companies.
 Writing is thinking. When you force yourself to explain an idea clearly, you often find
 that the idea was not as solid as it seemed.</span> … <span class="needle">The special magic golden-falcon is: 7606921.</span> …
@@ -557,9 +558,9 @@ const VIS = {
       `<tr class="${j < 4 || s.step >= 2 ? "" : "off"}"><td>${a}${note ? ` <small>${note}</small>` : ""}</td><td class="n">${x}</td><td class="n ${cls}">${y}</td></tr>`).join("") + `</table>`,
   tests: () => `<div class="chips">${["One hidden fact", "Lookalike facts", "Many answers", "Many questions", "Long random IDs", "Real text"].map((m, j) =>
       `<span class="chip${j === 0 ? " hl" : ""}">${m}</span>`).join("")}</div>`,
-  ex: s => `<div class="exbox"><div class="extag">${EX[s.ex][0]}</div><div class="prompt">${EX[s.ex][1]}</div></div>`,
-  prompt: () => `<div class="prompt">${PROMPT}</div>`,
-  prompt2: () => `<div class="prompt">${PROMPT2}</div>`,
+  ex: s => `<div class="exbox"><div class="extag">${EX[s.ex][0]}</div><div class="exrule">RULER &middot; ${EX[s.ex][1]}</div><div class="prompt">${EX[s.ex][2]}</div></div>`,
+  prompt: () => `<div class="exbox"><div class="extag">One hidden fact</div><div class="exrule">RULER &middot; niah_single_1</div><div class="prompt">${PROMPT}</div></div>`,
+  prompt2: () => `<div class="exbox"><div class="extag">Many answers</div><div class="exrule">RULER &middot; niah_multivalue</div><div class="prompt">${PROMPT2}</div></div>`,
 };
 
 const deck = document.getElementById("deck");
