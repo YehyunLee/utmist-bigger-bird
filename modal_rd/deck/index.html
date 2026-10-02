@@ -31,13 +31,16 @@
   .timeline { display:flex; width:100%; margin-bottom:1.6em; }
   .tl { flex:1; border-top:5px solid var(--accent); padding:.7em .6em 0 0; text-align:left; }
   .tl b { display:block; font-size:1.35vw; } .tl span { font-size:1.15vw; color:var(--muted); line-height:1.35; display:block; }
-  .k-partner .face { width:22vh; height:22vh; border-radius:50%; object-fit:cover; max-height:none; }
-  .k-partner .logo { max-height:22vh; }
-  .k-partner .initial { width:22vh; height:22vh; border-radius:50%; background:#e8edfb; color:var(--accent);
-                      font-size:10vh; font-weight:800; display:flex; align-items:center; justify-content:center; }
-  .k-partner .wordmark { font-size:4vw; font-weight:800; color:#c8102e; line-height:1.15; max-width:80%; }
-  .k-partner .name { font-size:2.6vw; font-weight:800; margin:.5em 0 0; }
-  .k-partner .say { font-size:2.1vw; font-weight:500; color:var(--muted); margin-top:.3em; }
+  .pgrid { display:flex; gap:3vw; align-items:stretch; justify-content:center; width:100%; }
+  .pgrid .p { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; }
+  .pgrid .pimg { height:17vh; display:flex; align-items:center; justify-content:center; }
+  .pgrid .plogo { max-height:17vh; max-width:100%; }
+  .pgrid .face { width:17vh; height:17vh; border-radius:50%; object-fit:cover; max-height:none; }
+  .pgrid .initial { width:17vh; height:17vh; border-radius:50%; background:#e8edfb; color:var(--accent);
+                    font-size:8vh; font-weight:800; display:flex; align-items:center; justify-content:center; }
+  .pgrid .wordmark { font-size:1.7vw; font-weight:800; color:#c8102e; line-height:1.2; max-width:95%; }
+  .pgrid .pname { font-size:1.7vw; font-weight:800; margin:.7em 0 0; }
+  .pgrid .pcap { font-size:1.2vw; color:var(--muted); margin:.4em 0 0; line-height:1.35; }
   .corner { position:absolute; top:4%; right:4%; height:7%; max-height:none !important; }
   .footer { position:absolute; bottom:2.5%; right:4%; font-size:.9vw; color:var(--muted); }
 </style>
@@ -68,10 +71,7 @@ const S = [
   {say: "September to October: faster GPUs on Modal, and our best results yet."},
 
   {kind: "section", say: "Thank you to our compute partners"},
-  {kind: "partner", img: A + "utmist_logo.png", name: "UTMIST", say: "Support and community from day one."},
-  {kind: "partner", img: A + "jerry.png", initial: "J", name: "Jerry", say: "Lent us his A100 GPU until July."},
-  {kind: "partner", text: "Digital Research Alliance of Canada", name: "", say: "National research computing, July to September."},
-  {kind: "partner", img: A + "prof_guerzhoy.png", round: true, name: "Prof. Michael Guerzhoy", say: "Supervision and access to research compute."},
+  {kind: "partners"},
 
   {say: "Today, here's what we found."},
 
@@ -160,6 +160,13 @@ const PROMPT2 = `… <span class="needle">The special magic violet-thistle is: 3
 Bigger Bird:  3201885, 7474932, 1236801, 3579629
 Normal model: 3201885.`;
 
+const PARTNERS = [
+  {img: "utmist_logo.png", name: "UTMIST", cap: "Support and community from day one."},
+  {img: "jerry.png", initial: "J", name: "Jerry", cap: "Lent us his A100 GPU until July."},
+  {text: "Digital Research Alliance of Canada", cap: "National research computing, July to September."},
+  {img: "prof_guerzhoy.png", round: true, name: "Prof. Michael Guerzhoy", cap: "Supervision and access to research compute."},
+];
+
 const TIMELINE = [
   ["Jan–Feb", "Hiring the team"], ["Feb 7", "DevCon talk"], ["Feb–Mar", "Reading the research"],
   ["Apr", "First experiments on BERT-style models"], ["Until Jul", "Jerry's A100 GPU, with UTMIST"],
@@ -174,16 +181,19 @@ S.forEach(s => {
   if (s.corner) html += `<img class="corner" src="${A}utmist_logo.png" alt="UTMIST">`;
   if (s.kind === "timeline")
     html += `<div class="timeline">${TIMELINE.map(([d, t]) => `<div class="tl"><b>${d}</b><span>${t}</span></div>`).join("")}</div>`;
-  if (s.kind === "partner") {
-    if (s.text) html += `<div class="wordmark">${s.text}</div>`;
-    else html += `<img class="${s.round || s.initial ? "face" : "logo"}" src="${s.img}" alt="${s.name}"` +
-                 (s.initial ? ` onerror="this.outerHTML='<div class=&quot;initial&quot;>${s.initial}</div>'"` : "") + `>`;
-    if (s.name) html += `<p class="name">${s.name}</p>`;
-  } else if (s.img) html += `<img src="${s.img}" alt="">`;
+  if (s.kind === "partners")
+    html += `<div class="pgrid">` + PARTNERS.map(p => {
+      let v = p.text
+        ? `<div class="pimg"><div class="wordmark">${p.text}</div></div>`
+        : `<div class="pimg"><img class="${p.round || p.initial ? "face" : "plogo"}" src="${A}${p.img}" alt="${p.name || ""}"` +
+          (p.initial ? ` onerror="this.outerHTML='<div class=&quot;pimg&quot;><div class=&quot;initial&quot;>${p.initial}</div></div>'"` : "") + `></div>`;
+      return `<div class="p">${v}${p.name ? `<p class="pname">${p.name}</p>` : ""}<p class="pcap">${p.cap}</p></div>`;
+    }).join("") + `</div>`;
+  else if (s.img) html += `<img src="${s.img}" alt="">`;
   if (s.kind === "num") html += `<div class="num">${s.num}</div>`;
   if (s.kind === "prompt") html += `<div class="prompt">${PROMPT}</div>`;
   if (s.kind === "prompt2") html += `<div class="prompt">${PROMPT2}</div>`;
-  html += `<p class="say"${s.kind && s.kind.startsWith("prompt") ? ' style="font-size:2.4vw;margin-top:.7em"' : ""}>${s.say}</p>`;
+  if (s.say) html += `<p class="say"${s.kind && s.kind.startsWith("prompt") ? ' style="font-size:2.4vw;margin-top:.7em"' : ""}>${s.say}</p>`;
   if (s.sub) html += `<p class="sub">${s.sub}</p>`;
   el.innerHTML = html;
   deck.appendChild(el);
