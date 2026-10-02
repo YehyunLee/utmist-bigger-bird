@@ -31,6 +31,8 @@
   .timeline { display:flex; width:100%; margin-bottom:1.6em; }
   .tl { flex:1; border-top:5px solid var(--accent); padding:.7em .6em 0 0; text-align:left; }
   .tl b { display:block; font-size:1.35vw; } .tl span { font-size:1.15vw; color:var(--muted); line-height:1.35; display:block; }
+  .tl.off { border-top-color:#dfe3ea; } .tl.off b, .tl.off span { opacity:.3; }
+  .tl.on b { color:var(--accent); }
   .ptitle { font-size:3.4vw; font-weight:800; color:var(--accent); margin:0 0 1em; letter-spacing:-.015em; }
   .pgrid { display:flex; gap:3vw; align-items:stretch; justify-content:center; width:100%; }
   .pgrid .p { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; }
@@ -60,15 +62,15 @@ const S = [
 
   {kind: "section", say: "Our journey"},
   {kind: "timeline", say: "Ten months, from hiring to results."},
-  {say: "January to February: we hired the team.", sub: "first round of hiring"},
-  {say: "February 7: our first public talk, at UTMIST DevCon."},
-  {say: "February to March: we read the research.", sub: "literature review sessions"},
-  {say: "April: our first experiments, on smaller BERT-style models."},
-  {say: "Until July: we trained on Jerry's A100 GPU, with UTMIST's support."},
-  {say: "July: Professor Michael Guerzhoy started supporting us."},
-  {say: "July to September: we ran on Canada's national research computers.", sub: "Digital Research Alliance of Canada"},
-  {say: "Late July: we moved to a modern AI model.", sub: "DeepSeek-R1-Distill-Llama-8B, the kind of model behind chat assistants"},
-  {say: "September to October: faster GPUs on Modal, and our best results yet."},
+  {kind: "timeline", tl: 0, say: "January to February: we hired the team.", sub: "first round of hiring"},
+  {kind: "timeline", tl: 1, say: "February 7: our first public talk, at UTMIST DevCon."},
+  {kind: "timeline", tl: 2, say: "February to March: we read the research.", sub: "literature review sessions"},
+  {kind: "timeline", tl: 3, say: "April: our first experiments, on smaller BERT-style models."},
+  {kind: "timeline", tl: 4, say: "Until July: we trained on Jerry's A100 GPU, with UTMIST's support."},
+  {kind: "timeline", tl: 5, say: "July: Professor Michael Guerzhoy started supporting us."},
+  {kind: "timeline", tl: 6, say: "July to September: we ran on Canada's national research computers.", sub: "Digital Research Alliance of Canada"},
+  {kind: "timeline", tl: 7, say: "Late July: we moved to a modern AI model.", sub: "DeepSeek-R1-Distill-Llama-8B, the kind of model behind chat assistants"},
+  {kind: "timeline", tl: 8, say: "September to October: faster GPUs on Modal, and our best results yet."},
 
   {kind: "partners", say: "Thank you to our compute partners"},
 
@@ -169,8 +171,8 @@ const PARTNERS = [
 const TIMELINE = [
   ["Jan–Feb", "Hiring the team"], ["Feb 7", "DevCon talk"], ["Feb–Mar", "Reading the research"],
   ["Apr", "First experiments on BERT-style models"], ["Until Jul", "Jerry's A100 GPU, with UTMIST"],
-  ["Jul", "Prof. Guerzhoy's support; switch to a chat-style model (R1-Llama-8B)"],
-  ["Jul–Sep", "Digital Research Alliance of Canada"], ["Sep–Oct", "Modal GPUs, best results"]];
+  ["Jul", "Prof. Guerzhoy's support"], ["Jul–Sep", "Digital Research Alliance of Canada"],
+  ["Late Jul", "Switch to a chat-style model (R1-Llama-8B)"], ["Sep–Oct", "Modal GPUs, best results"]];
 
 const deck = document.getElementById("deck");
 S.forEach(s => {
@@ -179,7 +181,8 @@ S.forEach(s => {
   let html = "";
   if (s.corner) html += `<img class="corner" src="${A}utmist_logo.png" alt="UTMIST">`;
   if (s.kind === "timeline")
-    html += `<div class="timeline">${TIMELINE.map(([d, t]) => `<div class="tl"><b>${d}</b><span>${t}</span></div>`).join("")}</div>`;
+    html += `<div class="timeline">${TIMELINE.map(([d, t], j) =>
+      `<div class="tl${s.tl === undefined ? "" : j === s.tl ? " on" : " off"}"><b>${d}</b><span>${t}</span></div>`).join("")}</div>`;
   if (s.kind === "partners")
     html += (s.say ? `<p class="ptitle">${s.say}</p>` : "") + `<div class="pgrid">` + PARTNERS.map(p => {
       let v = p.text
