@@ -94,6 +94,28 @@
 
   .strip i.e { border-color:#3a3f4a; border-width:2.5px; } .strip i.all { background:#e3e6ec; border-color:#cfd3da; }
 
+  /* Routing scan: how the end picks spots */
+  .rtrow { display:flex; gap:3px; align-items:flex-end; }
+  .rtcol { display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:9.5vw; gap:5px; }
+  .rtcol .bar { width:1.1vw; border-radius:2px 2px 0 0; background:#c9ced6; transition:opacity .25s; }
+  .rtcol .bar.win { background:var(--p); }
+  .rtcol .bar.off2 { opacity:0; }
+  .rtcol .cell { width:2.4vw; height:2.4vw; border:1.5px solid #c9ced6; border-radius:2px; background:#fff; transition:background .25s; }
+  .rtcol .cell.e { border-color:#3a3f4a; border-width:2.5px; }
+  .rtcol .cell.p { background:var(--p); border-color:#9a83c8; }
+  .rtcol .cell.r { background:var(--r); border-color:#c94a4a; }
+  .rtcol .cell.cur { outline:3px solid var(--r); outline-offset:1px; }
+
+  /* Fixed window vs document length */
+  .scwrap { display:flex; flex-direction:column; gap:1.5vw; width:96%; }
+  .scrow { display:flex; align-items:center; gap:1.2vw; transition:opacity .25s; }
+  .scrow.off { opacity:.12; }
+  .sclab { width:7.5vw; text-align:right; font-size:1.25vw; font-weight:600; color:var(--muted); }
+  .scbar { height:1.9vw; background:#eef0f3; border-radius:.45vw; position:relative; }
+  .scwin { position:absolute; right:0; top:0; bottom:0; width:1.28vw; background:var(--b); border-radius:0 .45vw .45vw 0;
+           font-style:normal; font-size:.85vw; font-weight:800; color:#fff; display:flex; align-items:center; justify-content:center; }
+  .scnote { font-family:ui-monospace, Menlo, monospace; font-size:1.15vw; color:var(--muted); margin-top:.6vw; }
+
   /* Struggle wall */
   .wall { display:grid; grid-template-columns:repeat(5, 1fr); gap:.7vw; width:100%; }
   .wt { border:2px solid #e1e4ea; border-radius:.8vw; padding:.55em .5em; text-align:left; background:#fff; transition:opacity .25s, background .25s, border-color .25s; }
@@ -244,6 +266,13 @@ const S = [
   {vis: "fix", step: 2, say: "Two: the nearby text, in full detail."},
   {vis: "fix", step: 3, say: "Three: a few hundred spots that the end of the document points to."},
   {vis: "fix", step: 4, say: "Four: the very end of the document reads everything."},
+  {vis: "route", step: 0, say: "How does the end choose? With one quick scan of the whole document.", sub: "the last 64 tokens — the part containing the question"},
+  {vis: "route", step: 1, say: "Every earlier spot gets a score: how much attention the end paid it."},
+  {vis: "route", step: 2, say: "Each attention head keeps only its top 512 spots.", sub: "the 32 heads each pick their own"},
+  {vis: "route", step: 3, say: "Every token may then look at those spots — and the scan is cheap.", sub: "it touches each position once"},
+  {vis: "scale", step: 0, say: "And the nearby text never grows."},
+  {vis: "scale", step: 1, say: "32,000 tokens or a million — it is always the last 16,000.", sub: "document strips drawn to scale"},
+  {vis: "scale", step: 2, say: "Fixed sizes for every part — that's what makes the work grow linearly."},
   {vis: "img", img: F + "ablations.png", say: "Surprise: looking at fewer spots worked better than more."},
   {vis: "img", img: F + "ablations.png", say: "No retraining. Same model, same weights."},
 
@@ -456,6 +485,30 @@ const VIS = {
           `<span class="${s.step > j ? "" : "off"}"><i style="background:${c}"></i>${t}</span>`).join("")}` +
         `<span class="${s.step >= 3 ? "" : "off"}"><i style="background:#fff;border:2.5px solid #3a3f4a"></i>the end of the document</span>`;
     return `<div class="strip">${cells(30, f)}</div><div class="legend">${legend}</div>`;
+  },
+  route: s => {
+    const SC = [14, 6, 22, 9, 18, 4, 11, 34, 8, 16, 26, 10, 7, 38, 13, 20, 9, 31, 12, 17, 8];
+    const TOP = new Set([7, 13, 17]);
+    const cols = SC.map((h, j) => {
+      const cls = s.step >= 3 && j === 19 ? "r cur" : s.step >= 2 && TOP.has(j) ? "p" : "";
+      return `<div class="rtcol"><i class="bar${s.step < 1 ? " off2" : ""}${s.step >= 2 && TOP.has(j) ? " win" : ""}" style="height:${h * 0.19}vw"></i><i class="cell ${cls}"></i></div>`;
+    }).join("") + [0, 1, 2].map(() =>
+      `<div class="rtcol"><i class="bar off2" style="height:2vw"></i><i class="cell e"></i></div>`).join("");
+    const L = [
+      ["#fff;border:2.5px solid #3a3f4a", "the end (last 64 tokens)", 0],
+      ["#c9ced6;height:.55vw", "a score per earlier spot", 1],
+      ["var(--p)", "top 512, kept", 2],
+      ["var(--r)", "any token", 3]];
+    const legend = L.map(([c, t, k]) =>
+      `<span class="${s.step >= k ? "" : "off"}"><i style="background:${c}"></i>${t}</span>`).join("");
+    return `<div class="rtrow">${cols}</div><div class="legend">${legend}</div>`;
+  },
+  scale: s => {
+    const ROWS = [["32K tokens", 2.56], ["65K tokens", 5.2], ["128K tokens", 10.24], ["1M tokens", 80]];
+    return `<div class="scwrap">` + ROWS.map(([lab, w]) =>
+      `<div class="scrow"><span class="sclab">${lab}</span><div class="scbar" style="width:${w}vw"><i class="scwin">${s.step >= 1 ? "16K" : ""}</i></div></div>`).join("") +
+      (s.step >= 2 ? `<div class="scnote">64 at the start &nbsp;·&nbsp; 16,000 nearby &nbsp;·&nbsp; 512 chosen spots &nbsp;·&nbsp; 256 at the end — none of these grow</div>` : "") +
+      `</div>`;
   },
   wall: s => `<div class="wall">${WALL.map(([n, t], j) => {
       const k = j + 1, era2 = k >= 16;
