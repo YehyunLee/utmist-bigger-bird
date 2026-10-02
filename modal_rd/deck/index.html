@@ -229,7 +229,7 @@ const S = [
   {vis: "bb", step: 3, say: "Third: a few random spots."},
   {vis: "bb", step: 4, say: "Together: the same fixed shape, whatever the text says."},
   {vis: "win", step: 1, say: "Big Bird's window takes everything nearby."},
-  {vis: "win", step: 2, say: "Bigger Bird picks the spots based on what the text says."},
+  {vis: "win", step: 2, say: "Bigger Bird lets the question choose where to look."},
 
   {kind: "section", say: "How we test it"},
   {say: "Skipping text is easy. Still understanding it is the hard part."},
@@ -267,12 +267,13 @@ const S = [
   {vis: "fix", step: 0, say: "Each token now looks at four things."},
   {vis: "fix", step: 1, say: "One: the very beginning of the document."},
   {vis: "fix", step: 2, say: "Two: the nearby text, in full detail."},
-  {vis: "fix", step: 3, say: "Three: a few hundred spots that the end of the document points to."},
-  {vis: "fix", step: 4, say: "Four: the very end of the document reads everything."},
-  {vis: "route", step: 0, say: "How does the end choose? With one quick scan of the whole document.", sub: "the last 64 tokens — the part containing the question"},
-  {vis: "route", step: 1, say: "Every earlier spot gets a score: how much attention the end paid it."},
-  {vis: "route", step: 2, say: "Each attention head keeps only its top 512 spots.", sub: "the 32 heads each pick their own"},
-  {vis: "route", step: 3, say: "Every token may then look at those spots — and the scan is cheap.", sub: "it touches each position once"},
+  {vis: "fix", step: 3, say: "Three: a few hundred spots the question finds relevant."},
+  {vis: "fix", step: 4, say: "Four: the question itself reads the whole document."},
+  {vis: "route", step: 0, say: "The question builds a reading list.", sub: "like a person who reads the question before opening a 400-page book"},
+  {vis: "route", step: 1, say: "One quick scan: the model asks which spots in the document the question pays attention to.", sub: "attention is used to decide where attention should look"},
+  {vis: "route", step: 2, say: "Each attention head keeps only its top 512 spots.", sub: "32 heads in each of 32 layers: over a thousand separate reading lists"},
+  {vis: "route", step: 3, say: "Then every token can look at those spots, and the scan itself is cheap.", sub: "it touches each position once"},
+  {vis: "img", img: F + "recall_layers.png", say: "How good are the reading lists? Nearly as good as an oracle's.", sub: "green (ours) sits next to red, a cheat that already knows the best spots"},
   {vis: "scale", step: 0, say: "And the nearby text never grows."},
   {vis: "scale", step: 1, say: "32,000 tokens or a million — it is always the last 16,000.", sub: "document strips drawn to scale"},
   {vis: "scale", step: 2, say: "Fixed sizes for every part — that's what makes the work grow linearly."},
@@ -314,6 +315,7 @@ const S = [
   {vis: "ex", ex: 4, say: "On essay-like text at 128,000 tokens, it's behind.", sub: "11 out of 24 correct, vs 17 for the normal model"},
   {say: "These are test puzzles, not real-world questions yet."},
   {say: "It saves computing time, not memory."},
+  {say: "It needs the question at the end of the prompt.", sub: "the reading list is built from the question, so it can't be prepared in advance"},
 
   {kind: "section", say: "Next"},
   {say: "Test on real-world questions."},
@@ -484,12 +486,12 @@ const VIS = {
     const f = j => last ? (j === 29 ? "r cur" : END(j) ? "q" : "all")
       : j === 25 ? "r cur" : s.step >= 1 && j < 3 ? "g" : s.step >= 2 && j >= 19 && j < 25 ? "b"
       : s.step >= 3 && FIX_SPOTS.has(j) ? "p" : s.step >= 3 && END(j) ? "e" : "";
-    const L = [["var(--g)", "beginning"], ["var(--b)", "nearby text"], ["var(--p)", "spots the end points to"]];
+    const L = [["var(--g)", "beginning"], ["var(--b)", "nearby text"], ["var(--p)", "spots the question finds relevant"]];
     const legend = last
-      ? `<span><i style="background:var(--r)"></i>a token at the end</span><span><i style="background:#e3e6ec"></i>it can see everything before it</span>`
+      ? `<span><i style="background:var(--r)"></i>a token in the question</span><span><i style="background:#e3e6ec"></i>it can see everything before it</span>`
       : `<span><i style="background:var(--r)"></i>current token</span>${L.map(([c, t], j) =>
           `<span class="${s.step > j ? "" : "off"}"><i style="background:${c}"></i>${t}</span>`).join("")}` +
-        `<span class="${s.step >= 3 ? "" : "off"}"><i style="background:#fff;border:2.5px solid #3a3f4a"></i>the end of the document</span>`;
+        `<span class="${s.step >= 3 ? "" : "off"}"><i style="background:#fff;border:2.5px solid #3a3f4a"></i>the question</span>`;
     return `<div class="strip">${cells(30, f)}</div><div class="legend">${legend}</div>`;
   },
   route: s => {
@@ -501,7 +503,7 @@ const VIS = {
     }).join("") + [0, 1, 2].map(() =>
       `<div class="rtcol"><i class="bar off2" style="height:2vw"></i><i class="cell e"></i></div>`).join("");
     const L = [
-      ["#fff;border:2.5px solid #3a3f4a", "the end (last 64 tokens)", 0],
+      ["#fff;border:2.5px solid #3a3f4a", "the question (last 64 tokens)", 0],
       ["#c9ced6;height:.55vw", "a score per earlier spot", 1],
       ["var(--p)", "top 512, kept", 2],
       ["var(--r)", "any token", 3]];
@@ -513,7 +515,7 @@ const VIS = {
     const ROWS = [["32K tokens", 2.56], ["65K tokens", 5.2], ["128K tokens", 10.24], ["1M tokens", 80]];
     return `<div class="scwrap">` + ROWS.map(([lab, w]) =>
       `<div class="scrow"><span class="sclab">${lab}</span><div class="scbar" style="width:${w}vw"><i class="scwin">${s.step >= 1 ? "16K" : ""}</i></div></div>`).join("") +
-      (s.step >= 2 ? `<div class="scnote">64 at the start &nbsp;·&nbsp; 16,000 nearby &nbsp;·&nbsp; 512 chosen spots &nbsp;·&nbsp; 256 at the end — none of these grow</div>` : "") +
+      (s.step >= 2 ? `<div class="scnote">64 at the start &nbsp;·&nbsp; 16,000 nearby &nbsp;·&nbsp; 512 chosen spots &nbsp;·&nbsp; 256 for the question — none of these grow</div>` : "") +
       `</div>`;
   },
   wall: s => `<div class="wall">${WALL.map(([n, t], j) => {
