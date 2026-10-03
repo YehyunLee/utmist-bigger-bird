@@ -417,13 +417,15 @@ const TODO = [
 const TEAM = [
   {img: "thomas.jpg", initial: "T", name: "Thomas Lee", role: "Project Manager",
    pts: ["Started on the team as a developer", "Product AI Engineer shipping rugged GPUs for NASA and the biggest US defense companies", "Managed 4 winning projects · Hack the North solo winner"]},
-  {img: "derek.png", initial: "D", name: "Derek Chen", role: "Co-Lead",
+  {img: "derek.png", initial: "D", name: "Derek Chen", role: "Co-Lead", pos: "center 15%",
    pts: ["3rd-year Engineering Physics", "Founder of Bigger Bird"]},
   {img: "han.png", initial: "H", name: "Han Fang", role: "Co-Lead",
    pts: ["3rd-year EngSci, ECE major", "Joined as co-lead"]},
-  {img: "jerry.png", initial: "J", name: "Jerry", role: "Developer",
-   pts: ["Developer on the team", "Also lent us his A100 GPU until July"]},  {img: "albert.png", initial: "A", name: "Albert", role: "Developer",
-   pts: ["Developer on the team"]},  {img: "david.png", initial: "D", name: "David", role: "Developer",
+  {img: "jerry.png", initial: "J", name: "Jerry", role: "Developer", pos: "center 8%",
+   pts: ["Developer on the team", "Also lent us his A100 GPU until July"]},
+  {img: "albert.png", initial: "A", name: "Albert", role: "Developer",
+   pts: ["Developer on the team"]},
+  {img: "david.png", initial: "D", name: "David", role: "Developer", pos: "center 4%",
    pts: ["Developer on the team"]},
 ];
 
@@ -471,6 +473,7 @@ const BENTO = [
 
 // ---- Stage visuals ----
 const face = (p, cls) => `<img class="${cls}" src="${A}${p.img}" alt="${p.name || ""}"` +
+  (p.pos ? ` style="object-position:${p.pos}"` : "") +
   (p.initial ? ` onerror="this.outerHTML='<div class=&quot;initial&quot;>${p.initial}</div>'"` : "") + `>`;
 const cells = (n, f) => Array.from({length: n}, (_, j) => `<i class="${f(j)}"></i>`).join("");
 const RAND = new Set(["0,4", "1,7", "2,2", "3,5", "4,0", "4,6", "4,8", "5,3", "6,5", "7,1", "7,7", "8,4", "9,2", "9,6"]);
