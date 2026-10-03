@@ -300,8 +300,7 @@ const S = [
   {vis: "img", img: F + "depth.png", say: "It works wherever the fact is hidden.", rule: "RULER · niah_single_1 · needle-depth sweep"},
 
   {kind: "section", say: '<span class="secnum">PART 7 · Jerry</span>Harder tests'},
-  {vis: "tests", say: "So we run six kinds of test."},
-  {vis: "exgrid", say: ""},
+  {vis: "exgrid", say: "So we run six kinds of test."},
 
   {vis: "img", img: F + "tasks.png", say: "Up to 65,000 tokens, Bigger Bird matches or beats the normal model.", sub: "a possible reason: with most of the noise never read, the answer has less to compete with"},
   {vis: "img", img: F + "tasks.png", say: "At 128,000 tokens, most of these stump both models.", sub: "12 prompts per test, so small differences aren't significant yet"},
@@ -311,7 +310,7 @@ const S = [
   {kind: "section", say: "<span class='secnum'>PART 8 · Thomas</span>Limits, and what's next"},
   {vis: "img", img: F + "attn_bench.png", say: "At a million tokens, our attention is 18 times faster."},
   {vis: "img", img: F + "attn_bench.png", say: "That's speed only. This model can't read that far yet."},
-  {vis: "ex", ex: 5, say: "On essay-like text at 128,000 tokens, it's behind: 11 of 24 vs 17. When it misses, it doesn't guess wrong — it keeps writing the essay.", sub: "context rot: it drifts instead of answering · but the baseline suffers too — its 7 misses look the same"},
+  {vis: "ex", ex: 6, say: "On essay-like text at 128,000 tokens, it's behind: 11 of 24 vs 17. When it misses, it doesn't guess wrong — it keeps writing the essay.", sub: "context rot: it drifts instead of answering · but the baseline suffers too — its 7 misses look the same"},
   {say: "Two more limits: it saves time, not memory, and these are test puzzles."},
   {kind: "todo", say: "Conclusion: so what's next?"},
 
@@ -382,6 +381,11 @@ const BOARD = [
   ["Top-K, first 16 layers normal", "—", "6/6", "good", "still quadratic"],
 ];
 const EX = [
+  ["One hidden fact", "niah_single_1", `<span class="dim">The grass is green. The sky is blue. …</span>
+<span class="dim">( 60,000 tokens of filler )</span>
+… <span class="needle">The special magic golden-falcon is: 7606921.</span> …
+<span class="dim">( 60,000 more tokens )</span>
+<span class="q">What is the special magic golden-falcon?</span>`],
   ["Lookalike facts", "niah_multikey_1", `… <span class="needle">The special magic golden-falcon is: 7606921.</span> …
 … <span class="needle">The special magic violet-thistle is: 3201885.</span> …  <span class="dim">(two more)</span>
 <span class="q">What is the special magic golden-falcon?</span>
@@ -596,7 +600,7 @@ const VIS = {
   tests: () => `<div class="chips">${["One hidden fact", "Lookalike facts", "Many answers", "Many questions", "Long random IDs", "Real text"].map((m, j) =>
       `<span class="chip${j === 0 ? " hl" : ""}">${m}</span>`).join("")}</div>`,
   ex: s => `<div class="exbox"><div class="extag">${EX[s.ex][0]}</div><div class="exrule">RULER &middot; ${EX[s.ex][1]}</div><div class="prompt">${EX[s.ex][2]}</div></div>`,
-  exgrid: s => `<div class="exgrid">` + EX.slice(0, 5).map(e =>
+  exgrid: s => `<div class="exgrid">` + EX.slice(0, 6).map(e =>
     `<div class="exbox"><div class="extag">${e[0]}</div><div class="exrule">RULER &middot; ${e[1]}</div><div class="prompt">${e[2]}</div></div>`).join("") + `</div>`,
   prompt: () => `<div class="exbox big"><div class="extag">One hidden fact</div><div class="exrule">RULER &middot; niah_single_1</div><div class="prompt">${PROMPT}</div></div>`,
   prompt2: () => `<div class="exbox"><div class="extag">Many answers</div><div class="exrule">RULER &middot; niah_multivalue</div><div class="prompt">${PROMPT2}</div></div>`,
