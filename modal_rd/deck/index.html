@@ -682,6 +682,7 @@ document.querySelectorAll(".quadcv").forEach(cv => {
   draw();
 });
 
+const mainCount = S.findIndex(s => s.kind === "section" && s.say === "Appendix");
 const slides = [...document.querySelectorAll(".slide")];
 let i = Math.max(0, Math.min(slides.length - 1, parseInt(location.hash.slice(1) || "1") - 1));
 const pvw = document.getElementById("pvw"), pvwin = document.getElementById("pvwin"), timerEl = document.getElementById("timer");
@@ -693,7 +694,7 @@ setInterval(() => {
 }, 500);
 const show = () => {
   slides.forEach((s, j) => s.classList.toggle("active", j === i));
-  document.getElementById("num").textContent = `${i + 1} / ${slides.length}`; location.hash = i + 1;
+  document.getElementById("num").textContent = i < mainCount ? `${i + 1} / ${mainCount}` : `appendix ${i - mainCount}`; location.hash = i + 1;
   if (i === 0) { t0 = null; timerEl.textContent = ""; } else if (t0 === null) t0 = Date.now();
   pvwin.innerHTML = "";
   if (i + 1 < slides.length) {
