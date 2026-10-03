@@ -792,7 +792,10 @@ const prTargets = (k, j) => {
 };
 document.querySelectorAll(".paircv").forEach(cv => {
   const ctx = cv.getContext("2d"), slide = cv.closest(".slide"), W = 1200, pad = 230, cw = (W - pad - 30) / PR_N;
-  const STEP = 280, HOLD = 1800, cx = i => pad + i * cw + cw / 2;
+  const STEP = 200, HOLD = 1800, cx = i => pad + i * cw + cw / 2;
+  const cumT = [0];
+  for (let j = 0; j < PR_N; j++) cumT.push(cumT[j] + STEP * (.6 + 2.4 * (j / (PR_N - 1)) ** 2));
+  const TOTAL = cumT[PR_N];
   const arc = (y, j, i, col, a, lw) => {
     const h = Math.min(120, (cx(j) - cx(i)) * .32 + 14);
     ctx.globalAlpha = a; ctx.strokeStyle = col; ctx.lineWidth = lw;
@@ -818,8 +821,9 @@ document.querySelectorAll(".paircv").forEach(cv => {
   function draw() {
     requestAnimationFrame(draw);
     if (!slide.classList.contains("active")) return;
-    const t = (performance.now() - (slide._t0 || 0)) % (STEP * PR_N + HOLD);
-    const cur = Math.min(PR_N, 1 + Math.floor(t / STEP));
+    const t = (performance.now() - (slide._t0 || 0)) % (TOTAL + HOLD);
+    let cur = PR_N; while (cur > 0 && t < cumT[cur - 1]) cur--;
+    cur = Math.max(1, Math.min(PR_N, cur));
     ctx.clearRect(0, 0, W, 460);
     row(185, "dense", "Dense", cur);
     row(415, "bb", "Bigger Bird", cur);
