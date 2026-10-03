@@ -280,16 +280,6 @@ const S = [
   {vis: "route", step: 2, say: "Each attention head keeps its top 512 spots.", sub: "32 heads in each of 32 layers, each with its own list"},
   {vis: "route", step: 3, say: "Every token can then use those spots.", sub: "the quick look touches each spot once, so it stays cheap"},
   {say: "Why the end? Those tokens are about to predict, so their attention shows what the prediction needs."},
-  {kind: "num", num: "1 in 4", say: "heads put the hidden number on their list", sub: "a random selector would find it in almost none"},
-  {say: "Does the question have to be at the end?", sub: "every test so far put it there"},
-  {kind: "num", num: "6 / 6", say: "with the question moved near the start", sub: "5 of 6 when it is the very first line · same 6 documents, still about 2× faster · a quick check, not a full test yet"},
-  {say: "It still works because the end reads the whole document, question included.", sub: "wherever the question sits, the tokens about to predict have seen it"},
-  {vis: "img", img: F + "ablations.png", say: "Two dials decided everything. Left: how many spots each head keeps."},
-  {vis: "img", img: F + "ablations.png", say: "Too few, and the fact gets skipped: 0 of 6 at 64 spots."},
-  {vis: "img", img: F + "ablations.png", say: "But more is not better. Thousands of spots dilute the signal.", sub: "best at a few hundred; only 3 of 6 with 4,000"},
-  {vis: "img", img: F + "ablations.png", say: "Right: how many positions about to predict read everything.", sub: "none → 2 of 6 · a little → 4 of 6 · 256 tokens → 6 of 6"},
-  {vis: "img", img: F + "ablations.png", say: "No retraining. Same model, same weights."},
-
   {kind: "section", say: '<span class="secnum">PART 6</span>Results'},
   {kind: "num", num: "30 / 30", say: "correct on 128,000-token documents"},
   {kind: "num", num: "28 / 30", say: "for the normal model", sub: "same documents; that 2-question gap is too small to count as a win"},
@@ -348,6 +338,17 @@ const S = [
 
   {kind: "bento"},
   {kind: "hero", say: "Thank you", corner: true},
+
+  {kind: "section", say: "Appendix"},
+  {kind: "num", num: "1 in 4", say: "heads put the hidden number on their list", sub: "a random selector would find it in almost none"},
+  {say: "Does the question have to be at the end?", sub: "every test so far put it there"},
+  {kind: "num", num: "6 / 6", say: "with the question moved near the start", sub: "5 of 6 when it is the very first line · same 6 documents, still about 2× faster · a quick check, not a full test yet"},
+  {say: "It still works because the end reads the whole document, question included.", sub: "wherever the question sits, the tokens about to predict have seen it"},
+  {vis: "img", img: F + "ablations.png", say: "Two dials decided everything. Left: how many spots each head keeps."},
+  {vis: "img", img: F + "ablations.png", say: "Too few, and the fact gets skipped: 0 of 6 at 64 spots."},
+  {vis: "img", img: F + "ablations.png", say: "But more is not better. Thousands of spots dilute the signal.", sub: "best at a few hundred; only 3 of 6 with 4,000"},
+  {vis: "img", img: F + "ablations.png", say: "Right: how many positions about to predict read everything.", sub: "none → 2 of 6 · a little → 4 of 6 · 256 tokens → 6 of 6"},
+  {vis: "img", img: F + "ablations.png", say: "No retraining. Same model, same weights."},
 ];
 
 const PROMPT = `The grass is green. The sky is blue. The sun is yellow. Here we go. …
