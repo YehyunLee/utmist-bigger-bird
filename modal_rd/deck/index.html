@@ -164,6 +164,8 @@
   .tl b { display:block; font-size:1.35vw; } .tl span { font-size:1.15vw; color:var(--muted); line-height:1.35; display:block; }
   .tl.off { border-top-color:#dfe3ea; } .tl.off b, .tl.off span { opacity:.3; }
   .tl.on b { color:var(--accent); }
+  .tltag { position:absolute; top:6%; left:8%; font-size:1.05vw; font-weight:800; letter-spacing:.18em;
+           color:#fff; background:var(--accent); padding:.45em .9em; border-radius:999px; }
 
   /* Reading list */
   .readlist { column-count:2; column-gap:4vw; text-align:left; width:94%; }
@@ -328,11 +330,11 @@ const S = [
   {kind: "timeline", tl: 2, say: "February to March: we read the research.", sub: "literature review sessions"},
   {say: "We read a lot.", sub: "papers, explainer videos, and course notes"},
   {kind: "readlist", say: "Some of what shaped the project:"},
-  {kind: "timeline", tl: 3, say: "April: our first experiments, on smaller BERT-style models."},
-  {kind: "timeline", tl: 4, say: "Until July: we trained on Jerry's A100 GPU, with UTMIST's support."},
-  {kind: "timeline", tl: 5, say: "July: Professor Michael Guerzhoy started supporting us."},
-  {kind: "timeline", tl: 6, say: "July to September: we ran on Canada's national research computers.", sub: "Digital Research Alliance of Canada"},
-  {kind: "timeline", tl: 7, say: "Late July: we moved to a modern AI model.", sub: "DeepSeek-R1-Distill-Llama-8B, the kind of model behind chat assistants"},
+  {kind: "timeline", tl: 3, tag: "RESEARCH PERIOD", say: "April: our first experiments, on smaller BERT-style models."},
+  {kind: "timeline", tl: 4, tag: "RESEARCH PERIOD", say: "Until July: we trained on Jerry's A100 GPU, with UTMIST's support."},
+  {kind: "timeline", tl: 5, tag: "RESEARCH PERIOD", say: "July: Professor Michael Guerzhoy started supporting us."},
+  {kind: "timeline", tl: 6, tag: "RESEARCH PERIOD", say: "July to September: we ran on Canada's national research computers.", sub: "Digital Research Alliance of Canada"},
+  {kind: "timeline", tl: 7, tag: "RESEARCH PERIOD", say: "Late July: we moved to a modern AI model.", sub: "DeepSeek-R1-Distill-Llama-8B, the kind of model behind chat assistants"},
   {kind: "timeline", tl: 8, say: "September to October: faster GPUs on Modal, and our best results yet."},
   {kind: "partners", say: "Thank you to our compute partners"},
 
@@ -580,7 +582,8 @@ S.forEach(s => {
       : `<div class="tile ${b.cls || ""}"><div class="tn">${b.n}</div><div class="tt">${b.t}</div>${b.s ? `<div class="ts">${b.s}</div>` : ""}</div>`).join("") + `</div>`;
   } else {
     if (s.kind === "timeline")
-      html += `<div class="timeline">${TIMELINE.map(([d, t], j) =>
+      html += (s.tag ? `<div class="tltag">${s.tag}</div>` : "") +
+        `<div class="timeline">${TIMELINE.map(([d, t], j) =>
         `<div class="tl${s.tl === undefined ? "" : j === s.tl ? " on" : " off"}"><b>${d}</b><span>${t}</span></div>`).join("")}</div>`;
     if (s.kind === "hero")
       html += `<div class="row"><img src="${A}bigger_bird_logo.png" alt="Bigger Bird"><div><div class="big">Bigger Bird</div><div class="small">Content-Aware Sparse Transformer Attention</div></div></div>`;
