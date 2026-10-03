@@ -172,6 +172,8 @@
   .readlist { column-count:2; column-gap:4vw; text-align:left; width:94%; }
   .readlist div { break-inside:avoid; font-size:1.45vw; font-weight:600; padding:.4em 0; border-bottom:1px solid #eef0f3; }
   .readlist span { display:block; font-size:1.05vw; font-weight:400; color:var(--muted); margin-top:.15em; }
+  .readlist.todo { column-count:1; width:70%; }
+  .readlist.todo div { font-size:1.7vw; padding:.6em 0; } .readlist.todo span { font-size:1.2vw; }
 
   /* People / partners */
   .ptitle { font-size:3.4vw; font-weight:800; color:var(--accent); margin:0 0 1em; letter-spacing:-.015em; }
@@ -313,7 +315,10 @@ const S = [
 
   {kind: "section", say: "<span class='secnum'>PART 9</span>Limits, and what's next"},
   {vis: "ex", ex: 4, say: "On essay-like text at 128,000 tokens, it's behind.", sub: "11 out of 24 correct, vs 17 for the normal model"},
-  {say: "It saves computing time, not memory, and these are test puzzles, not real-world questions.", sub: "next: real-world tests · close the natural-text gap · try models that read past 128,000 tokens"},
+  {vis: "ex", ex: 5, say: "When it misses, it doesn't guess wrong. It keeps writing the essay.", sub: "12 of our 13 misses look like this · the normal model's 7 misses do too · the whole gap comes from 6 documents"},
+  {say: "Turning the dials didn't fix it.", sub: "2× or 4× more spots, or a 4× longer full read at the end: no change · a 2× wider window: worse"},
+  {say: "Two more limits: it saves time, not memory, and these are test puzzles."},
+  {kind: "todo", say: "What's next"},
 
   {kind: "section", say: "How we got here"},
   {kind: "photo", img: A + "devcon_proposal.png", say: "February 2026: we pitched an idea at UTMIST DevCon."},
@@ -396,6 +401,19 @@ Writing is thinking. When you force yourself to explain an idea clearly, you oft
 that the idea was not as solid as it seemed.</span> … <span class="needle">The special magic golden-falcon is: 7606921.</span> …
 <span class="dim">… (tens of thousands of tokens of essays) …</span>
 <span class="q">What is the special magic golden-falcon?</span>`],
+  ["What a miss looks like", "niah_single_2 · document 3 · 128K", `<span class="dim">… (127,000 tokens of essays, with the fact hidden in the middle) …</span>
+<span class="q">What is the special magic …? The answer is:</span>
+
+Correct answer:  <span class="needle">7203641</span>
+Normal model:    <span class="needle">7203641.</span> The best way…
+Bigger Bird:     <span class="dim">The best way to get s… (keeps writing the essay)</span>`],
+];
+
+const TODO = [
+  ["Find the cause", "check whether the fact makes the reading lists on the documents we miss"],
+  ["Training support", "write the backward pass, then fine-tune with the pattern on so the model adapts to it"],
+  ["More speed", "fold the scoring scan and the end's full read into the kernel; today they run as separate steps"],
+  ["Real-world tests", "natural documents, and models that read past 128,000 tokens"],
 ];
 
 const TEAM = [
@@ -579,6 +597,9 @@ S.forEach(s => {
         `<div class="tl${s.tl === undefined ? "" : (Array.isArray(s.tl) ? j >= s.tl[0] && j <= s.tl[1] : j === s.tl) ? " on" : " off"}"><b>${d}</b><span>${t}</span></div>`).join("")}</div>`;
     if (s.kind === "hero")
       html += `<div class="row"><img src="${A}bigger_bird_logo.png" alt="Bigger Bird"><div><div class="big">Bigger Bird</div><div class="small">Content-Aware Sparse Transformer Attention</div></div></div>`;
+    if (s.kind === "todo")
+      html += `<p class="say" style="margin:0 0 .9em">${s.say}</p><div class="readlist todo">` +
+              TODO.map(([t, tag]) => `<div>${t}<span>${tag}</span></div>`).join("") + `</div>`;
     if (s.kind === "readlist")
       html += `<p class="say" style="margin:0 0 .9em">${s.say}</p><div class="readlist">` +
               READLIST.map(([t, tag]) => `<div>${t}<span>${tag}</span></div>`).join("") + `</div>`;
@@ -592,7 +613,7 @@ S.forEach(s => {
         `${p.name ? `<p class="pname">${p.name}</p>` : ""}<p class="pcap">${p.cap}</p></div>`).join("") + `</div>`;
     if (s.img && !["partners", "team"].includes(s.kind)) html += `<img src="${s.img}" alt="">`;
     if (s.kind === "num") html += `<div class="num">${s.num}</div>`;
-    if (s.say && !["readlist", "team", "partners"].includes(s.kind)) html += `<p class="say">${s.say}</p>`;
+    if (s.say && !["readlist", "todo", "team", "partners"].includes(s.kind)) html += `<p class="say">${s.say}</p>`;
     if (s.sub) html += `<p class="sub">${s.sub}</p>`;
   }
   el.innerHTML = html;
