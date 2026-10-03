@@ -293,9 +293,7 @@ const S = [
   {kind: "num", num: "30 / 30", rule: "RULER · niah_single_1 · 30 docs @128K", say: "correct on 128,000-token documents"},
   {kind: "num", num: "28 / 30", rule: "RULER · niah_single_1 · 30 docs @128K", say: "for the normal model", sub: "same documents; that 2-question gap is too small to count as a win"},
   {kind: "num", num: "1.9×", rule: "prefill benchmark · one H100", say: "faster to read the document"},
-  {vis: "img", img: F + "scaling.png", say: "The longer the document, the bigger the speed gap.", rule: "benchmark · prefill, one H100"},
-  {vis: "img", img: F + "scaling.png", say: "Normal model: double the length, about three times the time.", rule: "benchmark · prefill, one H100"},
-  {vis: "img", img: F + "scaling.png", say: "Bigger Bird: double the length, two times the time.", rule: "benchmark · prefill, one H100"},
+  {vis: "img", img: F + "scaling.png", say: "The longer the document, the bigger the speed gap.", rule: "benchmark · prefill, one H100", sub: "normal model: double the length → ~3× the time · Bigger Bird: double → ~2×"},
   {vis: "img", img: F + "loglog.png", say: "That's linear growth, not quadratic.", rule: "benchmark · prefill, one H100", sub: "measured slope 1.01 for Bigger Bird vs 1.65 for the normal model"},
   {vis: "img", img: F + "depth.png", say: "It works wherever the fact is hidden.", rule: "RULER · niah_single_1 · needle-depth sweep"},
 
