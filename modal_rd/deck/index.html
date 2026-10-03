@@ -794,7 +794,7 @@ document.querySelectorAll(".paircv").forEach(cv => {
   const ctx = cv.getContext("2d"), slide = cv.closest(".slide"), W = 1200, pad = 230, cw = (W - pad - 30) / PR_N;
   const STEP = 200, HOLD = 1800, cx = i => pad + i * cw + cw / 2;
   const cumT = [0];
-  for (let j = 0; j < PR_N; j++) cumT.push(cumT[j] + STEP * (.6 + 2.4 * (j / (PR_N - 1)) ** 2));
+  for (let j = 0; j < PR_N; j++) cumT.push(cumT[j] + STEP * (j >= PR_N - PR_TAIL ? 6 : 1));
   const TOTAL = cumT[PR_N];
   const arc = (y, j, i, col, a, lw) => {
     const h = Math.min(120, (cx(j) - cx(i)) * .32 + 14);
