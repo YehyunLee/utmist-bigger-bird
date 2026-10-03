@@ -195,6 +195,14 @@
   .ctable td { padding:.55em .6em; border-bottom:1px solid #e8ecf3; vertical-align:top; line-height:1.35; }
   .ctable td:first-child { font-weight:700; }
   .ctable tr.ours td { background:#eef3fd; }
+  /* Tail "reads everything" animation */
+  .tailwrap { width:88%; }
+  .tailwrap svg { width:100%; height:auto; display:block; overflow:visible; }
+  .tailwrap .arc { fill:none; stroke:var(--b); stroke-width:5; stroke-linecap:round; opacity:.55;
+                   animation:arcin .7s ease both; }
+  .tailwrap .cellr { fill:#eef0f3; stroke:#dfe3ea; }
+  .tailwrap .cellr.cur { fill:var(--r); stroke:#b0413e; stroke-width:3; }
+  @keyframes arcin { from { opacity:0; } to { opacity:.55; } }
   .readlist.todo { column-count:1; width:78%; }
   .readlist.todo div { font-size:2.2vw; padding:.55em 0; } .readlist.todo span { font-size:1.45vw; }
 
@@ -288,7 +296,7 @@ const S = [
 
   {kind: "section", say: '<span class="secnum">PART 5 · Thomas</span>Our fix'},
   {say: "The solution: let the tokens near the prediction score which far-away spots matter.", sub: "we call this routing: attention picks where attention looks"},
-  {vis: "fix", step: 4, say: "One group gets a full read: the last 256 tokens, the ones about to predict, see everything.", sub: "full detail for their own view, no skipping"},
+  {vis: "tail", say: "One group gets a full read: the last 256 tokens, the ones about to predict, see everything.", sub: "full detail for their own view, no skipping"},
   {vis: "route", step: 1, say: "The last 64 of those tokens then score every earlier spot.", sub: "one score per spot: the softmax attention prob the end gives it"},
   {say: "Why the end? Those tokens are about to predict, so their attention shows what the prediction needs."},
   {vis: "route", step: 2, say: "Each attention head keeps its top 512 spots.", sub: "32 heads in each of 32 layers, each with its own list"},
@@ -547,6 +555,24 @@ const VIS = {
           `<span class="${s.step > j ? "" : "off"}"><i style="background:${c}"></i>${t}</span>`).join("")}` +
         `<span class="${s.step >= 3 ? "" : "off"}"><i style="background:#fff;border:2.5px solid #3a3f4a"></i>about to predict</span>`;
     return `<div class="strip">${cells(30, f)}</div><div class="legend">${legend}</div>`;
+  },
+  tail: () => {
+    const N = 20, W = 1200, H = 330, y0 = 245, pad = 8, cw = (W - pad * 2) / N;
+    const cx = i => pad + i * cw + cw / 2;
+    let arcs = "", rects = "";
+    for (let i = 0; i < N; i++) {
+      const last = i === N - 1;
+      if (!last) {
+        const d = Math.min(190, (cx(N - 1) - cx(i)) * .22 + 26);
+        arcs += `<path class="arc" style="animation-delay:${.15 + i * .05}s"
+          d="M ${cx(N - 1)} ${y0 - 8} Q ${(cx(i) + cx(N - 1)) / 2} ${y0 - d * 2} ${cx(i)} ${y0 - 8}"/>`;
+      }
+      rects += `<rect class="cellr${last ? " cur" : ""}" x="${pad + i * cw + 3}" y="${y0}" width="${cw - 6}" height="46" rx="8"/>`;
+    }
+    return `<div class="tailwrap"><svg viewBox="0 0 ${W} ${H}">${arcs}${rects}
+      <text x="${cx(N - 1)}" y="${y0 + 78}" font-size="19" font-weight="700" fill="#3a3f4a" text-anchor="middle">one of the last 256</text>
+      <text x="${cx(0)}" y="${y0 + 78}" font-size="17" fill="#8a93a3" text-anchor="start">start of document</text></svg>
+      <div class="legend"><span><i style="background:var(--r)"></i>a token about to predict</span><span><i style="background:var(--b);width:2.2vw;border-radius:2px;height:.45vw"></i>it reads every earlier position</span></div></div>`;
   },
   route: s => {
     const SC = [14, 6, 22, 9, 18, 4, 11, 34, 8, 16, 26, 10, 7, 38, 13, 20, 9, 31, 12, 17, 8];
