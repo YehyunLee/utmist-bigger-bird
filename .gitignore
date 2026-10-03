@@ -10,3 +10,6 @@ __pycache__/
 *.safetensors
 venv
 nolima_data/
+
+# Netlify build artifact: figures copied into deck/ at deploy time
+modal_rd/deck/figures/
