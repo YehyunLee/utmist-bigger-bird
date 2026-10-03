@@ -203,6 +203,14 @@
   .tailwrap .cellr { fill:#eef0f3; stroke:#dfe3ea; }
   .tailwrap .cellr.cur { fill:var(--r); stroke:#b0413e; stroke-width:3; }
   @keyframes arcin { from { opacity:0; } to { opacity:.55; } }
+  .cmpwrap { width:88%; }
+  .cmpwrap svg { width:100%; height:auto; display:block; overflow:visible; }
+  .cmpwrap .arc { fill:none; stroke-width:5; stroke-linecap:round; opacity:.55;
+                  animation:arcin .55s ease both; }
+  .cmpwrap .cellr { fill:#eef0f3; stroke:#dfe3ea; }
+  .cmpwrap .cellr.cur { fill:var(--r); stroke:#b0413e; stroke-width:3; }
+  .cmpwrap .lab { font-size:21px; font-weight:700; fill:#3a3f4a; }
+  .cmpwrap .slab { font-size:15px; fill:#8a93a3; }
   .readlist.todo { column-count:1; width:78%; }
   .readlist.todo div { font-size:2.2vw; padding:.55em 0; } .readlist.todo span { font-size:1.45vw; }
 
@@ -305,6 +313,7 @@ const S = [
   {vis: "fix", step: 1, say: "One: the very beginning of the document."},
   {vis: "fix", step: 2, say: "Two: the nearby text, in full detail."},
   {vis: "fix", step: 3, say: "Three: the routed spots, the ones the scan chose."},
+  {vis: "cmp", say: "Same question, two ways to read.", sub: "top: dense reads every earlier token · bottom: ours reads a chosen few"},
   {kind: "section", say: '<span class="secnum">PART 6 · Jerry</span>Results'},
   {kind: "num", num: "30 / 30", rule: "RULER · niah_single_1 · 30 docs @128K", say: "correct on 128,000-token documents"},
   {kind: "num", num: "28 / 30", rule: "RULER · niah_single_1 · 30 docs @128K", say: "for the normal model", sub: "same documents; that 2-question gap is too small to count as a win"},
@@ -573,6 +582,35 @@ const VIS = {
       <text x="${cx(N - 1)}" y="${y0 + 78}" font-size="19" font-weight="700" fill="#3a3f4a" text-anchor="middle">one of the last 256</text>
       <text x="${cx(0)}" y="${y0 + 78}" font-size="17" fill="#8a93a3" text-anchor="start">start of document</text></svg>
       <div class="legend"><span><i style="background:var(--r)"></i>a token about to predict</span><span><i style="background:var(--b);width:2.2vw;border-radius:2px;height:.45vw"></i>it reads every earlier position</span></div></div>`;
+  },
+  cmp: () => {
+    const N = 20, W = 1200, pad = 170, cw = (W - pad * 2) / N;
+    const cx = i => pad + i * cw + cw / 2;
+    const row = (y0, lab, slab, targets) => {
+      let a = "";
+      targets.forEach(([i, col], k) => {
+        const h = Math.min(72, (cx(N - 1) - cx(i)) * .16 + 20);
+        a += `<path class="arc" style="stroke:${col};animation-delay:${.25 + k * .13}s"
+          d="M ${cx(N - 1)} ${y0 - 8} Q ${(cx(i) + cx(N - 1)) / 2} ${y0 - h * 1.7} ${cx(i)} ${y0 - 8}"/>`;
+      });
+      let r = "";
+      for (let i = 0; i < N; i++) {
+        const t = targets.find(t => t[0] === i);
+        r += `<rect class="cellr${i === N - 1 ? " cur" : ""}" x="${pad + i * cw + 3}" y="${y0}"
+          width="${cw - 6}" height="40" rx="7"${t ? ` style="fill:${t[1]};stroke:${t[1]}"` : ""}/>`;
+      }
+      return `${a}${r}<text class="lab" x="8" y="${y0 + 18}">${lab}</text><text class="slab" x="8" y="${y0 + 40}">${slab}</text>`;
+    };
+    const dense = [...Array(N - 1).keys()].map(i => [i, "#aab3c4"]);
+    const bb = [[0, "var(--g)"], [1, "var(--g)"], [4, "var(--p)"], [9, "var(--p)"],
+                [15, "var(--b)"], [16, "var(--b)"], [17, "var(--b)"], [18, "var(--b)"]];
+    return `<div class="cmpwrap"><svg viewBox="0 0 ${W} 320">
+      ${row(150, "Dense", "reads every earlier token", dense)}
+      ${row(272, "Bigger Bird", "reads a chosen few", bb)}</svg>
+      <div class="legend"><span><i style="background:var(--r)"></i>a token</span>
+        <span><i style="background:var(--g)"></i>the beginning</span>
+        <span><i style="background:var(--b)"></i>nearby text</span>
+        <span><i style="background:var(--p)"></i>routed spots</span></div></div>`;
   },
   route: s => {
     const SC = [14, 6, 22, 9, 18, 4, 11, 34, 8, 16, 26, 10, 7, 38, 13, 20, 9, 31, 12, 17, 8];
