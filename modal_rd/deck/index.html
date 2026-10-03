@@ -150,6 +150,7 @@
   .exbox .prompt { font-size:1.25vw; max-width:100%; }
   .extag { font-size:1.2vw; font-weight:700; color:var(--accent); margin-bottom:.25em; text-transform:uppercase; letter-spacing:.07em; }
   .exrule { font-size:.95vw; color:var(--muted); font-family:ui-monospace,monospace; margin-bottom:1.1em; }
+  .ruletag { position:absolute; top:4%; left:4%; font-size:.95vw; color:var(--muted); font-family:ui-monospace,monospace; font-weight:600; }
 
   /* Prompt boxes */
   .prompt { font-family: ui-monospace, Menlo, monospace; font-size:1.35vw; line-height:1.6; text-align:left;
@@ -283,14 +284,14 @@ const S = [
   {vis: "route", step: 3, say: "Every token can then use those spots.", sub: "the quick look touches each spot once, so it stays cheap"},
   {say: "Why the end? Those tokens are about to predict, so their attention shows what the prediction needs."},
   {kind: "section", say: '<span class="secnum">PART 6</span>Results'},
-  {kind: "num", num: "30 / 30", say: "correct on 128,000-token documents"},
-  {kind: "num", num: "28 / 30", say: "for the normal model", sub: "same documents; that 2-question gap is too small to count as a win"},
-  {kind: "num", num: "1.9×", say: "faster to read the document"},
-  {vis: "img", img: F + "scaling.png", say: "The longer the document, the bigger the speed gap."},
-  {vis: "img", img: F + "scaling.png", say: "Normal model: double the length, about three times the time."},
-  {vis: "img", img: F + "scaling.png", say: "Bigger Bird: double the length, two times the time."},
-  {vis: "img", img: F + "loglog.png", say: "That's linear growth, not quadratic.", sub: "measured slope 1.01 for Bigger Bird vs 1.65 for the normal model"},
-  {vis: "img", img: F + "depth.png", say: "It works wherever the fact is hidden."},
+  {kind: "num", num: "30 / 30", rule: "RULER · niah_single_1 · 30 docs @128K", say: "correct on 128,000-token documents"},
+  {kind: "num", num: "28 / 30", rule: "RULER · niah_single_1 · 30 docs @128K", say: "for the normal model", sub: "same documents; that 2-question gap is too small to count as a win"},
+  {kind: "num", num: "1.9×", rule: "prefill benchmark · one H100", say: "faster to read the document"},
+  {vis: "img", img: F + "scaling.png", say: "The longer the document, the bigger the speed gap.", rule: "benchmark · prefill, one H100"},
+  {vis: "img", img: F + "scaling.png", say: "Normal model: double the length, about three times the time.", rule: "benchmark · prefill, one H100"},
+  {vis: "img", img: F + "scaling.png", say: "Bigger Bird: double the length, two times the time.", rule: "benchmark · prefill, one H100"},
+  {vis: "img", img: F + "loglog.png", say: "That's linear growth, not quadratic.", rule: "benchmark · prefill, one H100", sub: "measured slope 1.01 for Bigger Bird vs 1.65 for the normal model"},
+  {vis: "img", img: F + "depth.png", say: "It works wherever the fact is hidden.", rule: "RULER · niah_single_1 · needle-depth sweep"},
 
   {kind: "section", say: '<span class="secnum">PART 7</span>Harder tests'},
   {say: "The first test hides one easy fact. Real documents aren't that tidy."},
@@ -577,6 +578,7 @@ S.forEach(s => {
       : b.cls === "chart" ? `<div class="tile chart"><img src="${b.img}" alt=""></div>`
       : `<div class="tile ${b.cls || ""}"><div class="tn">${b.n}</div><div class="tt">${b.t}</div>${b.s ? `<div class="ts">${b.s}</div>` : ""}</div>`).join("") + `</div>`;
   } else {
+    if (s.rule) html += `<div class="ruletag">${s.rule}</div>`;
     if (s.kind === "timeline")
       html += (s.tag ? `<div class="tltag">${s.tag}</div>` : "") +
         `<div class="timeline">${TIMELINE.map(([d, t], j) =>
