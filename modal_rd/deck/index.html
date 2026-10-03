@@ -161,6 +161,7 @@
 
   /* Timeline */
   .timeline { display:flex; position:absolute; top:14%; left:8%; right:8%; }
+  .k-timeline > img { max-height:36vh; margin-top:20vh; border-radius:10px; }
   .tl { flex:1; border-top:5px solid var(--accent); padding:.7em .6em 0 0; text-align:left; }
   .tl b { display:block; font-size:1.35vw; } .tl span { font-size:1.15vw; color:var(--muted); line-height:1.35; display:block; }
   .tl.off { border-top-color:#dfe3ea; } .tl.off b, .tl.off span { opacity:.3; }
@@ -326,7 +327,7 @@ const S = [
   {kind: "team", say: "The team"},
   {kind: "timeline", say: "Ten months, from hiring to results."},
   {kind: "timeline", tl: 0, say: "January to February: we hired the team.", sub: "first round of hiring"},
-  {kind: "timeline", tl: 1, say: "February 7: our first public talk, at UTMIST DevCon."},
+  {kind: "timeline", tl: 1, img: A + "devcon_proposal.png", say: "February 7: our first public talk, at UTMIST DevCon."},
   {kind: "timeline", tl: 2, say: "February to March: we read the research.", sub: "literature review sessions"},
   {say: "We read a lot.", sub: "papers, explainer videos, and course notes"},
   {kind: "readlist", say: "Some of what shaped the project:"},
