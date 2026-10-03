@@ -308,11 +308,8 @@ const S = [
   {vis: "img", img: F + "tasks.png", say: "Up to 65,000 tokens, Bigger Bird matches or beats the normal model.", sub: "a possible reason: with most of the noise never read, the answer has less to compete with"},
   {vis: "img", img: F + "tasks.png", say: "At 128,000 tokens, most of these stump both models.", sub: "12 prompts per test, so small differences aren't significant yet"},
 
-  {kind: "section", say: '<span class="secnum">PART 8</span>Looking ahead'},
-  {vis: "img", img: F + "attn_bench.png", say: "At a million tokens, our attention is 18 times faster."},
-  {vis: "img", img: F + "attn_bench.png", say: "That's speed only. This model can't read that far yet."},
 
-  {kind: "section", say: "<span class='secnum'>PART 9</span>Limits, and what's next"},
+  {kind: "section", say: "<span class='secnum'>PART 8</span>Limits, and what's next"},
   {vis: "ex", ex: 4, say: "On essay-like text at 128,000 tokens, it's behind.", sub: "11 out of 24 correct, vs 17 for the normal model"},
   {vis: "ex", ex: 5, say: "When it misses, it doesn't guess wrong. It keeps writing the essay.", sub: "12 of our 13 misses look like this · the normal model's 7 misses do too · the whole gap comes from 6 documents"},
   {say: "Turning the dials didn't fix it.", sub: "2× or 4× more spots, or a 4× longer full read at the end: no change · a 2× wider window: worse"},
