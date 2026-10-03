@@ -792,7 +792,7 @@ const prTargets = (k, j) => {
 };
 document.querySelectorAll(".paircv").forEach(cv => {
   const ctx = cv.getContext("2d"), slide = cv.closest(".slide"), W = 1200, pad = 230, cw = (W - pad - 30) / PR_N;
-  const STEP = 420, HOLD = 2400, cx = i => pad + i * cw + cw / 2;
+  const STEP = 280, HOLD = 1800, cx = i => pad + i * cw + cw / 2;
   const arc = (y, j, i, col, a, lw) => {
     const h = Math.min(120, (cx(j) - cx(i)) * .32 + 14);
     ctx.globalAlpha = a; ctx.strokeStyle = col; ctx.lineWidth = lw;
