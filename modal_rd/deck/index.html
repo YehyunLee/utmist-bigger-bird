@@ -148,6 +148,8 @@
 
   /* Test examples */
   .exbox .prompt { font-size:1.25vw; max-width:100%; }
+  .exbox.big .extag { font-size:1.6vw; } .exbox.big .exrule { font-size:1.25vw; margin-bottom:1.3em; }
+  .exbox.big .prompt { font-size:1.85vw; padding:1.3em 1.5em; }
   .extag { font-size:1.2vw; font-weight:700; color:var(--accent); margin-bottom:.25em; text-transform:uppercase; letter-spacing:.07em; }
   .exrule { font-size:.95vw; color:var(--muted); font-family:ui-monospace,monospace; margin-bottom:1.1em; }
   .ruletag { position:absolute; top:4%; left:4%; font-size:.95vw; color:var(--muted); font-family:ui-monospace,monospace; font-weight:600; }
@@ -598,7 +600,7 @@ const VIS = {
   tests: () => `<div class="chips">${["One hidden fact", "Lookalike facts", "Many answers", "Many questions", "Long random IDs", "Real text"].map((m, j) =>
       `<span class="chip${j === 0 ? " hl" : ""}">${m}</span>`).join("")}</div>`,
   ex: s => `<div class="exbox"><div class="extag">${EX[s.ex][0]}</div><div class="exrule">RULER &middot; ${EX[s.ex][1]}</div><div class="prompt">${EX[s.ex][2]}</div></div>`,
-  prompt: () => `<div class="exbox"><div class="extag">One hidden fact</div><div class="exrule">RULER &middot; niah_single_1</div><div class="prompt">${PROMPT}</div></div>`,
+  prompt: () => `<div class="exbox big"><div class="extag">One hidden fact</div><div class="exrule">RULER &middot; niah_single_1</div><div class="prompt">${PROMPT}</div></div>`,
   prompt2: () => `<div class="exbox"><div class="extag">Many answers</div><div class="exrule">RULER &middot; niah_multivalue</div><div class="prompt">${PROMPT2}</div></div>`,
 };
 
