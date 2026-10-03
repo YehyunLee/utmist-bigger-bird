@@ -325,7 +325,7 @@ const S = [
   {vis: "fix", step: 2, say: "Two: the nearby text, in full detail."},
   {vis: "fix", step: 3, say: "Three: the routed spots, the ones the scan chose."},
   {vis: "tail", say: "The exception: the last 256 tokens, the ones about to predict, read everything.", sub: "full detail for their own view, no skipping"},
-  {vis: "pair", say: "Token by token: dense reads every earlier token; we read a chosen few.", sub: "the counters add up every comparison made so far"},
+  {vis: "pair", say: "Dense is pairwise: every token reads every earlier token. Bigger Bird reads a chosen few.", sub: "the counters add up every comparison made so far"},
   {kind: "section", say: '<span class="secnum">PART 6 · Jerry</span>Results'},
   {kind: "num", num: "30 / 30", rule: "RULER · niah_single_1 · 30 docs @128K", say: "correct on 128,000-token documents"},
   {kind: "num", num: "28 / 30", rule: "RULER · niah_single_1 · 30 docs @128K", say: "for the normal model", sub: "same documents; that 2-question gap is too small to count as a win"},
