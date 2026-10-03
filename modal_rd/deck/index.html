@@ -161,6 +161,10 @@
 
   /* Timeline */
   .timeline { display:flex; position:absolute; top:14%; left:8%; right:8%; }
+  .hastl { justify-content:flex-start !important; padding-top:30vh; }
+  .hastl .say { margin-bottom:.7em; font-size:2.8vw; }
+  .hastl .readlist div { font-size:1.45vw; padding:.32em 0; }
+  .hastl .readlist span { font-size:.95vw; }
   .k-timeline > img { max-height:36vh; margin-top:20vh; border-radius:10px; }
   .tl { flex:1; border-top:5px solid var(--accent); padding:.7em .6em 0 0; text-align:left; }
   .tl b { display:block; font-size:1.35vw; } .tl span { font-size:1.15vw; color:var(--muted); line-height:1.35; display:block; }
@@ -329,8 +333,8 @@ const S = [
   {kind: "timeline", tl: 0, say: "January to February: we hired the team.", sub: "first round of hiring"},
   {kind: "timeline", tl: 1, img: A + "devcon_team.jpg", say: "February 7: our first public talk, at UTMIST DevCon."},
   {kind: "timeline", tl: 2, say: "February to March: we read the research.", sub: "literature review sessions"},
-  {say: "We read a lot.", sub: "papers, explainer videos, and course notes"},
-  {kind: "readlist", say: "Some of what shaped the project:"},
+  {tl: 2, say: "We read a lot.", sub: "papers, explainer videos, and course notes"},
+  {kind: "readlist", tl: 2, say: "Some of what shaped the project:"},
   {kind: "timeline", tl: [3, 7], tag: "RESEARCH PERIOD", say: "April to July: months of experiments, from Jerry's A100 to Canada's research computers.", sub: "with UTMIST and Prof. Guerzhoy's support · by late July we were on a modern chat-style model"},
   {kind: "timeline", tl: 8, say: "September to October: faster GPUs on Modal, and our best results yet."},
   {kind: "partners", say: "Thank you to our compute partners"},
@@ -590,7 +594,7 @@ const deck = document.getElementById("deck");
 S.forEach(s => {
   const el = document.createElement("section");
   const kind = s.vis ? "stage" : s.kind === "photo" ? "k-img k-photo" : s.kind ? "k-" + s.kind : "";
-  el.className = "slide " + kind;
+  el.className = "slide " + kind + (s.tl !== undefined && s.kind !== "timeline" ? " hastl" : "");
   let html = "";
   if (s.corner) html += `<img class="corner" src="${A}utmist_logo.png" alt="UTMIST">`;
   if (s.vis) {
@@ -602,7 +606,7 @@ S.forEach(s => {
       : `<div class="tile ${b.cls || ""}"><div class="tn">${b.n}</div><div class="tt">${b.t}</div>${b.s ? `<div class="ts">${b.s}</div>` : ""}</div>`).join("") + `</div>`;
   } else {
     if (s.rule) html += `<div class="ruletag">${s.rule}</div>`;
-    if (s.kind === "timeline")
+    if (s.kind === "timeline" || s.tl !== undefined)
       html += (s.tag ? `<div class="tltag">${s.tag}</div>` : "") +
         `<div class="timeline">${TIMELINE.map(([d, t], j) =>
         `<div class="tl${s.tl === undefined ? "" : (Array.isArray(s.tl) ? j >= s.tl[0] && j <= s.tl[1] : j === s.tl) ? " on" : " off"}"><b>${d}</b><span>${t}</span></div>`).join("")}</div>`;
