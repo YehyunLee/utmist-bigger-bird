@@ -172,8 +172,8 @@
   .readlist { column-count:2; column-gap:4vw; text-align:left; width:94%; }
   .readlist div { break-inside:avoid; font-size:1.45vw; font-weight:600; padding:.4em 0; border-bottom:1px solid #eef0f3; }
   .readlist span { display:block; font-size:1.05vw; font-weight:400; color:var(--muted); margin-top:.15em; }
-  .readlist.todo { column-count:1; width:70%; }
-  .readlist.todo div { font-size:1.7vw; padding:.6em 0; } .readlist.todo span { font-size:1.2vw; }
+  .readlist.todo { column-count:1; width:78%; }
+  .readlist.todo div { font-size:2.2vw; padding:.55em 0; } .readlist.todo span { font-size:1.45vw; }
 
   /* People / partners */
   .ptitle { font-size:3.4vw; font-weight:800; color:var(--accent); margin:0 0 1em; letter-spacing:-.015em; }
@@ -408,7 +408,7 @@ Bigger Bird:     <span class="dim">The best way to get s… (keeps writing the e
 ];
 
 const TODO = [
-  ["Longer models", "R1's context window is only 128K tokens, and quality rots near the end · find a bigger-context model to scale to"],
+  ["Bigger models", "R1's context window is only 128K tokens, and quality rots near the end · find a bigger-context model to scale to"],
   ["Training support", "write the backward pass, then fine-tune with the pattern on so the model adapts to it"],
   ["More optimization", "fold the scoring scan and the end's full read into the kernel; today they run as separate steps"],
   ["Real-world tests", "natural documents and real questions, not test puzzles"],
