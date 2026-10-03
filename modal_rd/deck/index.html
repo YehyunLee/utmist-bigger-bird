@@ -603,7 +603,7 @@ const VIS = {
       <div class="tailnote"><span class="br">}</span><span>the last 256 tokens<br><b>read everything</b></span></div></div>
       <div class="cnt"><b class="cn">0</b> comparisons</div></div></div>
     <div class="legend"><span><i style="background:var(--g)"></i>the beginning</span><span><i style="background:var(--b)"></i>nearby text</span>
-      <span><i style="background:var(--p)"></i>routed spots</span><span><i style="background:var(--r)"></i>about to predict</span></div>`,
+      <span><i style="background:var(--p)"></i>routed spots</span><span><i style="background:#f7c9c9"></i>last tokens read everything</span></div>`,
   pair: () => `<canvas class="paircv" width="1200" height="460"></canvas>
     <div class="legend"><span><i style="background:var(--g)"></i>the beginning</span><span><i style="background:var(--b)"></i>nearby text</span>
       <span><i style="background:var(--p)"></i>routed spots</span><span><i style="background:var(--r)"></i>about to predict</span></div>`,
@@ -748,7 +748,7 @@ const CMP_N = 48, CMP_ROUTED = [7, 14, 21, 28, 35], CMP_TAIL = 4, CMP_WIN = 8;
 const cmpCell = (k, r, c) => {
   if (c > r) return null;
   if (k === "dense") return "#1f4fd8";
-  if (r >= CMP_N - CMP_TAIL) return "#e06666";
+  if (r >= CMP_N - CMP_TAIL) return c === r ? "#e06666" : "#f7c9c9";
   if (c < 2) return "#a8d5a2";
   if (r - c < CMP_WIN) return "#a9c4f5";
   if (CMP_ROUTED.includes(c)) return "#b9a6dc";
