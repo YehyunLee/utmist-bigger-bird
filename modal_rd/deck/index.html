@@ -273,9 +273,9 @@ const S = [
   {say: "They broke at 128,000 tokens.", sub: "about 400 pages: the most this model can read"},
   {vis: "board", step: 1, say: "Every fully sparse version scored 0 or 1 out of 6 at 128,000 tokens."},
   {vis: "board", step: 2, say: "Keeping the first 16 layers normal fixed it, but that is still quadratic."},
-  {say: "The solution: let the tokens near the prediction score which far-away spots matter.", sub: "we call this routing: attention picks where attention looks"},
 
   {kind: "section", say: '<span class="secnum">PART 5 · Thomas</span>Our fix'},
+  {say: "The solution: let the tokens near the prediction score which far-away spots matter.", sub: "we call this routing: attention picks where attention looks"},
   {vis: "fix", step: 0, say: "Every token looks at three things, with one exception."},
   {vis: "fix", step: 1, say: "One: the very beginning of the document."},
   {vis: "fix", step: 2, say: "Two: the nearby text, in full detail."},
