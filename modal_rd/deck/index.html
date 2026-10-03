@@ -203,6 +203,12 @@
   .tailwrap .cellr { fill:#eef0f3; stroke:#dfe3ea; }
   .tailwrap .cellr.cur { fill:var(--r); stroke:#b0413e; stroke-width:3; }
   @keyframes arcin { from { opacity:0; } to { opacity:.55; } }
+  .cmp2 { display:flex; gap:6vw; justify-content:center; align-items:flex-start; }
+  .cmpp { display:flex; flex-direction:column; align-items:center; }
+  .cmph { font-size:1.7vw; font-weight:800; margin-bottom:.5em; }
+  .cmpcv { height:38vh; aspect-ratio:1; }
+  .cnt { font-size:1.35vw; color:var(--muted); margin-top:.6em; font-variant-numeric:tabular-nums; }
+  .cnt b { color:var(--ink, #111); font-size:1.25em; }
   .cmpwrap { width:88%; }
   .cmpwrap svg { width:100%; height:auto; display:block; overflow:visible; }
   .cmpwrap .arc { fill:none; stroke-width:3.4; stroke-linecap:round; opacity:.5;
@@ -313,7 +319,7 @@ const S = [
   {vis: "fix", step: 1, say: "One: the very beginning of the document."},
   {vis: "fix", step: 2, say: "Two: the nearby text, in full detail."},
   {vis: "fix", step: 3, say: "Three: the routed spots, the ones the scan chose."},
-  {vis: "cmp", say: "Same question, two ways to read.", sub: "top: every token reads every earlier token · bottom: every token reads a chosen few"},
+  {vis: "cmp", say: "Each row is one token. Dense reads the whole triangle; we read a few stripes.", sub: "at 128,000 tokens: ~8.6 billion vs ~2.3 billion comparisons per head"},
   {kind: "section", say: '<span class="secnum">PART 6 · Jerry</span>Results'},
   {kind: "num", num: "30 / 30", rule: "RULER · niah_single_1 · 30 docs @128K", say: "correct on 128,000-token documents"},
   {kind: "num", num: "28 / 30", rule: "RULER · niah_single_1 · 30 docs @128K", say: "for the normal model", sub: "same documents; that 2-question gap is too small to count as a win"},
@@ -583,39 +589,13 @@ const VIS = {
       <text x="${cx(0)}" y="${y0 + 78}" font-size="17" fill="#8a93a3" text-anchor="start">start of document</text></svg>
       <div class="legend"><span><i style="background:var(--r)"></i>a token about to predict</span><span><i style="background:var(--b);width:2.2vw;border-radius:2px;height:.45vw"></i>it reads every earlier position</span></div></div>`;
   },
-  cmp: () => {
-    const N = 60, W = 1200, pad = 175, cw = (W - pad * 2) / N, GREY = "#b9c0cf";
-    const cx = i => pad + i * cw + cw / 2;
-    const row = (y0, lab, slab, arcs, cellcols) => {
-      let r = "";
-      for (let i = 0; i < N; i++)
-        r += `<rect class="cellr" x="${pad + i * cw + 1}" y="${y0}" width="${cw - 2}" height="30" rx="4"
-          ${cellcols[i] ? ` style="fill:${cellcols[i]};stroke:${cellcols[i]}"` : ""}/>`;
-      return arcs.map(([j, i, col]) => {
-        const h = Math.min(62, (cx(j) - cx(i)) * .15 + 11);
-        return `<path class="arc" style="stroke:${col};animation-delay:${.15 + j * .1}s"
-          d="M ${cx(j)} ${y0 - 6} Q ${(cx(i) + cx(j)) / 2} ${y0 - h * 1.7} ${cx(i)} ${y0 - 6}"/>`;
-      }).join("") + r +
-        `<text class="lab" x="8" y="${y0 + 15}">${lab}</text><text class="slab" x="8" y="${y0 + 36}">${slab}</text>`;
-    };
-    const dense = [], bb = [], ROUTED = [9, 21, 33, 45];
-    for (let j = 1; j < N; j++) for (let i = 0; i < j; i++) dense.push([j, i, GREY]);
-    for (let j = 1; j < N; j++) {
-      if (j === N - 1) { for (let i = 0; i < j; i++) bb.push([j, i, GREY]); continue; }   // tail: full read
-      for (let i = 0; i < 2 && i < j; i++) bb.push([j, i, "var(--g)"]);                  // beginning
-      for (let i = Math.max(0, j - 6); i < j; i++) bb.push([j, i, "var(--b)"]);          // nearby
-      for (const i of ROUTED) if (i < j - 6) bb.push([j, i, "var(--p)"]);                // routed spots
-    }
-    const cellcols = { [N - 1]: GREY };
-    [0, 1].forEach(i => cellcols[i] = "var(--g)"); ROUTED.forEach(i => cellcols[i] = "var(--p)");
-    return `<div class="cmpwrap"><svg viewBox="0 0 ${W} 320">
-      ${row(148, "Dense", "each token reads every earlier token", dense, {})}
-      ${row(274, "Bigger Bird", "each token reads a chosen few", bb, cellcols)}</svg>
-      <div class="legend"><span><i style="background:var(--g)"></i>the beginning</span>
-        <span><i style="background:var(--b)"></i>nearby text</span>
-        <span><i style="background:var(--p)"></i>routed spots</span>
-        <span><i style="background:${GREY}"></i>the last 256 read everything</span></div></div>`;
-  },
+  cmp: () => `<div class="cmp2">
+    <div class="cmpp"><div class="cmph">Dense</div><canvas class="cmpcv" data-k="dense" width="440" height="440"></canvas>
+      <div class="cnt"><b class="cn">0</b> comparisons</div></div>
+    <div class="cmpp"><div class="cmph">Bigger Bird</div><canvas class="cmpcv" data-k="bb" width="440" height="440"></canvas>
+      <div class="cnt"><b class="cn">0</b> comparisons</div></div></div>
+    <div class="legend"><span><i style="background:var(--g)"></i>the beginning</span><span><i style="background:var(--b)"></i>nearby text</span>
+      <span><i style="background:var(--p)"></i>routed spots</span><span><i style="background:#8a93a3"></i>last tokens read everything</span></div>`,
   route: s => {
     const SC = [14, 6, 22, 9, 18, 4, 11, 34, 8, 16, 26, 10, 7, 38, 13, 20, 9, 31, 12, 17, 8];
     const TOP = new Set([7, 13, 17]);
@@ -752,6 +732,40 @@ document.querySelectorAll(".quadcv").forEach(cv => {
   draw();
 });
 
+// Dense vs Bigger Bird: attention grids fill row by row (one row = one token's reads), with live counters.
+const CMP_N = 48, CMP_ROUTED = [9, 20, 31], CMP_TAIL = 2;
+const cmpCell = (k, r, c) => {
+  if (c > r) return null;
+  if (k === "dense") return "#1f4fd8";
+  if (r >= CMP_N - CMP_TAIL) return "#8a93a3";
+  if (c < 2) return "#a8d5a2";
+  if (r - c < 6) return "#a9c4f5";
+  if (CMP_ROUTED.includes(c)) return "#b9a6dc";
+  return null;
+};
+const cmpRowOps = (k, r) => { let n = 0; for (let c = 0; c <= r; c++) if (cmpCell(k, r, c)) n++; return n; };
+document.querySelectorAll(".cmpcv").forEach(cv => {
+  const k = cv.dataset.k, ctx = cv.getContext("2d"), cn = cv.parentElement.querySelector(".cn");
+  const slide = cv.closest(".slide"), S0 = 440, cs = S0 / CMP_N, DUR = 3600, HOLD = 2600;
+  function draw() {
+    requestAnimationFrame(draw);
+    if (!slide.classList.contains("active")) return;
+    const t = (performance.now() - (slide._t0 || 0)) % (DUR + HOLD);
+    const rows = Math.min(CMP_N, Math.floor(t / DUR * CMP_N) + 1);
+    ctx.clearRect(0, 0, S0, S0);
+    ctx.fillStyle = "#f1f3f7";
+    for (let r = 0; r < CMP_N; r++) for (let c = 0; c <= r; c++) ctx.fillRect(c * cs, r * cs, cs - .8, cs - .8);
+    let ops = 0;
+    for (let r = 0; r < rows; r++) for (let c = 0; c <= r; c++) {
+      const col = cmpCell(k, r, c);
+      if (col) { ctx.fillStyle = col; ctx.fillRect(c * cs, r * cs, cs - .8, cs - .8); ops++; }
+    }
+    if (rows < CMP_N) { ctx.fillStyle = "#e06666"; ctx.fillRect(0, (rows - 1) * cs, 3, cs - .8); }
+    cn.textContent = ops.toLocaleString();
+  }
+  draw();
+});
+
 const mainCount = S.findIndex(s => s.kind === "section" && s.say === "Appendix");
 const slides = [...document.querySelectorAll(".slide")];
 let i = Math.max(0, Math.min(slides.length - 1, parseInt(location.hash.slice(1) || "1") - 1));
@@ -763,7 +777,7 @@ setInterval(() => {
   timerEl.textContent = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 }, 500);
 const show = () => {
-  slides.forEach((s, j) => s.classList.toggle("active", j === i));
+  slides.forEach((s, j) => { if (j === i && !s.classList.contains("active")) s._t0 = performance.now(); s.classList.toggle("active", j === i); });
   document.getElementById("num").textContent = i < mainCount ? `${i + 1} / ${mainCount}` : `appendix ${i - mainCount}`; location.hash = i + 1;
   if (i === 0) { t0 = null; timerEl.textContent = ""; } else if (t0 === null) t0 = Date.now();
   pvwin.innerHTML = "";
@@ -779,6 +793,7 @@ document.addEventListener("keydown", e => {
   if (["ArrowLeft", "PageUp"].includes(e.key)) i = Math.max(0, i - 1);
   show();
 });
+addEventListener("resize", () => show());
 document.addEventListener("click", e => { i = e.clientX > innerWidth / 2 ? Math.min(slides.length - 1, i + 1) : Math.max(0, i - 1); show(); });
 show();
 </script>
