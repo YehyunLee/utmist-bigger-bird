@@ -267,7 +267,7 @@ const S = [
   {vis: "img", img: F + "recall_layers.png", say: "Higher means closer to the normal model; 1.0 would be identical."},
   {vis: "img", img: F + "recall_layers.png", say: "The earlier shortcuts (blue, orange) lose 10 to 25 percent of the view in most layers.", sub: "and every layer feeds the next, so small losses pile up across all 32"},
   {vis: "img", img: F + "recall_layers.png", say: "Red is the best any shortcut could do: it cheats and picks the true best spots."},
-  {vis: "img", img: F + "recall_layers.png", say: "An early version of Bigger Bird (green) stays close to that ceiling in all 32 layers."},
+  {vis: "img", img: F + "recall_layers.png", say: "An early version of Bigger Bird (green) stays close to that ceiling in all 32 layers.", sub: "the missing piece was routing: the tokens near the prediction score which far-away spots matter"},
 
   {kind: "section", say: '<span class="secnum">PART 5</span>Our fix'},
   {vis: "fix", step: 0, say: "Every token looks at three things, with one exception."},
