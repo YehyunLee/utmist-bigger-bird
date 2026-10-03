@@ -307,7 +307,6 @@ const S = [
   {say: "Each test uses 12 new documents, none used for tuning."},
   {vis: "img", img: F + "tasks.png", say: "Up to 65,000 tokens, Bigger Bird matches or beats the normal model.", sub: "a possible reason: with most of the noise never read, the answer has less to compete with"},
   {vis: "img", img: F + "tasks.png", say: "At 128,000 tokens, most of these stump both models.", sub: "12 prompts per test, so small differences aren't significant yet"},
-  {vis: "prompt2", say: "Asked for all four numbers, Bigger Bird found all four. The normal model stopped at one."},
 
   {kind: "section", say: '<span class="secnum">PART 8</span>Looking ahead'},
   {vis: "img", img: F + "attn_bench.png", say: "At a million tokens, our attention is 18 times faster."},
@@ -338,6 +337,7 @@ const S = [
   {kind: "hero", say: "Thank you", corner: true},
 
   {kind: "section", say: "Appendix"},
+  {vis: "prompt2", say: "Asked for all four numbers, Bigger Bird found all four. The normal model stopped at one."},
   {kind: "num", num: "1 in 4", say: "heads put the hidden number on their list", sub: "a random selector would find it in almost none"},
   {say: "Does the question have to be at the end?", sub: "every test so far put it there"},
   {kind: "num", num: "6 / 6", say: "with the question moved near the start", sub: "5 of 6 when it is the very first line · same 6 documents, still about 2× faster · a quick check, not a full test yet"},
