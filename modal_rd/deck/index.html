@@ -317,7 +317,7 @@ const S = [
   {kind: "section", say: '<span class="secnum">PART 5 · Thomas</span>Our fix'},
   {say: "The solution: let the tokens near the prediction score which far-away spots matter.", sub: "we call this routing: attention picks where attention looks"},
   {vis: "route", step: 1, say: "First, the last 64 tokens score every earlier spot.", sub: "one score per spot: the softmax attention prob the end gives it"},
-  {say: "Why the end? Those tokens are about to predict, so their attention shows what the prediction needs."},
+  {say: "Why the end? Only those tokens have seen the whole document and the question.", sub: "so their attention shows what the answer needs · scorers spread through the document instead: 1 of 6"},
   {vis: "route", step: 2, say: "Each attention head keeps its top 512 spots.", sub: "32 heads in each of 32 layers, each with its own list"},
   {vis: "route", step: 3, say: "Then every token reads from that list.", sub: "the quick look touches each spot once, so it stays cheap"},
   {vis: "fix", step: 0, say: "Every token looks at three things, with one exception."},
