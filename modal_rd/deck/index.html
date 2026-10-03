@@ -206,7 +206,12 @@
   .cmp2 { display:flex; gap:6vw; justify-content:center; align-items:flex-start; }
   .cmpp { display:flex; flex-direction:column; align-items:center; }
   .cmph { font-size:1.7vw; font-weight:800; margin-bottom:.5em; }
-  .cmpcv { height:38vh; aspect-ratio:1; }
+  .cmpcv { height:38vh; aspect-ratio:1; display:block; }
+  .cvw { position:relative; }
+  .tailnote { position:absolute; left:100%; bottom:-.4vh; display:flex; align-items:center; gap:.4vw;
+              white-space:nowrap; font-size:1.1vw; color:var(--muted); text-align:left; line-height:1.25; }
+  .tailnote b { color:var(--r); }
+  .tailnote .br { font-size:3.4vh; color:var(--r); font-weight:300; }
   .cnt { font-size:1.35vw; color:var(--muted); margin-top:.6em; font-variant-numeric:tabular-nums; }
   .cnt b { color:var(--ink, #111); font-size:1.25em; }
   .cmpwrap { width:88%; }
@@ -592,10 +597,11 @@ const VIS = {
   cmp: () => `<div class="cmp2">
     <div class="cmpp"><div class="cmph">Dense</div><canvas class="cmpcv" data-k="dense" width="440" height="440"></canvas>
       <div class="cnt"><b class="cn">0</b> comparisons</div></div>
-    <div class="cmpp"><div class="cmph">Bigger Bird</div><canvas class="cmpcv" data-k="bb" width="440" height="440"></canvas>
+    <div class="cmpp"><div class="cmph">Bigger Bird</div><div class="cvw"><canvas class="cmpcv" data-k="bb" width="440" height="440"></canvas>
+      <div class="tailnote"><span class="br">}</span><span>the last 256 tokens<br><b>read everything</b></span></div></div>
       <div class="cnt"><b class="cn">0</b> comparisons</div></div></div>
     <div class="legend"><span><i style="background:var(--g)"></i>the beginning</span><span><i style="background:var(--b)"></i>nearby text</span>
-      <span><i style="background:var(--p)"></i>routed spots</span><span><i style="background:#8a93a3"></i>last tokens read everything</span></div>`,
+      <span><i style="background:var(--p)"></i>routed spots</span><span><i style="background:var(--r)"></i>about to predict</span></div>`,
   route: s => {
     const SC = [14, 6, 22, 9, 18, 4, 11, 34, 8, 16, 26, 10, 7, 38, 13, 20, 9, 31, 12, 17, 8];
     const TOP = new Set([7, 13, 17]);
@@ -733,19 +739,19 @@ document.querySelectorAll(".quadcv").forEach(cv => {
 });
 
 // Dense vs Bigger Bird: attention grids fill row by row (one row = one token's reads), with live counters.
-const CMP_N = 48, CMP_ROUTED = [9, 20, 31], CMP_TAIL = 2;
+const CMP_N = 48, CMP_ROUTED = [7, 14, 21, 28, 35], CMP_TAIL = 4, CMP_WIN = 8;
 const cmpCell = (k, r, c) => {
   if (c > r) return null;
   if (k === "dense") return "#1f4fd8";
-  if (r >= CMP_N - CMP_TAIL) return "#8a93a3";
+  if (r >= CMP_N - CMP_TAIL) return "#e06666";
   if (c < 2) return "#a8d5a2";
-  if (r - c < 6) return "#a9c4f5";
+  if (r - c < CMP_WIN) return "#a9c4f5";
   if (CMP_ROUTED.includes(c)) return "#b9a6dc";
   return null;
 };
 const cmpRowOps = (k, r) => { let n = 0; for (let c = 0; c <= r; c++) if (cmpCell(k, r, c)) n++; return n; };
 document.querySelectorAll(".cmpcv").forEach(cv => {
-  const k = cv.dataset.k, ctx = cv.getContext("2d"), cn = cv.parentElement.querySelector(".cn");
+  const k = cv.dataset.k, ctx = cv.getContext("2d"), cn = cv.closest(".cmpp").querySelector(".cn");
   const slide = cv.closest(".slide"), S0 = 440, cs = S0 / CMP_N, DUR = 3600, HOLD = 2600;
   function draw() {
     requestAnimationFrame(draw);
