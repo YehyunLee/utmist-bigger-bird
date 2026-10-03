@@ -260,9 +260,6 @@ const S = [
 
   {vis: "prompt", say: ""},
   {say: "We also time how long each model takes to read the document.", sub: "same GPU, same settings, one H100"},
-  {say: "The normal model uses FlashAttention, the fast standard version."},
-  {say: "We run 30 different documents at 128,000 tokens."},
-  {say: "Six were used to tune our method. The other 24 were never touched."},
 
   {kind: "section", say: "<span class='secnum'>PART 4 · Thomas</span>What didn't work"},
   {vis: "wall", step: 0, say: "We tried 19 different designs."},
@@ -347,6 +344,9 @@ const S = [
   {kind: "hero", say: "Thank you", corner: true},
 
   {kind: "section", say: "Appendix"},
+  {say: "The normal model uses FlashAttention, the fast standard version."},
+  {say: "We run 30 different documents at 128,000 tokens."},
+  {say: "Six were used to tune our method. The other 24 were never touched."},
   {kind: "num", num: "1 in 4", say: "heads put the hidden number on their list", sub: "a random selector would find it in almost none"},
   {say: "Does the question have to be at the end?", sub: "every test so far put it there"},
   {kind: "num", num: "6 / 6", say: "with the question moved near the start", sub: "5 of 6 when it is the very first line · same 6 documents, still about 2× faster · a quick check, not a full test yet"},
