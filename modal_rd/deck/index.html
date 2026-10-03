@@ -214,6 +214,7 @@
   .tailnote .br { font-size:3.4vh; color:var(--r); font-weight:300; }
   .cnt { font-size:1.35vw; color:var(--muted); margin-top:.6em; font-variant-numeric:tabular-nums; }
   .cnt b { color:var(--ink, #111); font-size:1.25em; }
+  .paircv { width:86%; height:auto; display:block; }
   .cmpwrap { width:88%; }
   .cmpwrap svg { width:100%; height:auto; display:block; overflow:visible; }
   .cmpwrap .arc { fill:none; stroke-width:3.4; stroke-linecap:round; opacity:.5;
@@ -325,6 +326,7 @@ const S = [
   {vis: "fix", step: 2, say: "Two: the nearby text, in full detail."},
   {vis: "fix", step: 3, say: "Three: the routed spots, the ones the scan chose."},
   {vis: "cmp", say: "Each row is one token. Dense reads the whole triangle; we read a few stripes.", sub: "at 128,000 tokens: ~8.6 billion vs ~2.3 billion comparisons per head"},
+  {vis: "pair", say: "Token by token: dense reads every earlier token; we read a chosen few.", sub: "the counters add up every comparison made so far"},
   {kind: "section", say: '<span class="secnum">PART 6 · Jerry</span>Results'},
   {kind: "num", num: "30 / 30", rule: "RULER · niah_single_1 · 30 docs @128K", say: "correct on 128,000-token documents"},
   {kind: "num", num: "28 / 30", rule: "RULER · niah_single_1 · 30 docs @128K", say: "for the normal model", sub: "same documents; that 2-question gap is too small to count as a win"},
@@ -602,6 +604,9 @@ const VIS = {
       <div class="cnt"><b class="cn">0</b> comparisons</div></div></div>
     <div class="legend"><span><i style="background:var(--g)"></i>the beginning</span><span><i style="background:var(--b)"></i>nearby text</span>
       <span><i style="background:var(--p)"></i>routed spots</span><span><i style="background:var(--r)"></i>about to predict</span></div>`,
+  pair: () => `<canvas class="paircv" width="1200" height="460"></canvas>
+    <div class="legend"><span><i style="background:var(--g)"></i>the beginning</span><span><i style="background:var(--b)"></i>nearby text</span>
+      <span><i style="background:var(--p)"></i>routed spots</span><span><i style="background:var(--r)"></i>about to predict</span></div>`,
   route: s => {
     const SC = [14, 6, 22, 9, 18, 4, 11, 34, 8, 16, 26, 10, 7, 38, 13, 20, 9, 31, 12, 17, 8];
     const TOP = new Set([7, 13, 17]);
@@ -768,6 +773,56 @@ document.querySelectorAll(".cmpcv").forEach(cv => {
     }
     if (rows < CMP_N) { ctx.fillStyle = "#e06666"; ctx.fillRect(0, (rows - 1) * cs, 3, cs - .8); }
     cn.textContent = ops.toLocaleString();
+  }
+  draw();
+});
+
+// Pairwise view: step through tokens one at a time; the current token draws arcs to everything it reads.
+const PR_N = 24, PR_ROUTED = [6, 12, 17], PR_TAIL = 2, PR_WIN = 3;
+const prTargets = (k, j) => {
+  const out = [];
+  for (let i = 0; i < j; i++) {
+    if (k === "dense") { out.push([i, "#1f4fd8"]); continue; }
+    if (j >= PR_N - PR_TAIL) out.push([i, "#e06666"]);
+    else if (i < 2) out.push([i, "#7cc174"]);
+    else if (j - i <= PR_WIN) out.push([i, "#6f9cf0"]);
+    else if (PR_ROUTED.includes(i)) out.push([i, "#9b82d0"]);
+  }
+  return out;
+};
+document.querySelectorAll(".paircv").forEach(cv => {
+  const ctx = cv.getContext("2d"), slide = cv.closest(".slide"), W = 1200, pad = 230, cw = (W - pad - 30) / PR_N;
+  const STEP = 420, HOLD = 2400, cx = i => pad + i * cw + cw / 2;
+  const arc = (y, j, i, col, a, lw) => {
+    const h = Math.min(120, (cx(j) - cx(i)) * .32 + 14);
+    ctx.globalAlpha = a; ctx.strokeStyle = col; ctx.lineWidth = lw;
+    ctx.beginPath(); ctx.moveTo(cx(j), y - 4); ctx.quadraticCurveTo((cx(i) + cx(j)) / 2, y - h, cx(i), y - 4); ctx.stroke();
+  };
+  const row = (y, k, name, cur) => {
+    let ops = 0;
+    for (let j = 1; j < cur; j++) { const t = prTargets(k, j); ops += t.length; t.forEach(([i, col]) => arc(y, j, i, col, .07, 2)); }
+    const tg = cur < PR_N ? prTargets(k, cur) : [];
+    tg.forEach(([i, col]) => arc(y, cur, i, col, .9, 3.2));
+    ops += tg.length;
+    ctx.globalAlpha = 1;
+    for (let i = 0; i < PR_N; i++) {
+      const hit = tg.find(t => t[0] === i);
+      ctx.fillStyle = i === cur ? "#e06666" : hit ? hit[1] : i < cur ? "#dfe3ea" : "#f1f3f7";
+      ctx.beginPath(); ctx.roundRect(cx(i) - cw / 2 + 3, y, cw - 6, 34, 6); ctx.fill();
+    }
+    ctx.fillStyle = "#14171f"; ctx.font = "800 26px Inter, Helvetica, sans-serif"; ctx.fillText(name, 10, y - 8);
+    ctx.font = "800 30px Inter, Helvetica, sans-serif"; ctx.fillText(ops.toLocaleString(), 10, y + 30);
+    const w = ctx.measureText(ops.toLocaleString()).width;
+    ctx.fillStyle = "#8a93a3"; ctx.font = "500 18px Inter, Helvetica, sans-serif"; ctx.fillText("comparisons", 18 + w, y + 30);
+  };
+  function draw() {
+    requestAnimationFrame(draw);
+    if (!slide.classList.contains("active")) return;
+    const t = (performance.now() - (slide._t0 || 0)) % (STEP * PR_N + HOLD);
+    const cur = Math.min(PR_N, 1 + Math.floor(t / STEP));
+    ctx.clearRect(0, 0, W, 460);
+    row(185, "dense", "Dense", cur);
+    row(415, "bb", "Bigger Bird", cur);
   }
   draw();
 });
