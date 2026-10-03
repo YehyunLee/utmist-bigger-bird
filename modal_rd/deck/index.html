@@ -25,6 +25,11 @@
   .num { font-size:9vw; font-weight:800; color:var(--accent); line-height:1; letter-spacing:-.03em; }
   .corner { position:absolute; top:4%; right:4%; height:7%; max-height:none !important; }
   .footer { position:absolute; bottom:2.5%; right:4%; font-size:.9vw; color:var(--muted); }
+  .timer { position:absolute; bottom:2.5%; left:4%; font-size:.9vw; color:var(--muted); font-variant-numeric:tabular-nums; }
+  .pvw { position:absolute; bottom:6.5%; right:4%; width:12vw; aspect-ratio:16/9; overflow:hidden;
+         border:1px solid #e3e6ee; border-radius:6px; background:#fff; opacity:.85; }
+  .pvw .in { position:relative; width:100vw; height:100vh; transform-origin:top left; pointer-events:none; }
+  .pvw .in .slide { display:flex; }
 
   /* Title */
   .k-hero .row { display:flex; align-items:center; gap:3.5vw; position:absolute; top:30%; left:50%; transform:translateX(-50%); }
@@ -228,6 +233,8 @@
 </head>
 <body>
 <div id="deck"></div>
+<div class="timer" id="timer"></div>
+<div class="pvw" id="pvw"><div class="in" id="pvwin"></div></div>
 <div class="footer"><span id="num"></span></div>
 <script>
 // Each entry is one slide.
@@ -675,8 +682,25 @@ document.querySelectorAll(".quadcv").forEach(cv => {
 
 const slides = [...document.querySelectorAll(".slide")];
 let i = Math.max(0, Math.min(slides.length - 1, parseInt(location.hash.slice(1) || "1") - 1));
-const show = () => { slides.forEach((s, j) => s.classList.toggle("active", j === i));
-                     document.getElementById("num").textContent = `${i + 1} / ${slides.length}`; location.hash = i + 1; };
+const pvw = document.getElementById("pvw"), pvwin = document.getElementById("pvwin"), timerEl = document.getElementById("timer");
+let t0 = null;
+setInterval(() => {
+  if (t0 === null) return;
+  const s = Math.floor((Date.now() - t0) / 1000);
+  timerEl.textContent = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+}, 500);
+const show = () => {
+  slides.forEach((s, j) => s.classList.toggle("active", j === i));
+  document.getElementById("num").textContent = `${i + 1} / ${slides.length}`; location.hash = i + 1;
+  if (i === 0) { t0 = null; timerEl.textContent = ""; } else if (t0 === null) t0 = Date.now();
+  pvwin.innerHTML = "";
+  if (i + 1 < slides.length) {
+    pvw.style.display = "";
+    pvwin.style.transform = `scale(${pvwin.parentElement.clientWidth / innerWidth})`;
+    const c = slides[i + 1].cloneNode(true); c.classList.add("active"); c.removeAttribute("id");
+    pvwin.appendChild(c);
+  } else pvw.style.display = "none";
+};
 document.addEventListener("keydown", e => {
   if (["ArrowRight", "PageDown", " "].includes(e.key)) i = Math.min(slides.length - 1, i + 1);
   if (["ArrowLeft", "PageUp"].includes(e.key)) i = Math.max(0, i - 1);
