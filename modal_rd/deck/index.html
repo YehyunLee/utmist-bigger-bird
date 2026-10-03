@@ -332,10 +332,10 @@ const S = [
   {kind: "num", num: "1.9×", rule: "prefill benchmark · one H100", say: "faster to read the document"},
   {vis: "img", img: F + "scaling.png", say: "The longer the document, the bigger the speed gap.", rule: "benchmark · prefill, one H100", sub: "normal model: double the length → ~3× the time · Bigger Bird: double → ~2×"},
   {vis: "img", img: F + "loglog.png", say: "That's linear growth, not quadratic.", rule: "benchmark · prefill, one H100", sub: "measured slope 1.01 for Bigger Bird vs 1.65 for the normal model"},
-  {vis: "img", img: F + "depth.png", say: "It works wherever the fact is hidden.", rule: "RULER · niah_single_1 · needle-depth sweep"},
+  {vis: "img", img: F + "depth.png", say: "It works wherever the fact is hidden.", rule: "RULER · niah_single_1 · needle-depth sweep", sub: "when there is one naive value to retrieve"},
 
   {kind: "section", say: '<span class="secnum">PART 7 · Jerry</span>Harder tests'},
-  {vis: "exgrid", say: "So we run six kinds of test."},
+  {vis: "exgrid", say: "Let's break down the six different retrieval challenges.", sub: "and how they differ from RULER"},
 
   {vis: "img", img: F + "tasks.png", say: "Up to 65,000 tokens, Bigger Bird matches or beats the normal model.", sub: "a possible reason: with most of the noise never read, the answer has less to compete with"},
   {vis: "img", img: F + "tasks.png", say: "At 128,000 tokens, most of these stump both models.", sub: "12 prompts per test, so small differences aren't significant yet"},
