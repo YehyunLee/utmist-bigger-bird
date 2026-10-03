@@ -177,6 +177,11 @@
   .readlist { column-count:2; column-gap:4vw; text-align:left; width:94%; }
   .readlist div { break-inside:avoid; font-size:1.45vw; font-weight:600; padding:.4em 0; border-bottom:1px solid #eef0f3; }
   .readlist span { display:block; font-size:1.05vw; font-weight:400; color:var(--muted); margin-top:.15em; }
+  .ctable { width:94%; border-collapse:collapse; font-size:1.3vw; text-align:left; }
+  .ctable th { font-size:1.05vw; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); font-weight:700; padding:.5em .6em; border-bottom:2px solid #d5dbe8; }
+  .ctable td { padding:.55em .6em; border-bottom:1px solid #e8ecf3; vertical-align:top; line-height:1.35; }
+  .ctable td:first-child { font-weight:700; }
+  .ctable tr.ours td { background:#eef3fd; }
   .readlist.todo { column-count:1; width:78%; }
   .readlist.todo div { font-size:2.2vw; padding:.55em 0; } .readlist.todo span { font-size:1.45vw; }
 
@@ -352,6 +357,7 @@ const S = [
   {vis: "img", img: F + "ablations.png", say: "But more is not better. Thousands of spots dilute the signal.", sub: "best at a few hundred; only 3 of 6 with 4,000"},
   {vis: "img", img: F + "ablations.png", say: "Right: how many positions about to predict read everything.", sub: "none → 2 of 6 · a little → 4 of 6 · 256 tokens → 6 of 6"},
   {vis: "img", img: F + "ablations.png", say: "No retraining. Same model, same weights."},
+  {kind: "ctable", say: "Everything we tried, side by side:"},
 ];
 
 const PROMPT = `The grass is green. The sky is blue. The sun is yellow. Here we go. …
@@ -419,6 +425,16 @@ const TODO = [
   ["Training support", "write the backward pass, then fine-tune with the pattern on so the model adapts to it"],
   ["More optimization", "fold the scoring scan and the end's full read into the kernel; today they run as separate steps"],
   ["Real-world tests", "natural documents and real questions, not test puzzles"],
+];
+
+const CTABLE = [
+  ["Approach", "What each token reads", "Pros", "Cons", "@128K"],
+  ["Dense attention", "every previous token", "the full picture — best quality", "quadratic prefill", "28/30"],
+  ["Sink + local window", "the start + nearby text", "fast, simple", "loses distant content — the blur", "misses the fact"],
+  ["Last-query top-k", "…plus top keys for the last token", "sometimes catches the fact", "one query's view is too narrow — mid-document stays blurry", "low fidelity"],
+  ["Routed, no dense tail", "…plus shared routes, but nothing extra", "high fidelity mid-document", "the question itself loses its full read", "2 of 6"],
+  ["Bigger Bird (ours)", "start + 16K window + 512 routes per head, and the last 256 read everything", "30/30 · ~1.9× faster · subquadratic", "extra routing step · behind on essay text · no memory savings", "30/30"],
+  ["Oracle per-query top-k", "the true top keys for every token", "best achievable at the budget", "needs dense attention first — not deployable", "upper bound"],
 ];
 
 const TEAM = [
@@ -611,6 +627,10 @@ S.forEach(s => {
         `<div class="tl${s.tl === undefined ? "" : (Array.isArray(s.tl) ? j >= s.tl[0] && j <= s.tl[1] : j === s.tl) ? " on" : " off"}"><b>${d}</b><span>${t}</span></div>`).join("")}</div>`;
     if (s.kind === "hero")
       html += `<div class="row"><img src="${A}bigger_bird_logo.png" alt="Bigger Bird"><div><div class="big">Bigger Bird</div><div class="small">Content-Aware Sparse Transformer Attention</div></div></div>`;
+    if (s.kind === "ctable")
+      html += `<p class="say" style="margin:0 0 .7em">${s.say}</p><table class="ctable"><tr>` +
+              CTABLE[0].map(h => `<th>${h}</th>`).join("") + `</tr>` +
+              CTABLE.slice(1).map((r, ri) => `<tr${ri === 4 ? ' class="ours"' : ""}>` + r.map(c => `<td>${c}</td>`).join("") + `</tr>`).join("") + `</table>`;
     if (s.kind === "todo")
       html += `<p class="say" style="margin:0 0 .9em">${s.say}</p><div class="readlist todo">` +
               TODO.map(([t, tag]) => `<div>${t}<span>${tag}</span></div>`).join("") + `</div>`;
@@ -628,7 +648,7 @@ S.forEach(s => {
         `${p.name ? `<p class="pname">${p.name}</p>` : ""}<p class="pcap">${p.cap}</p></div>`).join("") + `</div>`;
     if (s.img && !["partners", "team"].includes(s.kind)) html += `<img src="${s.img}" alt="">`;
     if (s.kind === "num") html += `<div class="num">${s.num}</div>`;
-    if (s.say && !["readlist", "todo", "team", "partners"].includes(s.kind)) html += `<p class="say">${s.say}</p>`;
+    if (s.say && !["readlist", "todo", "ctable", "team", "partners"].includes(s.kind)) html += `<p class="say">${s.say}</p>`;
     if (s.sub) html += `<p class="sub">${s.sub}</p>`;
   }
   el.innerHTML = html;
