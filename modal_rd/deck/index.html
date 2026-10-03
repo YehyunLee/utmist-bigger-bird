@@ -186,6 +186,8 @@
              font-size:8vh; font-weight:800; display:flex; align-items:center; justify-content:center; }
   .pgrid .pname { font-size:1.7vw; font-weight:800; margin:.7em 0 0; }
   .pgrid .prole { font-size:1.2vw; font-weight:700; color:var(--accent); margin:.25em 0 0; text-transform:uppercase; letter-spacing:.06em; }
+  .pgrid .ptag { margin-top:auto; display:flex; flex-direction:column; align-items:center; color:var(--muted); font-size:1.15vw; font-weight:600; }
+  .pgrid .ptag .curl { font-size:3vw; line-height:.55; display:inline-block; transform:rotate(90deg); color:var(--accent); }
   .pgrid .pcap { font-size:1.2vw; color:var(--muted); margin:.4em 0 0; line-height:1.35; }
   .pgrid ul { list-style:none; padding:0; margin:.6em 0 0; }
   .pgrid li { font-size:1.15vw; color:var(--muted); line-height:1.4; margin:.3em 0; }
@@ -423,9 +425,9 @@ const TEAM = [
    pts: ["3rd-year EngSci, ECE major", "Joined as co-lead"]},
   {img: "jerry.png", initial: "J", name: "Jerry", role: "Developer", pos: "center 8%",
    pts: ["Developer on the team", "Also lent us his A100 GPU until July"]},
-  {img: "albert.png", initial: "A", name: "Albert", role: "Developer",
+  {img: "albert.png", initial: "A", name: "Albert", role: "Developer", tag: "new hire",
    pts: ["Developer on the team"]},
-  {img: "david.png", initial: "D", name: "David", role: "Developer", pos: "center 4%",
+  {img: "david.png", initial: "D", name: "David", role: "Developer", pos: "center 4%", tag: "new hire",
    pts: ["Developer on the team"]},
 ];
 
@@ -611,7 +613,8 @@ S.forEach(s => {
     if (s.kind === "team")
       html += `<p class="ptitle">${s.say}</p><div class="pgrid">` + TEAM.map(p =>
         `<div class="p"><div class="pimg">${face(p, "face")}</div><p class="pname">${p.name}</p><p class="prole">${p.role}</p>` +
-        `<ul>${p.pts.map(t => `<li>${t}</li>`).join("")}</ul></div>`).join("") + `</div>`;
+        `<ul>${p.pts.map(t => `<li>${t}</li>`).join("")}</ul>` +
+        `${p.tag ? `<div class="ptag"><span class="curl">}</span>${p.tag}</div>` : ""}</div>`).join("") + `</div>`;
     if (s.kind === "partners")
       html += `<p class="ptitle">${s.say}</p><div class="pgrid">` + PARTNERS.map(p =>
         `<div class="p"><div class="pimg">${face(p, p.round || p.initial ? "face" : "plogo")}</div>` +
