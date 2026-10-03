@@ -325,7 +325,6 @@ const S = [
   {vis: "fix", step: 1, say: "One: the very beginning of the document."},
   {vis: "fix", step: 2, say: "Two: the nearby text, in full detail."},
   {vis: "fix", step: 3, say: "Three: the routed spots, the ones the scan chose."},
-  {vis: "cmp", say: "Each row is one token. Dense reads the whole triangle; we read a few stripes.", sub: "at 128,000 tokens: ~8.6 billion vs ~2.3 billion comparisons per head"},
   {vis: "pair", say: "Token by token: dense reads every earlier token; we read a chosen few.", sub: "the counters add up every comparison made so far"},
   {kind: "section", say: '<span class="secnum">PART 6 · Jerry</span>Results'},
   {kind: "num", num: "30 / 30", rule: "RULER · niah_single_1 · 30 docs @128K", say: "correct on 128,000-token documents"},
@@ -366,6 +365,7 @@ const S = [
   {kind: "hero", say: "Thank you", corner: true},
 
   {kind: "section", say: "Appendix"},
+  {vis: "cmp", say: "Each row is one token. Dense reads the whole triangle; we read a few stripes.", sub: "at 128,000 tokens: ~8.6 billion vs ~2.3 billion comparisons per head"},
   {say: "The normal model uses FlashAttention, the fast standard version."},
   {say: "We run 30 different documents at 128,000 tokens."},
   {say: "Six were used to tune our method. The other 24 were never touched."},
